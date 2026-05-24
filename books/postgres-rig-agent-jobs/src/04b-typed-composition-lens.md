@@ -50,34 +50,19 @@ Read this as the simple version:
 
 ## What You Already Know
 
-Start with these anchors:
+Start by anchoring yourself in the solid type theory you have already established. Chapter 4 finally gave your most important, dangerous production values real Rust names. You also intuitively know that certain operational objects have a strictly legal order of operations. Finally, you understand that a completed job, a formally approved request, and a merely validated tool input are profoundly not interchangeable states, even if they share similar data structures.
 
-- Chapter 4 gave important values real Rust names.
-- Some objects have a legal order of operations.
-- A completed job, approved request, and validated tool input are not interchangeable states.
-
-This chapter adds: typed composition and typestate. You will use the type
-system where workflow order matters, while avoiding type machinery where a
-simple validated constructor is enough.
+This chapter adds the final polish: typed composition and typestate. You will learn to violently deploy the type system wherever workflow order matters, while pragmatically avoiding heavy type machinery in places where a simple, validated constructor is perfectly sufficient.
 
 ## Focus Cue
 
-Keep three things in view:
+Keep three critical elements fiercely in view as you read. Regarding **State**, recognize that explicitly typed transformations, lifecycle states, and error pipelines are the only things that can be safely composed without fear. Regarding the **Move**, understand that a value is only permitted to move through a pipeline when the previous output type flawlessly and mathematically satisfies the next input requirement. Finally, regarding **Proof**, remember that newtypes, typestate builders, and explicit `Result` pipelines are the undeniable proof that illegal composition was caught and destroyed long before runtime.
 
-- **State:** typed transformations, lifecycle states, and error pipelines that can be safely composed.
-- **Move:** a value moves through a pipeline only when the previous output type satisfies the next input requirement.
-- **Proof:** Newtypes, typestate builders, and `Result` pipelines make illegal composition visible before runtime.
-
-If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
-
+If you ever get lost in the abstraction, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical typing concept to a concrete production check.
 
 ## Production Artifact
 
-Build or inspect this artifact before moving on:
-
-- **Artifact:** a small typestate pipeline for one lifecycle that has illegal transitions.
-- **Why it matters:** compile-time state is useful when runtime checks would protect a dangerous operation too late.
-- **Done when:** an unvalidated or unapproved value cannot call the operation reserved for a validated or approved value.
+Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a small typestate pipeline specifically designed for a single lifecycle that is prone to illegal transitions. This artifact matters intensely because compile-time state tracking is incredibly useful when relying on runtime checks would only manage to protect a dangerous operation far too late. You will know this is "done" when an unvalidated or unapproved value mathematically cannot even attempt to call the operation strictly reserved for a validated or approved value.
 
 
 ## Implementation Map
@@ -341,179 +326,83 @@ performance.
 
 ## Formal Definition
 
-For this chapter, the precise definition is:
+For this chapter, the formal definition of adoption is unapologetically academic yet intensely practical: Typed composition is the mathematically safe connection of transformations where the output and input types must flawlessly match, actively utilizing typestate whenever the specific lifecycle order of operations matters to system safety.
 
-```text
-Typed composition is the safe connection of transformations whose output and input types match, with typestate used when lifecycle order matters.
-```
-
-In the book's system model:
-
-- **State:** typed transformations, lifecycle states, and error pipelines that can be safely composed.
-- **Actor:** the compiler, constructors, and developers connect only compatible outputs, inputs, and lifecycle states.
-- **Transition:** a value moves through a pipeline only when the previous output type satisfies the next input requirement.
-- **Evidence:** Newtypes, typestate builders, and `Result` pipelines make illegal composition visible before runtime.
-- **Invariant:** composition makes category errors and illegal lifecycle transitions visible before production execution.
+In the book's overarching system model, the **State** mapping is precise: typed transformations, lifecycle states, and strict error pipelines are explicitly defined so they can be safely composed. The **Actor** interactions are restricted so that the Rust compiler, the smart constructors, and the developers themselves can connect only fully compatible outputs, inputs, and lifecycle states. The core **Transition** dictates that a value moves through a pipeline *only* when the previous step's output type undeniably satisfies the next step's rigorous input requirement. The **Evidence** ensures that newtypes, typestate builders, and explicit `Result` pipelines make any attempt at illegal composition glaringly visible long before runtime. Ultimately, the governing **Invariant** guarantees that this strict composition successfully forces both category errors and illegal lifecycle transitions to become visible, compile-time failures rather than terrifying production execution bugs.
 
 ## What Can Fail
 
-| Signal | Production meaning |
-| --- | --- |
-| Design smell | Lifecycle order is enforced by convention. |
-| Production symptom | A request can be sent before auth, payload validation, or policy preparation. |
-| Corrective invariant | Invalid lifecycle transitions are not expressible through the public API. |
-| Evidence to inspect | Typestate builders expose `build` only after required states exist. |
-
+When relying on composition, the most dangerous failure mode is blind optimism. The most common design smell occurs when a critical lifecycle order is enforced purely by loose team convention or hopeful comments rather than strict types. The production symptom of this tragedy is that an unvalidated request can suddenly be sent out before formal authorization, payload validation, or necessary policy preparation has actually happened. The corrective invariant to ruthlessly enforce is that invalid, out-of-order lifecycle transitions must be mathematically inexpressible through your public API. If a failure occurs, the operational evidence you must inspect includes the typestate builders themselves; they should only ever expose a `.build()` or `.execute()` method *after* all prerequisite states definitively exist in the type signature.
 
 ## Production Contract
 
-Use the three ideas at different strengths:
+When integrating these powerful type concepts, you are drafting a clear, three-part production contract. 
 
-```text
-newtypes: default for meaningful boundary values
-typestate: selective for construction order and lifecycle gates
-category theory: teaching lens for composition, identity, and error flow
-```
+First, use **newtypes** as your absolute default for any meaningful boundary value. Second, use **typestate** selectively, reserving it strictly for construction order and critical lifecycle gates where skipping a step would cause an incident. Third, use **category theory** purely as a conceptual teaching lens for understanding composition, identity, and error flow, but never as an excuse to rename ordinary services to things like `Monad` or `NaturalTransformation`.
 
-Do not encode database runtime status as compile-time typestate. Do not expose
-math vocabulary in operational APIs. Do use types to make the safe path the
-easy path.
-
-This contract is intentionally pragmatic.
-
-The book does not ask you to turn the whole system into type-level machinery.
-It asks you to notice where a wrong order would hurt production. A missing
-idempotency key before enqueue is dangerous. A missing approval before a
-rollback is dangerous. A missing receipt before replay is dangerous. Those are
-good places for stronger types or explicit state transitions.
-
-For low-risk local code, plain functions are fine. For high-risk workflow
-boundaries, the type signature should make the preconditions visible.
+Do not attempt to encode your highly volatile, runtime database status as rigid compile-time typestate. Do not lazily expose confusing math vocabulary in your operational, blue-collar APIs. But absolutely do use these types to structurally force the safe path to be the easiest, most obvious path for the next developer who touches your code at 2 AM.
 
 ## Judgment: When Not To Use Typestate
 
-Typestate is powerful because it can make illegal transitions impossible to
-call. That power has a cost.
+Typestate is an incredibly powerful tool because it can literally make illegal transitions mathematically impossible to call. However, that power comes with a severe cognitive cost.
 
-Use typestate when the lifecycle order is stable and a wrong call can create a
-dangerous side effect:
+You should aggressively use typestate when the lifecycle order is highly stable and a wrong call can create a dangerous external side effect. Excellent use cases include moving from unvalidated to validated, from unauthorized to authorized, from approval requested to formally approved, from a draft tool request to an executable tool request, or from an incomplete builder to a fully populated command.
 
-```text
-unvalidated -> validated
-unauthorized -> authorized
-approval requested -> approved
-draft tool request -> executable tool request
-incomplete builder -> complete command
-```
+You must absolutely not use typestate when the state is primarily messy, unpredictable runtime data. Terrible use cases include raw database rows freshly loaded from Postgres, states that are dynamically configured by external policy at runtime, workflow states that change every other week based on product requirements, complex dashboards, or simple, scalar values that genuinely only need one standard constructor.
 
-Do not use typestate when the state is mostly runtime data:
-
-```text
-database rows loaded from Postgres
-states configured by policy at runtime
-workflow states that change weekly
-dashboards and operator filters
-simple values that only need one constructor
-```
-
-For persisted agent work, the usual split is:
-
-```text
-database status -> enum plus row conversion
-command construction -> typestate if order matters
-tool execution gate -> typestate or explicit approved type
-operator query -> plain enum and SQL predicate
-```
-
-When typestate makes every function generic and nobody can explain the
-signature, the design is too heavy. Return to a validated constructor, an enum,
-and a clear transition method.
-
-Category theory follows the same rule. Use it to explain composition,
-identity, mapping, and error flow. Do not make the production API speak math
-when ordinary engineering names are clearer.
+For persisted agent work, the pragmatic split is simple: use an enum and strict row conversion for database status, use typestate for command construction when order truly matters, use a dedicated 'approved' type for the final tool execution gate, and use plain enums for operator queries. When your typestate implementation forces every single function in the codebase to become generically tangled and no one on your team can easily explain the signature, your design has become too heavy. Delete it, and confidently return to using a validated constructor, a clear enum, and a strictly defined transition method.
 
 ## Progressive Hardening Path
 
-| Stage | Implementation shape | What changes |
-| --- | --- | --- |
-| Naive version | Lifecycle order is enforced by convention. | Convention-only lifecycle order lets callers assemble valid-looking objects in invalid states. |
-| Safer version | Invalid lifecycle transitions are not expressible through the public API. | Typed transformations and typestate make the allowed composition visible in the function signatures. |
-| Production version | Typestate builders expose `build` only after required states exist. | The code can expose `build`, `execute`, or `approve` only after the required typed evidence exists. |
+Migrating to typestate and strict composition is a progressive hardening path.
 
-Use the naive row when lifecycle order lives in prose. Use the safer row when composition needs types. Use the production row when illegal transitions should be unrepresentable.
+In the naive version, lifecycle order is desperately enforced by team convention and hopeful comments. In this fragile state, convention-only order allows weary developers to easily assemble perfectly valid-looking objects that are actually in completely invalid, dangerous states.
+
+The safer version dramatically improves upon this by ensuring that invalid lifecycle transitions are fundamentally inexpressible through the public API. Here, typed transformations and strategic typestate mechanically force the allowed composition to be glaringly visible directly in the function signatures.
+
+The final, production-grade version hardens this integration entirely. The team implements typestate builders that physically only expose `.build()`, `.execute()`, or `.approve()` methods *after* the required, typed prerequisite evidence exists. Use the naive row to aggressively spot "convention-based" safety, use the safer row when composition demands type-level enforcement, and rely on the production row when illegal transitions absolutely must be unrepresentable.
 
 ## Testing Strategy
 
-Test composition by making illegal ordering impossible or explicit:
-
-- **Unit or type test:** prove the Rust typestate builder exposes `build`, `execute`, or `approve` only after the required earlier states exist.
-- **Persistence or boundary test:** prove Postgres lifecycle rows cannot be decoded into a later domain state unless the earlier evidence is present.
-- **Regression test:** preserve a case where an output is used before validation or approval; the type pipeline should fail before runtime side effects.
+You must aggressively test your composition by ensuring illegal ordering is either mathematically impossible or explicitly, violently rejected. In your unit or type tests, you must prove that your Rust typestate builder legitimately only exposes its terminal methods after the required earlier states physically exist in the type signature. Your persistence or boundary tests must unequivocally prove that Postgres lifecycle rows cannot be successfully decoded into a later domain state unless the earlier, prerequisite evidence is fully present in the data. Furthermore, your regression tests must meticulously encode a terrifying scenario where an output is somehow maliciously used before validation or approval; your type pipeline must structurally fail long before any runtime side effects can be triggered.
 
 ## Observability Strategy
 
-Observe composition as a sequence of typed transformations:
-
-- Emit structured `tracing` fields for pipeline step, input type, output type, typestate state, trace id, and validation outcome.
-- Record an operation event when a pipeline advances from raw input to parsed value, validated value, policy-checked value, approved value, or executed result.
-- The runbook query should identify the exact transformation where a workflow stopped before an illegal side effect could occur.
+You must actively observe your composition as a strict sequence of explicitly typed transformations. Emit structured `tracing` fields detailing the specific pipeline step, the exact input type, the resulting output type, the current typestate, the trace id, and the formal validation outcome. You must record a formal operation event the instant a pipeline successfully advances from raw input to parsed value, to a validated value, to a policy-checked value, to an approved value, and finally to an executed result. Ultimately, the runbook query you construct should instantly identify the exact transformation layer where a failing workflow stopped, definitively proving that it halted long before an illegal side effect could ever occur.
 
 ## Security and Safety Considerations
 
-Composition is safe only when unsafe states cannot skip validation:
+Typed composition functions as a genuine security control only when unsafe states absolutely cannot skip mandatory validation steps. You must treat every single pipeline step that crosses a trust boundary—such as an API endpoint, a database read, or an untrusted model output—as fiercely demanding its own distinct type before it can proceed. Authorization, strict sandboxing, and formal approval checks must be represented as unforgeable, un-skippable steps within the composition chain. Always meticulously redact sensitive payload values from your type-level tracing, while ensuring the exact sequence of typed transformations remains perfectly visible for the inevitable security audit.
 
-- Treat each pipeline input as untrusted until the previous typed transformation has produced the required state.
-- authorization, sandboxing, and approval should be separate transformations before an executable tool request or side effect receipt can exist.
-- Redact raw model and tool payloads between transformations while preserving the typed state names and failure evidence.
+Treat every single pipeline input as inherently hostile until the previous typed transformation has explicitly produced the required state. Authorization, sandboxing, and approval decisions must be separate, legally enforced transformations *before* an executable tool request or a side-effect receipt can physically exist in the system. Finally, aggressively redact raw model and tool payloads between transformations while flawlessly preserving the typed state names and any associated failure evidence.
 
 ## Operational Checklist
 
-Use this checklist before relying on typed composition and typestate in production:
+Before relying on typed composition and typestate in production, operators must perform a strict review of the system's boundaries.
 
-- **State:** Lifecycle states such as Pending, Running, WaitingForHuman, Approved, and
-  Completed determine which operations exist.
-- **Boundary:** Raw model output enters a validation pipeline before it becomes a typed
-  tool request or state transition.
-- **Failure:** Illegal transitions such as completing an unapproved run or executing an
-  unvalidated tool call are unrepresentable or rejected.
-- **Observability:** Typed pipeline steps emit trace fields and events that match the
-  state transition names.
-- **Safety:** Side-effecting steps appear after parse, validation, authorization,
-  sandboxing, approval, and idempotency checks.
+First, verify the **State** boundary: ensure lifecycle states such as Pending, Running, WaitingForHuman, Approved, and Completed strictly determine which operations physically exist on the object. Second, inspect the **Boundary** transitions themselves: verify that raw model output violently enters a validation pipeline before it can ever become a typed tool request or trigger a state transition. 
+
+Third, rehearse your **Failure** modes: ensure that illegal transitions—such as trying to complete an unapproved run or blindly executing an unvalidated tool call—are either mathematically unrepresentable by the compiler or brutally rejected at runtime. Fourth, validate your **Observability** pipeline: confirm that typed pipeline steps emit trace fields and operation events that perfectly match the names of the state transitions. Finally, verify **Safety**: ensure that any side-effecting step only appears mathematically *after* the parse, validation, authorization, sandboxing, approval, and idempotency checks have successfully completed.
 
 ## Exercises
 
-1. Write a negative test where a `ToolCall<Requested>` is executed before validation
-   or approval supplies the required idempotency evidence. Explain which idempotency
-   key, receipt, or state transition prevents duplicate work.
-2. Sketch the Postgres evidence: rows that prove raw output, validated request, policy
-   decision, approval, execution, and receipt are separate evidence.
-3. Define or refine the Rust type, enum, constructor, or typestate that represents
-   `ToolCall<Requested>`, `ToolCall<Validated>`, `ToolCall<Approved>`, and
-   `ToolCall<Executed>`. Then name the runbook question that proves it works.
+To test your operational mastery, write a decidedly negative test where a `ToolCall<Requested>` is stubbornly attempting to execute before formal validation or approval supplies the required idempotency evidence. You must explicitly explain which idempotency key, receipt, or state transition mathematically prevented the duplicate work. Next, sketch the exact Postgres evidence: explicitly define the rows that prove raw output, validated request, policy decision, approval, execution, and receipt are stored as completely separate evidence. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that precisely represents the transitions between `ToolCall<Requested>`, `ToolCall<Validated>`, `ToolCall<Approved>`, and `ToolCall<Executed>`. Then, meticulously name the runbook question that proves this enforcement mechanism actually works at 3 AM.
+
 ## Self-Check
 
-Use this quick retrieval drill before moving on:
-
-- Recall: What problem does typestate solve that an enum alone may not solve?
-- Explain: Why should typed composition start with engineering flow before category-theory words?
-- Apply: Choose one lifecycle where only the next legal operation should compile.
-- Evidence: Name the state type, transition method, invalid call, and compile-time or unit test that proves safety.
+Before you move on, use this quick retrieval drill to solidify your composition understanding. First, recall exactly what operational problem typestate solves that a simple enum alone cannot mathematically solve. Next, be able to clearly explain why applying typed composition must start with boring engineering flow rather than intimidating category-theory words. Then, defensively scan your own codebase and explicitly choose one lifecycle where only the strictly *next* legal operation should be allowed to compile. Finally, explicitly name the state type, the transition method, the invalid call you prevented, and the compile-time or unit test that undeniably proves your safety.
 
 ## Summary
 
-Use newtypes broadly for domain meaning. Use typestate narrowly where lifecycle state determines which operations are legal. Use composition language only when it clarifies safe pipelines.
+Use newtypes broadly for clear domain meaning. Use typestate narrowly and surgically precisely where the lifecycle state must dictate which operations are legally allowed to exist. Use category theory composition language only when it actively clarifies the engineering pipeline, and never when it obscures it.
 
-- **Invariant:** raw input, model output, and workflow state move through typed transformations before side effects execute.
-- **Evidence:** compile-time states, validation steps, policy decisions, approval records, and receipts form a visible path.
-- **Carry forward:** type discipline is not cleverness; it is production bug prevention.
+The core invariant to remember is that raw input, unpredictable model output, and core workflow state must all securely move through strictly typed transformations long before any dangerous side effects can execute. To enforce this, your architecture must visibly rely on compile-time states, rigorous validation steps, unforgeable policy decisions, formal approval records, and concrete receipts forming an undeniable execution path. 
+
+Moving forward, remember the golden rule: strict type discipline is profoundly not about academic cleverness; it is the most effective form of production bug prevention available.
 
 ## Changed Understanding
 
-- **Before this chapter:** composition looked like chaining functions because the code compiles.
-- **After this chapter:** safe composition means every step transforms one validated type into the next lawful type.
-- **Keep:** read each pipeline arrow as a validated transformation between typed states.
+Before reading this chapter, composition likely looked exactly like casually chaining functions together simply because the compiler allowed it. After this chapter, you should understand that genuinely safe composition means every single step rigorously transforms one formally validated type into the next lawful, prerequisite type. Moving forward, keep in mind that you must always read each pipeline arrow as a highly validated transformation between explicitly typed states.
 
 ## Further Reading & Credible References
 

@@ -266,7 +266,7 @@ The companion SQL exposes a small health surface:
 
 ```sql
 {{#include ../../../examples/postgres-rig-agent-jobs/sql/queue_metrics.sql}}
-```
+The medical monitor analogy is perfect. In AI, we often have the **"Vibes-based Monitoring"** problem, where a developer looks at three outputs and says "The model feels slow today." SLIs turn those vibes into **Hard Data**.
 
 Fleet health is a signal; SLO measurement is a contract. For that, the companion
 implementation also exposes SLI queries such as:
@@ -275,10 +275,22 @@ implementation also exposes SLI queries such as:
 {{#include ../../../examples/postgres-rig-agent-jobs/sql/sli_job_start_latency.sql}}
 ```
 
+We should also measure **Quality SLIs**. For example, "99% of triage jobs result in a valid proposal." If the "Good Event" count drops because models are failing to parse, that's an SLO breach that requires a prompt engineer, not a SRE. These SLIs should be part of our **Continuous Evaluation** pipeline.
+
+In AI, performance is inextricably linked to cost. We should add a **Cost SLI**: for example, "99% of triage jobs cost less than $0.05." If a worker "loops" or "retries" with a larger model, causing a cost spike, our **Cost-per-Reasoning-Step** metric will catch it before it burns the budget.
+
 The query returns a measurement row with a named SLO, a named SLI, a measurement
 window, a target in basis points, a good-event count, and a total-event count.
 That row is later converted into typed Rust values before it can drive a release
 or paging decision.
+
+> ### 🎓 The Professor's Corner
+>
+> **Observability as Consensus: The Group Agreement**
+>
+> Think of every worker and database as people in a meeting. Each one is shouting their "View" of the truth! 
+> 
+> **Observability** is how we reach **Consensus**. We look at all the shouts (logs, metrics, events) and find where they agree. If one person says "Jobs are stuck" (metric) but the teacher's gradebook says "No they aren't" (ledger), we have a gap! Our job as operators is to find the truth in the middle.
 
 Start with these alerts:
 
@@ -346,6 +358,16 @@ Use both; they answer different questions.
 When they disagree, prefer the durable ledger for audit and use the live trace
 to explain timing, dependencies, and latency. The ledger is the source of truth
 for what the system committed.
+
+This is the **Causality Thread**. We use the **W3C Trace Context** standard to ensure that this thread is not broken when a job moves from a worker to an external model provider and back. We should also record the **Span ID** in our failure history. It allows you to pinpoint *which specific attempt* caused the trace to fail.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Storyteller's Rule: Connecting the Dots**
+>
+> Every signal (trace, log, event) should be a sentence in a story. If the sentences don't connect, the story doesn't make sense! 
+> 
+> If you have a log that says "Something went wrong" but no Trace ID to link it to a job, you have a sentence without a subject. A good storyteller makes sure every clue leads back to the main character (the Job ID). This is how we reconstruct the whole journey!
 
 This is why the book does not require a heavy observability platform on day one.
 
@@ -490,6 +512,14 @@ database row -> validated audit or operation record -> operator evidence
 Unknown actor types, unknown severities, empty actions, missing subjects, and
 non-object evidence are rejected before they enter the domain model. That is
 observability as a boundary, not a best-effort print statement.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Black Box Recorder: More than "Error"**
+>
+> You don't want to find the flight recorder (the logs) and have it just say "Something went wrong." You want it to tell you the altitude, the speed, and what the pilot was doing! 
+> 
+> This is why we need **Audit and Operation Events**. They are the dials and gauges of our system. They tell us not just *that* we failed, but *what* we were thinking when we did.
 
 The difference is simple but important.
 

@@ -33,6 +33,8 @@ The model produced text. The system treated that text as permission. A billing
 status changed because an untrusted component used the word "approved" in the
 right shape.
 
+This is why we must prioritize **System Sovereignty**. We often speak about **Alignment**—the idea that the model should share our values. But in production, alignment is about ensuring the system—not the model—is sovereign. Your approval gate is the mechanism that ensures the system remains in charge. It protects against **Indirect Prompt Injection**, where a model reads a malicious document and is "tricked" into proposing a risky action.
+
 **False fix:** make the prompt stricter: "Only approve billing changes when you
 are sure." That may reduce some bad outputs, but it does not change the system
 boundary. The model can still be confused by stale memory, prompt injection,
@@ -47,6 +49,8 @@ update.
 
 In production, confident model text is not permission. Some actions affect customers, money, infrastructure, privacy, or compliance, and those actions need deterministic control.
 
+This is the principle of **Constraint Layering**. Prompts are **Probabilistic Policies** (the model tries to follow them). Code is **Deterministic Policy** (the system forces them). You should never use a prompt to enforce a "Hard Constraint" (like "don't delete the database"). That is what the Rust code and the database are for.
+
 Without durable approval and policy state, human-in-the-loop becomes a conversation instead of a safety boundary. This chapter separates model proposals from authorization, sandboxing, approval, and execution evidence.
 
 ## Plain Version
@@ -55,6 +59,14 @@ Read this as the simple version:
 
 **Simple rule:** Human approval is a control surface for risky action. It is not
 a decoration after the model answers.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Permission Slip: The Parent and the Kid**
+>
+> When I was a kid, if I wanted to go on a field trip, I needed a **Permission Slip** signed by my parents. I could ask as much as I wanted, but the school wouldn't let me on the bus without that piece of paper! 
+> 
+> The model is like the kid asking to go on the trip, and the human is the parent with the pen! Durable approval is our "Paper Trail" that proves the parent said yes. It makes the whole system feel safe and familiar.
 
 **Why it matters:** Some tool calls should pause. A person with the right
 authority must approve, reject, or ask for more evidence. The important part is
@@ -100,6 +112,16 @@ interruption. The agent asks, a person replies "yes", and the worker continues.
 That is weak. The reply may not name the actor, tenant, policy version, exact
 action, or reason. It may not survive process death. It may not be queryable
 during an incident.
+
+In distributed systems, a chat message is **Ephemeral State**. If the Slack bot crashes, the approval is lost! By making it a **Durable Approval Request**, we create a **Distributed Lock** that can only be released by a specific human actor.
+
+> ### 🎓 The Professor's Corner
+>
+> **Explicit vs. Implicit State: "Said" vs. "Stored"**
+>
+> An **Implicit State** is like a promise someone made in a noisy room. You *think* you heard them say "OK," but you have no proof! 
+> 
+> An **Explicit State** is like writing that promise in a permanent Gradebook. We don't just "talk" about approvals; we store them as rows in our notebook (the database). This is the only way to be sure the system knows what to do even after a power outage or a crash.
 
 **Done when:** The artifact is complete when the model can propose a risky
 action, but policy and approval state decide whether execution is legal.
@@ -296,6 +318,8 @@ An approval can be pending while the system is still healthy. An escalation
 means the system has reached a boundary where autonomous progress is no longer
 safe: a deadline breached, failures repeated, an abuse signal appeared, an
 approval timed out, or a worker found incompatible durable work.
+
+This is the distinction between **Authority (Approval)** and **Responsibility (Escalation)**. When the automation reaches its limit, it must "Fail Fast" and "Fail Loudly." Your escalation record is the "Loud Failure" that forces a human to acknowledge the boundary. It prevents the system from becoming a **Black Box** during an incident.
 
 Treat escalation as durable state, not a Slack message:
 

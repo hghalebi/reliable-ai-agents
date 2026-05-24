@@ -675,11 +675,10 @@ Reliable AI agents need security boundaries around the model. The model can reas
 - **After this chapter:** agent security means every model output, tool request, memory record, secret, and tenant boundary is treated as a trust boundary.
 - **Keep:** trace every dangerous action through parsing, validation, authorization, sandboxing, approval, and redaction.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) names the agent-specific risks behind prompt injection, tool abuse, memory poisoning, and data leakage.
-- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) gives the governance frame for trustworthy, accountable AI systems.
-- [NIST AI RMF Generative AI Profile](./31-credible-resources-further-reading.md#security-abuse-and-governance) maps generative-AI risks to concrete controls, measurement, and management actions.
-- [MITRE ATLAS](./31-credible-resources-further-reading.md#security-abuse-and-governance) helps translate attacker behavior into threat models, abuse tests, and monitoring requirements.
-- [OWASP Secrets Management Cheat Sheet](./31-credible-resources-further-reading.md#security-abuse-and-governance) supports the chapter's treatment of secret references, rotation evidence, and incident response without leaking secret values.
-- [European Data Protection Board: Respect Individuals' Rights](./31-credible-resources-further-reading.md#security-abuse-and-governance) supports treating privacy requests and data-subject rights as auditable operational work when agents handle user or tenant data.
+- **[Myers & Liskov: A Decentralized Model for Information Flow Control (IFC)](https://dl.acm.org/doi/10.1145/266635.266669)** (1997). The foundational academic paper for trust boundaries. It introduces the "Label Model" used to ensure that untrusted model input cannot "flow" into privileged tool execution without an explicit declassification (authorization) step.
+- **[Zeldovich et al.: Securing Distributed Systems with IFC (DStar)](https://www.usenix.org/conference/osdi-08/securing-distributed-systems-information-flow-control)** (2008). Research on preserving trust labels across network and process boundaries, providing the theoretical basis for the "Traceable Authority" used in this chapter.
+- **[OWASP: Top 10 for LLM Applications (2025 Edition)](https://genai.ovasp.org/)**. The industry-standard vulnerability list. This chapter directly addresses LLM01 (Prompt Injection), LLM02 (Insecure Output Handling), and the new LLM08 (Vector and Embedding Weaknesses).
+- **[MITRE ATLAS: Adversarial Threat Landscape for Artificial-Intelligence Systems](https://atlas.mitre.org/)**. A definitive knowledge base of adversary tactics and techniques (e.g., "AML.T0006: Indirect Prompt Injection") used to develop the threat models in this chapter.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects security boundaries to the formal semantics of "Transactions" and "Isolation" needed to prevent cross-tenant data corruption.

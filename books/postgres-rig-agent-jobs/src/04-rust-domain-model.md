@@ -84,54 +84,23 @@ Build or inspect this artifact before moving on:
 
 ## Implementation Map
 
-Use this map when you move from reading to implementation:
-
-- **Primary surface:** `src/domain.rs` plus row-conversion modules such as `src/agent_run.rs` and `src/tool_call.rs`.
-- **State transition:** convert raw boundary data into newtypes, enums, and validated domain objects.
-- **Evidence path:** invalid IDs, statuses, counts, versions, and decisions are rejected before core logic.
-
+When you transition from reading about these types to actual implementation, rely on this map as your guide. The primary surfaces you will interact with are `src/domain.rs`, along with the fierce row-conversion modules such as `src/agent_run.rs` and `src/tool_call.rs`. The core state transition here is ruthlessly converting raw, untrusted boundary data into strict newtypes, explicit enums, and validated domain objects. The evidence path mathematically guarantees that any invalid IDs, rogue statuses, impossible attempt counts, hallucinated versions, and unapproved decisions are violently rejected long before the core business logic is ever exposed to them.
 
 ## Operator Question
 
-Before you ship this idea, answer one operational question:
-
-- **Question:** Which raw value would become dangerous if two meanings were confused?
-- **Evidence to inspect:** newtype constructor, enum variant, typed error, row conversion test, and rejected invalid value.
-- **Escalate if:** a domain boundary still accepts a raw string, boolean, count, JSON value, or untyped error.
-
+Before you ship any architectural idea based on this domain model, you must answer one vital operational question: Which raw, primitive value currently in the codebase would instantly become dangerous if its meaning were accidentally confused with another? To answer this, you must explicitly inspect the newtype constructors, the enum variants, the typed errors, the row conversion tests, and the logs of specifically rejected invalid values. You should immediately escalate the design to leadership if any critical domain boundary still lazily accepts a raw string, a naked boolean, a raw integer count, an untyped JSON value, or a generic, unhelpful error string.
 
 ## Runtime Walkthrough
 
-Follow the concept as one runtime pass:
-
-1. **Trigger:** raw boundary data enters Rust.
-2. **Action:** parse it into newtypes, enums, and validated constructors.
-3. **Persistence:** return typed domain values or typed validation errors.
-4. **Check:** verify important concepts are not carried as raw primitives.
-
+Follow the concept of typed boundaries as a single runtime pass. First, a trigger occurs when raw, highly suspicious boundary data enters the Rust application from the database or the network. Next, the action requires the system to forcefully parse that data into strict newtypes, enums, and validated constructors. For persistence, the boundary must definitively return either perfectly typed domain values or explicitly typed validation errors. Finally, the check requires verifying that no important business concept is ever carried deeper into the system as a loose, raw primitive.
 
 ## Acceptance Gate
 
-Do not move on until this minimum evidence exists:
-
-- **Minimum evidence:** important domain concepts are typed before business logic sees them.
-- **Validation path:** inspect constructors, enums, typed errors, and row-conversion tests.
-- **Stop if:** a meaningful ID, status, version, retry count, decision, or payload crosses a boundary as a raw primitive.
+Do not move on until you can produce the minimum required evidence. You must be able to empirically prove that all important domain concepts are strictly typed *before* the business logic ever sees them. To validate this path, an operator must inspect the constructors, enums, typed errors, and the rigorous row-conversion tests. Stop the design process immediately if a meaningful ID, status, version, retry count, policy decision, or external payload is caught crossing a boundary while disguised as a raw primitive.
 
 ## Micro-Lesson
 
-Use this five-line version before the heavier mechanism:
-
-```text
-pain: In production, raw strings and numbers hide category errors
-rule: If a value has production meaning, give it a Rust type instead of passing a raw primitive around
-tiny example: typed Rust values that represent job identity, worker ownership, model versions, retry decisions, failures, and results
-artifact: a Rust domain module with newtypes, enums, validated constructors, and typed errors
-proof: important domain concepts are typed before business logic sees them
-```
-
-If the next section feels large, keep only these five lines in view. Then read
-the mechanism as the detailed proof.
+If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, raw strings and numbers perfectly hide disastrous category errors. The guiding rule is that if a value has genuine production meaning, you must give it a strict Rust type instead of casually passing a raw primitive around. A tiny example of this is seeing typed Rust values explicitly represent job identity, worker ownership, model versions, retry decisions, failures, and results. The resulting artifact is a highly paranoid Rust domain module packed with newtypes, enums, validated constructors, and typed errors. The ultimate proof of success is that important domain concepts are mathematically typed long before the business logic is ever allowed to touch them.
 
 ## Worked Walkthrough
 
@@ -342,92 +311,23 @@ individual Rust enthusiasts.
 
 ## Raw Data Types Are Forbidden At Boundaries
 
-For this book, raw domain primitives are forbidden across architectural
-boundaries.
+For the architecture described in this book, raw domain primitives are strictly forbidden from crossing architectural boundaries. 
 
-Do not expose this:
+Do not expose a function signature that takes a raw job id, a raw error string, and a raw boolean flag for permanency. Instead, expose a signature that strictly demands a typed `JobId`, a typed `FailureMessage`, and a typed `RetryDisposition`. 
 
-```text
-async fn retry_or_dead(job_id: JobId, error: String, permanent: bool);
-```
+Raw strings, unstructured JSON values, generic booleans, simple integers, and database text are permitted *only* deep inside private adapters that immediately validate and mathematically convert them. A database row DTO must become a typed domain model. A command-line argument must become an `AgentInstruction`. An environment variable must become a `DatabaseUrl` or a strict provider client config. Raw provider text must become an `AgentSummary`. Loose release metadata must become a `PromptVersion`, `ModelRoute`, or `PolicyVersion`.
 
-Expose this:
+This rule is unforgiving because this system is explicitly designed to run for years. A raw `String` innocently called `message` eventually, inevitably becomes a secret leak, a mathematically malformed policy decision, or a completely unsearchable operational trace at 3 AM.
 
-```text
-async fn retry_or_dead(
-    job_id: JobId,
-    error: FailureMessage,
-    retry_disposition: RetryDisposition,
-);
-```
-
-Raw strings, JSON values, booleans, integers, and database text are allowed only
-inside private adapters that immediately validate and convert them:
-
-```text
-database row DTO -> domain model
-command-line argument -> AgentInstruction
-environment variable -> DatabaseUrl or provider client config
-provider text -> AgentSummary
-release metadata -> PromptVersion, ModelRoute, PolicyVersion
-```
-
-The rule is strict because this system is supposed to run for years. A raw
-`String` called `message` eventually becomes a secret leak, a malformed policy
-decision, or an unsearchable operational trace.
-
-The important word is boundaries.
-
-Raw values are allowed at the edge because the world speaks in HTTP bodies,
-database rows, environment variables, provider responses, and command-line
-arguments. The problem begins when those raw values keep traveling inward.
-
-At the boundary, the system should make a decision:
-
-```text
-accept and convert into a domain type
-or reject with a typed error
-```
-
-There should not be a third path where the raw value quietly becomes part of
-business logic.
+The most important word here is boundaries. Raw values are tolerated at the absolute edge of the system simply because the outside world speaks in messy HTTP bodies, flat database rows, loose environment variables, unpredictable provider responses, and raw command-line arguments. The operational nightmare begins only when those raw values are allowed to keep traveling inward. At the boundary, the system must make a brutal, immediate decision: either aggressively accept and convert the data into a strict domain type, or violently reject it with a typed error. There must never be a third path where the raw value quietly sneaks in and becomes part of your business logic.
 
 ## State Is A Contract
 
-The `JobStatus` enum mirrors the database check constraint. That symmetry is
-intentional. A worker should not be able to invent a new status locally that the
-database cannot store, and the database should not accept a status that the Rust
-domain cannot understand.
+The Rust `JobStatus` enum must perfectly mirror the Postgres database check constraint. That aggressive symmetry is not a coincidence; it is an architectural mandate. A worker should never be able to magically invent a new status locally that the database cannot physically store, and the database should never accept a rogue status that the Rust domain cannot possibly understand.
 
-The same idea applies to event types:
+The exact same uncompromising idea applies to event types. Events like `job_enqueued`, `duplicate_suppressed`, `job_picked`, `agent_started`, `agent_succeeded`, `agent_failed`, `retry_scheduled`, `job_succeeded`, `job_dead`, `lease_extended`, `job_cancelled`, and `expired_lease_recovered` are not just strings; they are the formal operational vocabulary of the entire system. When an incident inevitably happens, the event stream must read like a crisp, undeniable timeline, not like a desperate pile of randomly generated log strings.
 
-```text
-job_enqueued
-duplicate_suppressed
-job_picked
-agent_started
-agent_succeeded
-agent_failed
-retry_scheduled
-job_succeeded
-job_dead
-lease_extended
-job_cancelled
-expired_lease_recovered
-```
-
-These events are the operational vocabulary of the system. When an incident
-happens, the event stream should read like a timeline, not like a pile of logs.
-
-State names also teach the rest of the team how the system works. If the enum
-has variants like `Pending`, `Running`, `Succeeded`, `Dead`, and `Cancelled`,
-then code review can ask whether each transition is legal. If the database
-stores arbitrary status text, every query becomes a guess about spelling and
-meaning.
-
-The same idea applies to decisions. A boolean called `approved` cannot explain
-`approved`, `rejected`, `expired`, `withdrawn`, or `requires_more_context`.
-An enum can.
+State names also actively teach the rest of the engineering team exactly how the system works. If an enum explicitly lists variants like `Pending`, `Running`, `Succeeded`, `Dead`, and `Cancelled`, then code review can effectively ask whether each transition is actually legal. Conversely, if the database lazily stores arbitrary status text, every single operational query becomes a terrified guess about spelling and meaning. The same exact idea applies to business decisions. A simple boolean called `approved` mathematically cannot explain the difference between `approved`, `rejected`, `expired`, `withdrawn`, or `requires_more_context`. An explicit enum can.
 
 ## Formal Definition
 
@@ -556,3 +456,7 @@ The database may store generic values, but the Rust boundary should recover mean
 - **[Scott Wlaschin: Domain Modeling Made Functional](https://fsharpforfunandprofit.com/books/)**. While written for F#, this book is the industry standard for using Algebraic Data Types (ADTs) to make illegal states unrepresentable—a core principle of the Rust domain model in this chapter.
 - **[Rust API Guidelines: Newtype Pattern](https://rust-lang.github.io/api-guidelines/type-safety.html#newtype-pattern-encapsulates-implementation-details-c-newtype)**. The official community standard for when and how to wrap primitives in domain-specific types.
 - **[thiserror Documentation](https://docs.rs/thiserror/latest/thiserror/)**. The practical reference for defining the custom error enums that power the validated constructors used in this chapter.
+main model in this chapter.
+- **[Rust API Guidelines: Newtype Pattern](https://rust-lang.github.io/api-guidelines/type-safety.html#newtype-pattern-encapsulates-implementation-details-c-newtype)**. The official community standard for when and how to wrap primitives in domain-specific types.
+- **[thiserror Documentation](https://docs.rs/thiserror/latest/thiserror/)**. The practical reference for defining the custom error enums that power the validated constructors used in this chapter.
+ in this chapter.

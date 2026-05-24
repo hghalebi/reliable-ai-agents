@@ -26,10 +26,10 @@ and tests.
 
 During an incident, no one can say which boundary owns the failed transition.
 
-- **What breaks:** components exist, but responsibility is not allocated.
+- **What breaks:** components exist, but responsibility is not allocated. I call this **"Boundary Blame"**—is it a bad prompt, a bad model, or a bad tool? 
 - **False fix:** draw a bigger architecture diagram with more arrows.
 - **Design response:** make the blueprint a failure-ownership map where every
-  boundary has state, transition, invariant, evidence, and operator question.
+  boundary has state, transition, invariant, evidence, and operator question. This is what enables **Root Cause Attribution (RCA)** in AI systems.
 
 ## Motivation
 
@@ -182,6 +182,16 @@ process, one Postgres database, and Rig at the agent boundary. It does not begin
 with a queue cluster, workflow engine, event-streaming platform, service mesh, or
 multi-region deployment.
 
+This is the **Principle of Least Infrastructure**. Postgres is your **Linearizable Log**. Before you move to a specialized orchestrator, you must prove you can operate the state machine on a simple relational store. 
+
+> ### 🎓 The Professor's Corner
+>
+> **The Single Box Limit: Postgres First**
+>
+> Think of your system like a new business. You don't start by renting a whole skyscraper (Kafka)! You start with one good shop (Postgres). 
+> 
+> You should only move to a bigger "Distributed System" when your single shop can no longer keep its promises. Postgres is incredibly strong—it can handle a lot of work before you ever need to buy more complexity.
+
 Small does not mean casual. The serious MVP is serious because the important
 failure questions already have answers:
 
@@ -288,6 +298,16 @@ Operations
 
 Read this diagram from top to bottom as a chain of trust.
 
+This is the **Hierarchy of Trust**. The API is the **Gatekeeper**, Postgres is the **Memory**, and the Worker is the **Muscle**. By separating these, you prevent a single compromised process from owning the whole system. This is essentially a **Shared-Nothing Architecture** implemented over a shared ledger.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Blueprint as a Map: Not a Photo**
+>
+> A map doesn't show you every single tree in the forest; it shows you the roads so you don't get lost! Your blueprint is your map for production. 
+> 
+> It tells you where the "Town Squares" (the database) and the "Highways" (the worker loops) are. If you follow the map, you'll always know where the evidence is, even in a storm! It's a "Tool for Travel" rather than a "Test to Pass."
+
 The API is trusted to admit work, not to complete work. Postgres is trusted to
 remember state, not to interpret model output. The worker is trusted to move
 jobs through legal transitions, not to invent business permission. Rig is
@@ -361,6 +381,8 @@ The companion code models this as state, not conversation:
 ```rust,ignore
 {{#include ../../../examples/postgres-rig-agent-jobs/src/handoff.rs:handoff_typestate}}
 ```
+
+It prevents **Dangling Handoffs** where a request is lost between two agents. Most multi-agent frameworks treat handoffs as "Sending a message." But in production, a handoff is a **Commitment**. If Agent A hands off to Agent B, the system must record that the **Responsibility shifted**.
 
 The database row boundary validates that the source and target agents are
 different, the payload is a JSON object, the accepted state has target-job

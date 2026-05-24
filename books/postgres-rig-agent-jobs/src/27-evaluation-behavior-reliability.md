@@ -600,11 +600,10 @@ you whether the agent deserved to run.
 - **After this chapter:** evaluation is the CI/CD pipeline for model-dependent behavior and must block unsafe prompt, model, or policy changes.
 - **Keep:** inspect the golden dataset, evaluator version, pass gate, regression failure, and deployment decision.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [OpenAI Evals](./31-credible-resources-further-reading.md#evaluation-and-behavior-reliability) provides concrete patterns for turning behavior expectations into repeatable evaluation artifacts.
-- [OpenAI: How evals drive the next chapter in AI for businesses](./31-credible-resources-further-reading.md#evaluation-and-behavior-reliability) reinforces the chapter's emphasis on task-specific rubrics, graders, and release gates.
-- [LangSmith evaluation docs](./31-credible-resources-further-reading.md#evaluation-and-behavior-reliability) is useful for understanding datasets, experiments, evaluators, and trace-based behavior review as production practices.
-- [Evaluating Large Language Models Trained on Code](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) is relevant because HumanEval popularized executable functional-correctness checks, the same idea this chapter generalizes into behavior receipts.
-- [SWE-bench: Can Language Models Resolve Real-World GitHub Issues?](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) is relevant because realistic issue-derived cases are a strong model for regression datasets when agents modify production artifacts.
-- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) connects behavior evaluation to governance, accountability, and risk management.
+- **[Zheng et al.: Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685)** (2023). The seminal academic paper formalizing the use of strong models to evaluate others. It identifies the "Verbosity" and "Position" biases that the rubrics in this chapter are designed to mitigate.
+- **[Hamel Husain: Evaluation-Driven Development (EDD) for LLMs](https://hamel.dev/blog/posts/evals/)**. A definitive industry guide advocating for "Error Analysis" and binary (Pass/Fail) metrics over generic benchmarks—the exact philosophy behind the "Scorecard" in this chapter.
+- **[Google DeepMind: FACTS—A Framework for Automated Critique of Long-form Summaries](https://arxiv.org/abs/2402.14811)** (2024). Research into the "Atomic Claim" and "Grounding" patterns used to verify that agent responses rely only on provided durable evidence.
+- **[Cohen's Kappa ($\kappa$): Inter-Rater Reliability in LLM Evaluation](https://en.wikipedia.org/wiki/Cohen%27s_kappa)**. The statistical gold standard for measuring how well an automated judge (LLM) aligns with a human expert, providing the mathematical "North Star" for the evaluation receipts in this chapter.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects behavior evaluation to the formal requirements for "Event Sourcing" and the reconstruction of state from historical traces.

@@ -656,11 +656,10 @@ budgets, and human approval throughput.
 - **After this chapter:** capacity is controlled flow across database queues, workers, model providers, quotas, budgets, and backpressure.
 - **Keep:** inspect backlog, worker saturation, provider quota, cost budget, and admission-control state together.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) explains the row-selection and locking primitives behind job claiming and queue inspection.
-- [PostgreSQL explicit locking documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is the source to use when reasoning about worker leases, concurrent claims, and lock contention.
-- [PostgreSQL transaction isolation documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) sharpens the chapter's treatment of atomic retries, status transitions, and recovery queries.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects the local Postgres design to broader principles for durable, auditable systems.
-- [DeepSeek API docs](./31-credible-resources-further-reading.md#agent-architecture) is the provider source to check before changing model routes, usage fields, or request limits.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) supports the chapter's separation of durable usage evidence from live metrics and traces.
+- **[John Little: A Proof for the Queuing Formula $L = \lambda W$](https://web.mit.edu/e-strategy/www/Little.pdf)** (1961). The foundational mathematical theorem for capacity planning. It proves that the number of jobs in a system depends only on arrival rate and latency—the exact logic used to size the worker pools in this chapter.
+- **[John Nagle: Congestion Control in IP/TCP Internetworks (RFC 896)](https://datatracker.ietf.org/doc/html/rfc896)** (1984). The seminal paper that defined "Congestion Collapse." It explains why systems that don't use backpressure end up doing 100% work for 0% useful output during overload.
+- **[AWS Builders' Library: Using Load Shedding to Avoid Overload](https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/)**. A definitive practical guide to the "Admission Control" patterns implemented in this chapter, including the use of LIFO queues and deadline propagation.
+- **[Marc Brooker: Little's Law and Distributed Systems](https://brooker.co.za/blog/2014/08/13/littles-law.html)**. A high-signal engineering review of how to apply queuing theory to real-world microservices and background workers.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Chapter 8 explains the "Metastable Failure" modes that occur when retries amplify pressure on an already-saturated database or provider.

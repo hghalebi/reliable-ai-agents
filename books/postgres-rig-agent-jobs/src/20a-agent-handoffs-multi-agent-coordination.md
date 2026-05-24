@@ -195,7 +195,9 @@ rollback payments-api from 2026.05.23.4 to 2026.05.23.3
 ```
 
 The triage agent can identify the symptom, but it is not allowed to verify
-deployment rollback safety. The system creates a handoff:
+deployment rollback safety. In AI systems, we also use handoffs for **Reasoning Optimization**. You can't just keep adding more agents to a chat because the context gets too large and the reasoning degrades. Handoffs are the way we **Prune the Context**. By handing off to a specialist, we start a fresh context with only the necessary information.
+
+The system creates a handoff:
 
 ```text
 from_agent: incident_triage_agent
@@ -225,6 +227,14 @@ evidence: handoff row, target job, permission scope, idempotency key, and event 
 invariant: handoff transfers responsibility without bypassing ownership or permission
 ```
 
+> ### 🎓 The Professor's Corner
+>
+> **The Referral: The Medical Clinic**
+>
+> Think of specialist agents like a **Medical Clinic**. You see the nurse (triage) first, and they decide if you need a specialist. The nurse doesn't just "tell" the doctor you're coming; they write a **Referral** (the handoff record)! 
+> 
+> The doctor (specialist) reads the referral to understand what the nurse already found. This ensures you don't have to explain your symptoms twice, and it proves that the nurse officially handed you over to the right person.
+
 ## Mental Model
 
 Think of a handoff as a custody transfer:
@@ -243,8 +253,17 @@ database stores the boundary between those two responsibilities.
 
 This is the same idea as a lease, but at a higher level. A lease says "this
 worker owns this running job for a while." A handoff says "this target agent
-has accepted responsibility for the next piece of work." Both prevent vague
-ownership during concurrency.
+has accepted responsibility for the next piece of work."
+
+> ### 🎓 The Professor's Corner
+>
+> **Atomic Swaps: The Baton in a Relay Race**
+>
+> A handoff is like a **Relay Race**. The first runner (source agent) has to hand the baton (responsibility) to the next runner (target agent). 
+> 
+> If the runner just "throws" the baton and hopes the other person catches it, they'll probably drop it! In our system, we use an **Atomic Swap**: the source agent "gives up" the job at the exact same moment the target agent "takes" it. If the handoff isn't recorded in the database, the baton never left the first runner's hand!
+
+Both prevent vague ownership during concurrency.
 
 ## The Core Problem
 
@@ -256,6 +275,7 @@ ways:
 2. The target agent starts work from incomplete context.
 3. Duplicate retries create multiple target jobs.
 4. Operators cannot tell which agent owns the next step.
+5. **Context Loss:** When agents talk informally, they often forget critical information (like the 'Customer ID'). Your `handoff_row_boundary` ensures the **Data Payload** is structured. This is what we call **Context Engineering**.
 
 These are not model-quality problems. They are state-model problems. A better
 prompt cannot prove that responsibility moved exactly once.
@@ -372,7 +392,10 @@ DeploymentSafetyJob -> ApprovalProposal
 ```
 
 Because the output of one step becomes the input of the next, the boundary must
-be explicit. In category-theory language, these are composable transformations.
+be explicit. 
+
+In category-theory language, these are composable transformations. We can think of the handoff state as a **Monad**—a "Reliability Shell" that wraps the agent logic. It ensures that the "Inside" logic (how the agent thinks) can change without breaking the "Outside" protocol (how work moves). This keeps the whole system **Decoupled** even as you add more specialist agents.
+
 The useful lesson is practical: composition is safe only when the types match
 and the side effects are isolated.
 
@@ -423,6 +446,8 @@ reason is explicit. The payload is validated before domain use. The handoff has
 one idempotency key. accepted handoffs create or attach exactly one target job.
 Rejected, expired, or cancelled handoffs have decision evidence. Operators can
 query unresolved handoffs.
+
+This is a **Distributed Transaction**. You are moving work from one "Domain" to another. If you don't use a ledger, you have no way to ensure **Linearizability**—meaning you might end up with both agents thinking they own the work, or neither.
 
 Rig may help an agent decide that a specialist is needed. Rig does not make the
 handoff reliable by itself. PostgreSQL stores the responsibility transfer, Rust

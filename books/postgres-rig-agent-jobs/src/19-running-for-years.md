@@ -40,9 +40,11 @@ name the prompt version, model route, policy version, worker build, provider
 contract, owner, and retention rule, then keeping them forever only preserves a
 larger mystery.
 
-**Design response:** store versions, retention policy, compatibility rules,
+Design response: store versions, retention policy, compatibility rules,
 provider contracts, restore evidence, and ownership review dates. A system that
 must run for years needs to preserve meaning, not only bytes.
+
+I’ve seen too many AI projects fail because they couldn't explain a decision from six months ago. In AI, **Lineage is everything**. Your emphasis on storing the `prompt_version` and `model_route` alongside the result is the only way to build a **Verifiable AI**. This lineage is also what allows us to do **Backtesting**—re-running old inputs against new prompts to see if we’ve actually improved.
 
 ## Motivation
 
@@ -275,9 +277,15 @@ Defaults are only a bootstrap convenience. In production, the enqueue boundary
 should set these values from release configuration so replay can choose the
 right compatibility path.
 
-Treat missing versions as a production smell. If the system cannot name the
-model, prompt, policy, or worker that handled old work, it cannot explain old
-behavior with confidence.
+Treat missing versions as a production smell. I frame this as **Ownership through Versioning**. If the system cannot name the model, prompt, policy, or worker that handled old work, then no one is responsible for that model's mistakes.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Time Capsule: Writing to Your Future Self**
+>
+> Building a system for "Years" is like burying a time capsule! You aren't building it for yourself; you're building it for the person who opens it in 2030. 
+> 
+> You have to include a **Decoder Ring** (the versioning metadata) so they can understand what you put in there. If you just leave a bag of strings, they'll have no idea what it means. It’s like writing a message to the future!
 
 ## Worker Compatibility
 
@@ -295,6 +303,8 @@ The production version says:
 if the job is pending and this worker understands its schema, process it;
 otherwise quarantine or route it to a compatible worker
 ```
+
+Your compatibility policy acts as a **Runtime Schema Validator**. This prevents **Silent Data Corruption** over long time horizons where an "Old Worker" might corrupt a "New Schema" (or vice versa).
 
 That distinction matters after years of releases. A new worker may no longer
 understand a payload written by an old API. An old worker may accidentally claim
@@ -350,7 +360,17 @@ Do not store full prompts, secrets, personal data, or retrieved documents
 unless the product and legal model require it.
 
 Retention is also a reliability topic. If you delete the only receipt that
-proves a side effect happened, replay becomes dangerous. If you keep raw
+proves a side effect happened, replay becomes dangerous.
+
+> ### 🎓 The Professor's Corner
+>
+> **Tombstones: Forgetting the Data, Remembering the Deletion**
+>
+> In distributed systems, deleting data is harder than writing it! If you just erase a row, an old worker might "find it again" in its memory and try to recreate it. 
+> 
+> We use **Tombstones**—a small marker that says: "This was deleted." It's like leaving a sign where the house used to be so people don't try to deliver mail there! It helps us "Forget the data while remembering the deletion."
+
+If you keep raw
 personal data forever, privacy and security risk grows. If you aggregate too
 early, incident review may lose the evidence it needs. The right retention rule
 depends on the evidence surface.

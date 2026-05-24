@@ -1153,11 +1153,10 @@ The runbook is ready when a tired operator can inspect, pause, explain, and reco
 - **After this chapter:** a runbook is an executable operator path from symptom to evidence to safe action.
 - **Keep:** run the checked SQL or command path that turns an alert into a safe operator action.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) explains the row-selection and locking primitives behind job claiming and queue inspection.
-- [PostgreSQL explicit locking documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is the source to use when reasoning about worker leases, concurrent claims, and lock contention.
-- [PostgreSQL transaction isolation documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) sharpens the chapter's treatment of atomic retries, status transitions, and recovery queries.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects the local Postgres design to broader principles for durable, auditable systems.
-- [OWASP Secrets Management Cheat Sheet](./31-credible-resources-further-reading.md#security-abuse-and-governance) supports treating credential rotation, exposure, owner, and audit evidence as runbook-visible state.
-- [European Data Protection Board: Respect Individuals' Rights](./31-credible-resources-further-reading.md#security-abuse-and-governance) supports making data-protection requests visible in runbooks instead of leaving privacy work in private support notes.
+- **[Richard Cook: How Complex Systems Fail](https://how.complexsystems.fail/)** (1998). A foundational paper for SRE and Resilience Engineering. It identifies why "Human Operators" are the adaptable element that keeps inherently hazardous systems (like agents) safe, provided they have the right evidence.
+- **[Google SRE Book: Managing Incidents](https://sre.google/sre-book/managing-incidents/)** (Chapter 14). Provides the formal Incident Command System (ICS) framework used to separate strategy (Incident Commander) from execution (Operations), which the runbook structure in this chapter supports.
+- **[PagerDuty: Incident Response Documentation](https://response.pagerduty.com/)**. The industry standard for the on-call lifecycle (Detect, Triage, Diagnose, Remediate). It provides the practical context for the "Mitigation First" rule used in these runbooks.
+- **[Don Norman: The Design of Everyday Things (Design for Error)](https://jnd.org/books/the-design-of-everyday-things/)**. Explains the cognitive science behind "Slip" vs "Mistake" and why runbooks must be designed to reduce choices during high-stress periods.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects runbook queries to the "Observability vs. Monitoring" distinction and the formal requirements for a reviewable event ledger.

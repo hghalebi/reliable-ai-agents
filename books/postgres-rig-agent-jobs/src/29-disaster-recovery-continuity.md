@@ -546,9 +546,9 @@ and operator decisions are practiced from durable evidence.
 **Keep:** prove restore and replay with backups, checkpoints, RPO/RTO targets,
 receipt checks, quarantine decisions, and reconciliation queries.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) explains the row-selection and locking primitives behind job claiming and queue inspection.
-- [PostgreSQL explicit locking documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is the source to use when reasoning about worker leases, concurrent claims, and lock contention.
-- [PostgreSQL transaction isolation documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) sharpens the chapter's treatment of atomic retries, status transitions, and recovery queries.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects the local Postgres design to broader principles for durable, auditable systems.
+- **[FEMA: Continuity of Operations (COOP) Planning](https://www.fema.gov/pdf/about/org/ncp/coop_brochure.pdf)**. While focused on government, this standard provides the foundational vocabulary for "Business Continuity Planning" (BCP) and the "Orders of Succession" used to manage the operator sign-off in this chapter.
+- **[Google SRE Book: Data Integrity—What You Read is What You Wrote](https://sre.google/sre-book/data-integrity/)**. Explains the formal relationship between backups, checksums, and the "Receipt Reconciliation" needed to prevent side-effect duplication during recovery.
+- **[AWS Builders' Library: Ensuring Rollback Safety](https://aws.amazon.com/builders-library/ensuring-rollback-safety-during-deployments/)**. Although focused on code, the principles of "Compatibility" and "Evidence" apply directly to the restored database rows discussed in this chapter.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 10: Batch Processing). Connects "Fault Tolerance" to the formal ability to resume a multi-step workflow from a durable checkpoint.

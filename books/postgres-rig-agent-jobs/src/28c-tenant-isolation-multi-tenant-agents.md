@@ -545,11 +545,9 @@ typed, persisted, tested, queried, and audited.
 **Keep:** one tenant's data can enter another tenant's workflow only through
 explicit, durable, reviewable policy.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because tool abuse, data leakage, and prompt injection become more dangerous in multi-tenant systems.
-- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because tenant isolation is part of governed, accountable AI operations.
-- [NIST AI RMF Generative AI Profile](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because generative-AI risks must map to controls, monitoring, and management actions.
-- [PostgreSQL row-level security documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant as a later hardening mechanism for database-enforced tenant boundaries.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because tenant isolation depends on durable state, transactions, and clear data ownership.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because boundary failures need runbooks, alerts, incident response, and evidence-based review.
+- **[AWS Whitepaper: SaaS Tenant Isolation Strategies](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/welcome.html)**. The definitive industry guide to the "Silo," "Pool," and "Bridge" isolation models. It explains why the "Pool" model used in this chapter requires the rigorous, deterministic authorization checks implemented here.
+- **[PostgreSQL: Row-Level Security (RLS) Documentation](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)**. The practical reference for the database-level hardening mentioned in this chapter, which ensures that even a compromised application cannot cross tenant boundaries.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 12: The Future of Data Systems). Connects multi-tenancy to the formal "System of Systems" view, where data ownership must be preserved across multiple coordination points (Postgres, workers, models).
+- **[Non-Interference (Formal Security Model)](https://en.wikipedia.org/wiki/Non-interference_(security))**. The academic "Gold Standard" for isolation. It proves that a system is secure if "high-level" (Tenant A) inputs cannot affect "low-level" (Tenant B) observable behavior.

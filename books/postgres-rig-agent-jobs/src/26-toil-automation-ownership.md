@@ -508,8 +508,10 @@ collection and safe actions.
 - **After this chapter:** good automation removes repeated toil while preserving ownership, reviewability, and safe stopping points.
 - **Keep:** require every automation to have an owner, stop rule, evidence output, and review cadence.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) gives the operational frame for SLIs, SLOs, error budgets, toil, incidents, and release discipline.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) supports the chapter's treatment of traces, metrics, logs, and cross-boundary evidence.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects operational evidence back to durable state, transactions, and event histories.
+- **[Google SRE Book: Eliminating Toil](https://sre.google/sre-book/eliminating-toil/)** (Chapter 5). The definitive industry reference for defining, measuring, and limiting manual, repetitive work. It introduces the "50% Rule" to ensure teams have headroom for strategic engineering.
+- **[Lisanne Bainbridge: Ironies of Automation](https://en.wikipedia.org/wiki/Ironies_of_Automation)** (1983). A foundational academic paper identifying why automating "easy" tasks makes the remaining "hard" tasks even more difficult for humans, leading to skill atrophy and vigilance decrement.
+- **[Sheridan & Verplank: Human and Computer Control (Levels of Automation)](https://apps.dtic.mil/sti/citations/ADA054659)** (1978). Formalizes the 10 levels of automation, from purely manual control to full autonomy. It provides the rubric for the "Judgment vs. Mechanical" distinction used in this chapter.
+- **[Parasuraman et al.: A Model for Types and Levels of Human Interaction with Automation](https://ieeexplore.ieee.org/document/873097)** (2000). Research into how automation should be applied across different stages (Information, Analysis, Decision, Action) to preserve human situational awareness.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects ownership and automation to the formal requirements for "System of Systems" maintenance and the lifecycle of durable state.

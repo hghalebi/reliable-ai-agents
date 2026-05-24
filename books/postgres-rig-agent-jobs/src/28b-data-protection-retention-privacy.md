@@ -651,11 +651,9 @@ evidence surfaces, with typed state and auditable completion.
 **Keep:** minimize sensitive data without destroying the evidence needed to
 operate, audit, and recover the system.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [European Data Protection Board: Respect Individuals' Rights](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because data-subject requests should become accountable workflow rather than informal support promises.
-- [ICO: Storage Limitation](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because retention review, redaction, erasure, and evidence preservation require documented judgment.
-- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because privacy, accountability, transparency, and governance are part of trustworthy AI operations.
-- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because prompt injection, data leakage, tool misuse, and memory poisoning can create privacy work.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because retention and privacy requests operate over durable histories, logs, and state.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because overdue privacy work should be operated with ownership, review cadence, runbooks, and incident response.
+- **[Ann Cavoukian: Privacy by Design (The 7 Foundational Principles)](https://www.ipc.on.ca/wp-content/uploads/2013/09/pbd-primer.pdf)**. The globally recognized standard for embedding privacy into the architecture of automated systems. It provides the "Positive-Sum" philosophy used to balance auditability with data minimization.
+- **[EDPB: Guidelines on Data Protection by Design and by Default](https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en)**. The regulatory and technical standard for implementing the durable data-protection workqueue described in this chapter.
+- **[ICO: Data Minimization Guidance](https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/principles/data-minimization/)**. Practical industry guidance on how to preserve enough evidence for system reliability while redacting or erasing what is no longer needed.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 11: Stream Processing). Explains the formal mechanics of "Compacting" and "Deleting" data in distributed ledgers while maintaining a verifiable history.

@@ -172,6 +172,8 @@ approval: required
 That recommendation is useful, but it is also risky. The system must not let a
 model-generated sentence become a production rollback by itself.
 
+This is what I call **Systemic Alignment**. The agent helps with the "Precision" (identifying the bad deploy), while the system helps with the "Recall" (ensuring the action actually happens once approved). By separating these, we ensure the agent is aligned with our production safety goals.
+
 Read the tiny case as:
 
 ```text
@@ -203,9 +205,11 @@ The system must decide.
 The database must remember.
 ```
 
-This is the bridge from agent demos to production engineering. A demo often
+This is the **Student's Creed**. It's the bridge from agent demos to production engineering. A demo often
 optimizes for the shortest path from prompt to action. A reliable system
 optimizes for the safest path from request to evidence-backed action.
+
+This is also a **Causal History**. In distributed systems, reliability is the ability to prove that **A happened because of B**. Your end-to-end trace is the proof of that causality.
 
 ## Step 1: Admission
 
@@ -272,6 +276,8 @@ If `worker-b` asks for work at the same time, the locked row is skipped. If
 A lease is not ownership forever. It is ownership for a bounded time. That
 boundedness is the reason the system can recover from process death without
 letting two workers safely pretend they own the same job.
+
+This is **Optimistic Concurrency Control (OCC)** implemented with a **Pessimistic Lease**. It's the most efficient way to scale worker pools without central coordination bottlenecks.
 
 This is also where the worker stops being an invisible background loop. The
 claim, heartbeat, completion, retry, and cancellation paths all become explicit
@@ -350,6 +356,8 @@ That discipline is what keeps a useful model from silently becoming an
 unauthorized production actor. The model can identify that a rollback looks
 reasonable. The system decides whether rollback is permitted, who must approve
 it, and how execution will be recorded.
+
+This separation is what allows us to swap a "Creative/Drafting" model for the proposal and a "Logical/Checking" model for the policy check. I call this **Multi-Model Verification**.
 
 Production evidence:
 
@@ -471,6 +479,14 @@ the external system before acting again.
 This is the most dangerous boundary in the scenario. Generating a rollback
 proposal is reversible. Sending the rollback command is not.
 
+> ### 🎓 The Professor's Corner
+>
+> **The Distributed Transaction Problem: The Receipt as Proof**
+>
+> You can't have a single "Magic Transaction" that spans both your database and the external world. If the database commits but the email API fails, or vice versa, you're in trouble! 
+> 
+> The **Receipt** is your compensating proof. It's the only way to "bridge the gap" between your local notebook and the outside world. Without the receipt, your system is just guessing what happened!
+
 The side-effect receipt turns an external action into local evidence. It does
 not make the external system perfectly reliable, and it does not remove the
 need for reconciliation. It gives the local system a durable fact to reason
@@ -507,6 +523,14 @@ Which receipt proves the rollback happened?
 The answer should come from state rows, handoff rows, event timelines,
 approvals, receipts, metrics, and runbook queries. It should not depend on
 memory or a private chat thread.
+
+> ### 🎓 The Professor's Corner
+>
+> **The Relay Race of Proof: Passing the Packet**
+>
+> Think of this whole scenario as a **Relay Race**. Each step—Admission, Ownership, Handoff, Approval—is a runner passing a "Proof Packet" to the next runner. 
+> 
+> If a runner tries to start without a packet (the previous evidence), the race stops! This ensures that no one is "Cheating" and everyone has the proof they need to do their job safely.
 
 This final review is the real exam for the scenario.
 

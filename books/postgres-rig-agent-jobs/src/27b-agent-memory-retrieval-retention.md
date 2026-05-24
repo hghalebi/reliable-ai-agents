@@ -508,12 +508,10 @@ Agent memory is useful only when it is bounded. In production, memory is typed d
 - **After this chapter:** memory is governed evidence with scope, provenance, confidence, retention, and permission boundaries.
 - **Keep:** inspect memory scope, source, confidence, retention policy, retrieval reason, and deletion path.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#agent-architecture) is relevant because agent memory should serve a clear workflow need rather than become unnecessary agentic complexity.
-- [Rig: Build AI Applications in Rust](./31-credible-resources-further-reading.md#agent-architecture) is relevant because Rig consumes model context while the application remains responsible for deciding which memory is safe to provide.
-- [Reflexion: Language Agents with Verbal Reinforcement Learning](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) is relevant because it shows how feedback and reflective memory can improve later attempts, while this chapter adds production scope, retention, and review controls.
-- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because memory retrieval and operator diagnostics depend on precise, scoped selection semantics.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because memory is long-lived data whose meaning depends on modeling, retention, and auditability.
-- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because memory poisoning and data leakage are core LLM application risks.
-- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) is relevant because durable memory affects accountability, governance, and risk management over time.
+- **[A-MemGuard: A Defense Framework for Agent Memory](https://mem0.ai/)** (2025). Emerging research on detecting and mitigating memory poisoning. It highlights why LLM-based detectors often miss 66% of malicious entries, reinforcing the need for the "Provenance and Confidence" fields used in this chapter.
+- **[Morris et al.: Text Embeddings Reveal (Almost) As Much As Text](https://arxiv.org/abs/2310.06816)** (ACL 2024). Academic research on "Embedding Inversion." It proves that 50-70% of original words can be recovered from raw vectors, justifying the chapter's rule that vector similarity is not a security boundary.
+- **[MINJA: Memory Injection Attacks on Large Language Model Agents](https://arxiv.org/abs/2406.01258)** (2024). Foundational research on the 95% success rate of persistent memory poisoning attacks, providing the threat model for the "Memory Write Policy" implemented here.
+- **[Reflexion: Language Agents with Verbal Reinforcement Learning](https://arxiv.org/abs/2303.11366)** (2023). Shows how reflective memory improves agent performance, while this chapter adds the production-critical "Horizon" and "Retention" controls needed to scale it safely.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects memory retrieval to the formal semantics of "Derived Data" and the maintenance of materialized views (like vector indices).

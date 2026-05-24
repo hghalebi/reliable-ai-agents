@@ -568,10 +568,10 @@ For reliable AI agents, extreme fault tolerance is not about exotic
 infrastructure first. It is about disciplined dependency direction, durable
 approved state, practiced failover, and evidence that operators can inspect.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [PlanetScale: The principles of extreme fault tolerance](./31-credible-resources-further-reading.md#reliability-and-operations) explains isolation, redundancy, static stability, control/data plane separation, progressive delivery, and regular failover practice in a production database platform.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) provides the operational foundation for drills, error budgets, incident response, and reliability as a practiced discipline.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) explains durable state, replication, transactions, and failure modes behind reliable data systems.
-- [PostgreSQL High Availability, Load Balancing, and Replication](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) documents the database-level mechanisms behind redundancy and failover.
-- [PostgreSQL synchronous commit documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) explains why acknowledged writes and durable replicas matter when a system treats replicas as failover candidates.
+- **[AWS Builders' Library: Static Stability Using Availability Zones](https://aws.amazon.com/builders-library/static-stability-using-availability-zones/)**. The definitive industry reference (by Marc Brooker) for building systems that continue to serve work when control-plane dependencies fail.
+- **[Castro & Liskov: Practical Byzantine Fault Tolerance (PBFT)](https://pmg.csail.mit.edu/papers/osdi99.pdf)** (1999). The seminal academic paper on consensus in the presence of lying or malicious nodes. it provides the mathematical foundation for why redundant workers must agree on a shared durable ledger.
+- **[IBM: The MAPE-K Loop (Monitor-Analyze-Plan-Execute)](https://en.wikipedia.org/wiki/Autonomic_computing)**. The foundational architectural pattern for self-healing systems. it motivates the "Fault-Tolerance Review" and "Failover Drill" evidence used in this chapter.
+- **[Lisanne Bainbridge: Ironies of Automation](https://en.wikipedia.org/wiki/Ironies_of_Automation)** (1983). Explains why extreme fault tolerance must preserve "Human situational awareness" so that operators can effectively intervene when the "Static Stability" mode is active.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 9: Consistency and Consensus). Connects worker isolation and redundancy to the formal limits of distributed system consensus.

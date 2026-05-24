@@ -661,8 +661,10 @@ Safe release engineering keeps old rows readable, new behavior measurable, and r
 - **After this chapter:** agent release engineering versions and gates code, schema, prompts, models, policies, evals, and rollback evidence.
 - **Keep:** version code, schema, prompt, model, policy, evaluator, dataset, and rollback plan as one release packet.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) gives the operational frame for SLIs, SLOs, error budgets, toil, incidents, and release discipline.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) supports the chapter's treatment of traces, metrics, logs, and cross-boundary evidence.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects operational evidence back to durable state, transactions, and event histories.
+- **[Walter F. Tichy: Tools for Software Configuration Management](https://dl.acm.org/doi/10.5555/54366.54370)** (1988). The foundational academic paper for version and configuration control. It formalizes the concepts of "Source vs. Derived Objects" and "Immutability" used to manage the behavior packets in this chapter.
+- **[Martin Fowler: The Expand and Contract Pattern](https://martinfowler.com/bliki/ParallelChange.html)**. The definitive practical guide to "Parallel Change"—implementing backward-incompatible schema and worker changes without downtime.
+- **[Netflix Technology Blog: Automated Canary Analysis at Netflix with Kayenta](https://netflixtechblog.com/automated-canary-analysis-at-netflix-with-kayenta-3260bc7acc69)**. Explains the statistical approach to comparing "Baseline" and "Canary" metrics to ensure release safety.
+- **[Anthropic: Prompt Engineering Best Practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)**. Industry guidance for treating prompts as versioned code artifacts, including the use of "Golden Datasets" for regression testing.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 4: Encoding and Evolution). The primary reference for managing version skew and the formal limits of forward/backward compatibility.

@@ -21,7 +21,6 @@ Read this chapter as one link in the production chain:
 
 The previous chapter made ownership temporary and recoverable. This chapter
 decides what happens after an owned attempt fails.
-
 That decision is not "try again" versus "give up." A production retry system has
 to answer a more precise question:
 
@@ -29,7 +28,10 @@ to answer a more precise question:
 Is repeating this work safe, likely to help, and worth the cost?
 ```
 
+In AI, we have a unique class of failure: **Stochastic Drift**. A model might work 90% of the time but fail on a specific prompt. If we retry with the *exact same* prompt and model, we are just gambling. We might need a **Model Temperature/Variation Retry** strategy where a retry uses slightly different parameters to get past a reasoning bottleneck.
+
 Sometimes the answer is yes. A provider timeout, a network reset, or a temporary
+... (omitted) ...
 rate limit may succeed later. Sometimes the answer is no. A malformed payload,
 missing configuration, denied policy, or impossible state will not become valid
 just because the worker waits ten seconds.
@@ -196,6 +198,8 @@ reasoning. A semantic disposition can preserve whether the system saw a
 transient provider failure, a permanent validation failure, exhausted attempts,
 or a cancellation.
 
+We should also respect **Model-Specific Error Codes**. For example, if a model says "Content Filter Triggered," that is a permanent failure for that input. Retrying it is useless and potentially a safety violation. Our classification must be smart enough to know when to stop.
+
 Classification is the difference between recovery and repetition.
 
 Recovery changes the future. It waits for a condition that might improve: a
@@ -257,10 +261,7 @@ queue from turning one outage into a CPU and API-cost storm.
 Backoff is load control.
 
 When a shared dependency fails, every worker may discover the failure at the same
-time. If every worker retries immediately, the system creates a second incident:
-provider pressure, queue churn, log volume, database writes, and customer-visible
-latency all rise together. A small failure becomes a storm because the retry
-system amplifies it.
+time. If every worker retries at exactly 30 seconds, they will collide again in a **Retry Storm**. To prevent this, we add **Jitter**—a bit of randomness to the backoff time. It's the standard "safety valve" that ensures workers don't all push at once.
 
 Backoff spreads demand over time. The cap matters too. Without a cap, a job can
 disappear for so long that operators stop seeing it as active work. With no
@@ -338,6 +339,8 @@ attempt and max attempts
 next retry time when retry is scheduled
 trace id and span id when available
 ```
+
+In distributed systems, this is your **Vector of Failure**. It allows you to see if a job is "Flapping" (succeeding then failing) or "Stalling" (consistently failing). This is the data you need for **Root Cause Analysis (RCA)**.
 
 This keeps retry analysis honest. A retry is not just "we tried again." It is
 an explicit state transition with a cause, a budget, and evidence that can be
@@ -424,6 +427,14 @@ Retries are a scheduling decision, not a hidden loop around a fallible call.
 
 Use the naive row when retry is just a loop. Use the safer row to classify the failure. Use the production row before repeated work can touch providers or side effects.
 
+> ### 🎓 The Professor's Corner
+>
+> **The Backoff Curve: The Bouncing Ball**
+>
+> Think of **Backoff** like a bouncing ball. The first time it hits the floor (fails), it bounces back quickly. But as it hits more times, it takes longer and longer to come back up. The system "gets more patient" as it fails more often!
+> 
+> We also add **Jitter**—which is like the ball hitting an uneven floor. It bounces in slightly different directions so it doesn't always land in the same spot as all the other balls. This keeps our system from getting overwhelmed by a "Storm" of bouncing balls!
+
 The hardening path changes who owns the decision.
 
 In the naive version, the failing call owns the retry loop. In the safer version,
@@ -442,7 +453,7 @@ Test retry as a typed scheduling decision:
 - **Persistence or boundary test:** prove Postgres updates attempt count, next run time, failure class, failure history, and terminal dead-letter state atomically.
 - **Regression test:** replay a failure at the final attempt and verify the job becomes dead-lettered instead of being scheduled forever.
 
-Good retry tests should make wrong optimism fail.
+Good retry tests should make **Wrong Optimism** fail. I call this being a **"Professional Pessimist."** A good engineer always assumes the worst will happen and builds a plan for it. It makes being "Defensive" feel like a superpower!
 
 Test that a provider timeout schedules a delayed retry. Test that a malformed
 payload does not. Test that the final allowed attempt becomes dead-lettered with

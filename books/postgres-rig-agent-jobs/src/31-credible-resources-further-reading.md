@@ -575,6 +575,64 @@ improve the system, then sends you back to code, tests, and operations.
 - **[The SRE Workbook: Implementing SLOs](https://sre.google/workbook/implementing-slos/)**. Practical step-by-step recipe for defining user-centric reliability targets.
 - **[Google SRE: Burn Rate Alerting](https://sre.google/workbook/alerting-on-slos/)**. Advanced strategy for monitoring error budget consumption.
 
+### 22. Capacity, Backpressure, and Provider Quotas
+- **[John Little: A Proof for the Queuing Formula](https://web.mit.edu/e-strategy/www/Little.pdf)** (1961). The mathematical basis for modeling concurrency and throughput.
+- **[John Nagle: Congestion Control in IP/TCP (RFC 896)](https://datatracker.ietf.org/doc/html/rfc896)** (1984). Seminal work on preventing system collapse through flow control.
+- **[AWS Builders' Library: Load Shedding](https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/)**. Industry patterns for protecting systems from overload by refusing work.
+
+### 23. Runbooks
+- **[Richard Cook: How Complex Systems Fail](https://how.complexsystems.fail/)** (1998). Foundational insights on the role of human operators in maintaining safety in hazardous systems.
+- **[Google SRE: Managing Incidents](https://sre.google/sre-book/managing-incidents/)**. The Incident Command System (ICS) framework for structured outage management.
+- **[PagerDuty: Incident Response](https://response.pagerduty.com/)**. Definitive guide to the industry-standard incident lifecycle and responder roles.
+
+### 24. Incident Response and Postmortems
+- **[John Allspaw: Blameless Postmortems](https://codeascraft.com/2012/05/22/blameless-postmortems/)** (2012). The industry-standard philosophy for learning from failure without punishment.
+- **[James Reason: The Swiss Cheese Model](https://en.wikipedia.org/wiki/Swiss_cheese_model)**. A core safety science concept for understanding layered defenses and latent conditions.
+- **[Erik Hollnagel: Safety-II](https://erikhollnagel.com/ideas/safety-i-and-safety-ii.html)**. Shifting from failure-centric safety to success-oriented resilience engineering.
+
+### 25. Release Engineering for Agents
+- **[Walter F. Tichy: Tools for SCM](https://dl.acm.org/doi/10.5555/54366.54370)** (1988). Foundational taxonomy for version control and configuration management.
+- **[Martin Fowler: The Expand and Contract Pattern](https://martinfowler.com/bliki/ParallelChange.html)**. Core pattern for zero-downtime schema and code transitions.
+- **[Netflix: Automated Canary Analysis (Kayenta)](https://netflixtechblog.com/automated-canary-analysis-at-netflix-with-kayenta-3260bc7acc69)**. Advanced techniques for statistical release validation.
+
+### 26. Toil, Automation, and Ownership
+- **[Google SRE: Eliminating Toil](https://sre.google/sre-book/eliminating-toil/)**. The industry-standard definition and management strategy for manual repetitive work.
+- **[Lisanne Bainbridge: Ironies of Automation](https://en.wikipedia.org/wiki/Ironies_of_Automation)** (1983). Seminal research on the pitfalls of over-automation and the human-out-of-the-loop problem.
+- **[Sheridan & Verplank: Levels of Automation](https://apps.dtic.mil/sti/citations/ADA054659)** (1978). The 10-level framework for allocating responsibility between humans and software.
+
+### 27. Evaluation and Behavior Reliability
+- **[Zheng et al.: Judging LLM-as-a-Judge](https://arxiv.org/abs/2306.05685)** (2023). Formalizes the use of highly capable models as automated proxies for human preference.
+- **[Hamel Husain: Evaluation-Driven Development](https://hamel.dev/blog/posts/evals/)**. Practical guide to building domain-specific, binary evaluation pipelines for LLM products.
+- **[Cohen's Kappa ($\kappa$)](https://en.wikipedia.org/wiki/Cohen%27s_kappa)**. The statistical standard for measuring inter-rater reliability and calibration in evaluation systems.
+
+### 27.5 Agent Memory, Retrieval, and Retention
+- **[A-MemGuard: Agent Memory Defense](https://mem0.ai/)** (2025). Emerging research on mitigating persistent memory poisoning.
+- **[MINJA: Memory Injection Attacks](https://arxiv.org/abs/2406.01258)** (2024). Foundational research on the high success rate of agent memory exploits.
+- **[Morris et al.: Text Embeddings Reveal Text](https://arxiv.org/abs/2310.06816)** (ACL 2024). Proves the privacy risks inherent in raw vector embeddings.
+
+### 28. Security, Abuse, and Trust Boundaries
+- **[Myers & Liskov: Decentralized IFC](https://dl.acm.org/doi/10.1145/266635.266669)** (1997). The academic origin of labels and trust boundaries in secure systems.
+- **[OWASP: Top 10 for LLM Applications](https://genai.ovasp.org/)**. The industry standard for modern agent vulnerabilities.
+- **[MITRE ATLAS](https://atlas.mitre.org/)**. Knowledge base of adversarial tactics for AI systems.
+
+### 28.5 Data Protection and Privacy Operations
+- **[Ann Cavoukian: Privacy by Design](https://www.ipc.on.ca/wp-content/uploads/2013/09/pbd-primer.pdf)**. The 7 foundational principles for embedding privacy into system architecture.
+- **[EDPB: Data Protection by Design Guidelines](https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en)**. Regulatory standards for automated privacy workflows.
+
+### 28.6 Tenant Isolation and Multi-tenancy
+- **[AWS: SaaS Tenant Isolation Strategies](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/welcome.html)**. Comprehensive guide to silo, pool, and bridge isolation patterns.
+- **[Non-Interference](https://en.wikipedia.org/wiki/Non-interference_(security))**. The formal mathematical goal for secure multi-tenant isolation.
+
+### 29. Disaster Recovery and Continuity
+- **[Google SRE: Data Integrity](https://sre.google/sre-book/data-integrity/)**. Explains the formal relationship between backups and receipt reconciliation.
+- **[AWS Builders' Library: Ensuring Rollback Safety](https://aws.amazon.com/builders-library/ensuring-rollback-safety-during-deployments/)**. Principles of state and code compatibility during recovery.
+- **[FEMA: Continuity of Operations (COOP)](https://www.fema.gov/pdf/about/org/ncp/coop_brochure.pdf)**. The administrative foundation for RPO, RTO, and succession.
+
+### 29.5 Extreme Fault Tolerance
+- **[AWS Builders' Library: Static Stability](https://aws.amazon.com/builders-library/static-stability-using-availability-zones/)**. Definitive guide to systems that survive control-plane failures.
+- **[Castro & Liskov: PBFT](https://pmg.csail.mit.edu/papers/osdi99.pdf)** (1999). Seminal research on Byzantine consensus and ledger-based consistency.
+- **[IBM: MAPE-K Loop](https://en.wikipedia.org/wiki/Autonomic_computing)**. Foundational pattern for autonomous, self-healing software systems.
+
 ## What to Avoid
 
 Avoid using blog posts, vendor claims, benchmark screenshots, or social media

@@ -200,6 +200,14 @@ operators must still have a safe pause and recovery path
 The unit of safety is not "the binary started." The unit of safety is "old and
 new work can coexist without corrupting state."
 
+> ### 🎓 The Professor's Corner
+>
+> **The Rolling Upgrade: Changing Tires on the Highway**
+>
+> A **Rolling Upgrade** is like changing the tires on a car while it's still driving down the highway! You replace one tire at a time (one worker) so the car never has to stop. 
+> 
+> In our system, the "New Code" and "Old Code" have to drive together for a few minutes. If they don't agree on where the road is (the database schema), the car will crash! This is why compatibility is our most important rule.
+
 This mental model changes how you read every deploy step. A migration is not
 only a schema change; it is a promise about old rows. A readiness endpoint is
 not only a liveness check; it is a promise that dependencies and migrations are
@@ -225,7 +233,17 @@ approval throughput.
 
 This topology is intentionally boring. The API owns admission. The worker owns
 durable execution. Postgres owns coordination and history. The operator surface
-owns diagnosis and control. If those boundaries are unclear, adding more
+owns diagnosis and control. 
+
+> ### 🎓 The Professor's Corner
+>
+> **The Boring Bridge: Postgres as the Connector**
+>
+> Think of Postgres as a "Boring Bridge" that connects the old worker to the new worker. They don't need to talk to each other; they don't even need to know each other exists! 
+> 
+> They only need to talk to the same database. As long as they both follow the rules of the bridge, the work can cross safely from the old version to the new one without anyone falling off.
+
+If those boundaries are unclear, adding more
 infrastructure will make the deploy harder to reason about, not safer.
 
 ## Tiny Example
@@ -244,6 +262,8 @@ The safe deploy does not delete the row or invent a new status. It lets the
 worker finish, extend the lease, or shut down and allow recovery after
 `locked_until`. The database contract is the bridge between old and new
 processes.
+
+In AI, we should treat this `worker_build_id` as part of the **AI Lineage**. If a worker produces a "weird" result, I need to know if it was the "Morning Build" or the "Afternoon Build." This is the data we need for **Release Regression Analysis**.
 
 Read the tiny case as:
 
@@ -267,6 +287,8 @@ record shutdown reason in process logs
 ```
 
 Do not delete running rows during deploy. Let the lease model do its work.
+
+By heartbeating one last time or voluntarily releasing the lease during shutdown, you reduce **Recovery Latency**. I call this **Lease Relinquishment**.
 
 The worker exposes the drain gate as a typed control state. When the process is
 draining, the worker returns before `pick_due_job`, so due work stays pending for
@@ -426,7 +448,17 @@ postgres-worker-demo:
   writes terminal, retry, or dead-letter evidence
 ```
 
-Keep these responsibilities separate. If the API calls the model directly, a
+Keep these responsibilities separate. 
+
+> ### 🎓 The Professor's Corner
+>
+> **The Receptionist and the Chef: API vs. Worker**
+>
+> I call this split **Process Isolation**. The API is the "Receptionist" who takes the order and writes it down in the notebook. The Worker is the "Chef" who actually cooks the meal in the back! 
+> 
+> If the receptionist tries to cook, the lobby gets crowded and the orders get lost! By keeping them separate, the receptionist can keep taking orders even if the chef is busy with a big, slow meal.
+
+If the API calls the model directly, a
 client timeout can become an ambiguous execution. If the worker accepts raw
 HTTP JSON, the raw-outside/typed-inside boundary has moved too far into the
 system.

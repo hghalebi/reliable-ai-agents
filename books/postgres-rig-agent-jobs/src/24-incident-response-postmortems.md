@@ -516,8 +516,10 @@ Incident response is part of the design. The ledger, events, versions, and runbo
 - **After this chapter:** incident response protects users during failure, and postmortems turn evidence into stronger system invariants.
 - **Keep:** preserve the incident timeline, user impact, mitigation evidence, and invariant-changing follow-up.
 
-## Further Reading and Sources
+## Further Reading & Credible References
 
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) gives the operational frame for SLIs, SLOs, error budgets, toil, incidents, and release discipline.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) supports the chapter's treatment of traces, metrics, logs, and cross-boundary evidence.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) connects operational evidence back to durable state, transactions, and event histories.
+- **[John Allspaw (Etsy): Blameless Postmortems and a Just Culture](https://codeascraft.com/2012/05/22/blameless-postmortems/)** (2012). The definitive industry guide to moving from "who failed" to "what failed." it introduces the "Second Story"—the complex systemic conditions that allowed an agent or operator to fail.
+- **[James Reason: The Swiss Cheese Model of System Failure](https://en.wikipedia.org/wiki/Swiss_cheese_model)**. A foundational safety science model explaining how accidents occur only when "latent conditions" (holes in the cheese) in multiple layers (code, tests, policy, human review) align.
+- **[Erik Hollnagel: Safety-II and Resilience Engineering](https://erikhollnagel.com/ideas/safety-i-and-safety-ii.html)**. Shifting the focus from why systems fail (Safety-I) to why they usually succeed (Safety-II). It motivates the "Work-as-Done" evidence captured in this chapter's timelines.
+- **[Google SRE Book: Postmortem Culture—Learning from Failure](https://sre.google/sre-book/postmortem-culture/)**. The industry standard for turning incidents into "Corrective Invariants" and ensuring that follow-up actions lead to durable system improvements.
+- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects postmortem findings to the formal limits of distributed state and the "Metastable Failure" patterns discussed in this chapter.

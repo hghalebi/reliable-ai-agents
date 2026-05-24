@@ -213,6 +213,8 @@ because they prove integration with Postgres, provider APIs, or deployment
 surfaces. Do not invert that order. A flaky live model test should not be the
 only signal that your retry state machine works.
 
+In AI engineering, we often have a **Data-Eval Loop**. We must emphasize that **Behavior Evaluations (Evals)** are not just tests; they are **Statistical Benchmarks**. You don't expect 100% pass rates in the outer ring, but you do expect a **Baseline of Performance**. If a prompt change drops the baseline, the release must stop.
+
 The useful habit is to name the risk first, then choose the ring. If the risk is
 a broken Rust invariant, use a unit test. If the risk is provider schema drift,
 use a provider fixture or live smoke test. If the risk is lower answer quality,
@@ -353,6 +355,8 @@ duplicate webhook during a slow tool call
 approval request expiring while the worker waits
 restore from backup before workers resume
 ```
+
+Simulating a "Worker crash after model output but before side effect" is a brilliant way to test whether the system can "Re-align" after a disruption. I call this **State-Alignment Testing**.
 
 Chaos testing is the next step. A chaos experiment deliberately injects failure
 into a running system to test whether the system still preserves its
@@ -521,14 +525,28 @@ Test the test strategy itself by mapping checks to risks:
 objects reject missing dataset, rubric, owner, or expected evidence. This keeps
 test evidence typed instead of becoming another bag of strings.
 
-**Persistence or boundary test:** prove Postgres fixtures and SQL queries cover
-the state, failure, runbook, and evaluation evidence named by the chapter. The
-database is part of the reliability contract, so the database needs direct
-tests.
+**Persistence test:** Then test the persistence boundary. Many teams mock their database, which means they never test their **Transaction Isolation** or **Locking Logic**. Your insistence on direct SQL tests is the only way to prove that `SKIP LOCKED` actually prevents duplicate worker picks. I call this **Contractual Testing**.
 
-**Regression test:** add a behavior change without an evaluation receipt or
-failure fixture and verify the release gate blocks promotion. This turns a
-previous failure into a permanent guardrail.
+**Regression test:** finally, add the regression test that catches the
+production failure. Attempt a risky action where model text says it is approved,
+but no approval row exists. Execution must remain blocked. This test teaches the
+central rule: model text is not authority.
+
+> ### 🎓 The Professor's Corner
+>
+> **Breaking Your Own Toys: The Reverse Question**
+>
+> When you build something cool, don't just ask "How do I make it work?" Ask "How do I break it and see the alarm go off?" I call this **The Reverse Question**. 
+> 
+> A good engineer is like a professional "Toy Breaker." We try every trick to fool the system—like giving it a fake approval or a stale lease—just to make sure the "Safety Guards" are awake! It turns testing into a fun game of stress-testing your own machine!
+
+> ### 🎓 The Professor's Corner
+>
+> **Idempotency Invariants: The "Twice is Once" Rule**
+>
+> Think of an **Idempotency Invariant** as a rule that says: "No matter how many times I do this, it only counts as one!" 
+> 
+> In your tests, you should try running the same job twice. If the *second* run does anything new—like sending a second email—the invariant is broken! It's like checking the mail: no matter how many times you open the box, you only get today's letters once.
 
 ## Observability Strategy
 
