@@ -144,9 +144,4 @@ Do not use the card to avoid the hard parts. Use it to find the next hard part.
 
 ## Further Reading and Sources
 
-- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the card pack gives multiple ways to enter the same technical idea without changing the production target.
-- [CDC: ADHD in the Classroom](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the cards make expectations, organization, and restart routines explicit for readers with limited attention.
-- [Digital.gov: Short and Simple](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the cards use short, direct language while preserving the real engineering claim.
-- [Paas and van Merrienboer: Cognitive-Load Theory](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the cards reduce unnecessary working-memory load before the reader studies deeper mechanisms.
-- [IES: Organizing Instruction and Study to Improve Student Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the cards connect concrete examples, practice prompts, and evidence checks.
-- [Nature Reviews Psychology: Spacing and Retrieval Practice](./31-credible-resources-further-reading.md#learning-design-and-plain-language) is relevant because the cards support repeated recall of concepts, artifacts, and operator questions over time.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

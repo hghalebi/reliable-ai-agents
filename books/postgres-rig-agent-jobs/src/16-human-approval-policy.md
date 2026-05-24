@@ -577,10 +577,6 @@ Carry this forward: human-in-the-loop is durable state, not a chat message.
 - **After this chapter:** human approval is a control surface: policy decides what may execute, and approval creates durable evidence.
 - **Keep:** inspect the approval request, policy version, reviewer identity, decision, and resulting audit event.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Amodei et al.: Concrete Problems in AI Safety](https://arxiv.org/abs/1606.06565)** (2016). The foundational academic paper exploring "Scalable Oversight" and the role of human-in-the-loop systems in preventing agents from diverging from human intent.
-- **[NIST AI Risk Management Framework (AI RMF 1.0)](https://www.nist.gov/itl/ai-rmf)**. The definitive industry standard for building trustworthy AI systems. It treats human oversight (HITL/HOTL) as a fundamental component of a socio-technical safety system.
-- **[The Four-Eyes Principle (2-Person Rule) in Software Authorization](https://en.wikipedia.org/wiki/Two-man_rule)**. A core security protocol that mandates critical decisions be vets by at least two independent actors—the model (proposer) and the human (approver) in this chapter.
-- **[OWASP Top 10 for LLM: LLM02 (Insecure Output Handling)](https://genai.ovasp.org/llm-02-insecure-output-handling/)**. Explains the specific security risk of trusting model output as permission, which the "Approval Gate" pattern in this chapter directly remediates.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects human-in-the-loop state to the "Auditability" and "Non-repudiation" requirements of high-stakes automated systems.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

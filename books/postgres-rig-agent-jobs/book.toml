@@ -1,0 +1,18 @@
+[book]
+authors = ["Hamze Ghalebi"]
+language = "en"
+src = "src"
+title = "Reliable AI Agents"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = ""
+edit-url-template = ""
+
+[output.html.playground]
+editable = false

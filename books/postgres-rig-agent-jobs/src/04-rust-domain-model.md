@@ -450,13 +450,6 @@ The database may store generic values, but the Rust boundary should recover mean
 - **After this chapter:** domain types carry meaning; raw data enters at boundaries and typed values move through the system.
 - **Keep:** look for newtypes, enums, constructors, and row-to-domain conversions at every boundary.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Alexis King: Parse, don't validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)** (2019). The foundational text for type-driven design. It explains why a system is safer when it transforms unstructured input (like a database string) into a structured type (like a `WorkerId`) rather than just checking a boolean property.
-- **[Scott Wlaschin: Domain Modeling Made Functional](https://fsharpforfunandprofit.com/books/)**. While written for F#, this book is the industry standard for using Algebraic Data Types (ADTs) to make illegal states unrepresentable—a core principle of the Rust domain model in this chapter.
-- **[Rust API Guidelines: Newtype Pattern](https://rust-lang.github.io/api-guidelines/type-safety.html#newtype-pattern-encapsulates-implementation-details-c-newtype)**. The official community standard for when and how to wrap primitives in domain-specific types.
-- **[thiserror Documentation](https://docs.rs/thiserror/latest/thiserror/)**. The practical reference for defining the custom error enums that power the validated constructors used in this chapter.
-main model in this chapter.
-- **[Rust API Guidelines: Newtype Pattern](https://rust-lang.github.io/api-guidelines/type-safety.html#newtype-pattern-encapsulates-implementation-details-c-newtype)**. The official community standard for when and how to wrap primitives in domain-specific types.
-- **[thiserror Documentation](https://docs.rs/thiserror/latest/thiserror/)**. The practical reference for defining the custom error enums that power the validated constructors used in this chapter.
- in this chapter.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

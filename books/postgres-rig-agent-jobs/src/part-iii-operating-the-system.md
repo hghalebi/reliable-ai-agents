@@ -114,6 +114,4 @@ of workers and dashboards.
 
 ## Further Reading and Sources
 
-- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#agent-architecture) helps distinguish deterministic workflows from agentic behavior before the book adds durable execution machinery.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) gives the data-systems vocabulary behind durable state, logs, transactions, and recoverable workflows.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) grounds the chapter's reliability claims in operational practice rather than agent-specific hype.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

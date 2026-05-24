@@ -598,9 +598,6 @@ The in-memory store proves the algorithm. The Postgres store proves the producti
 - **After this chapter:** the store is a contract boundary where raw rows become validated domain state and atomic transitions.
 - **Keep:** validate every database row before it becomes domain state or drives a transition.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Martin Fowler: Patterns of Enterprise Application Architecture (Data Mapper)](https://martinfowler.com/eaaCatalog/dataMapper.html)** (2002). The foundational pattern for the "conversion layer" described in this chapter. It explains how to move data between objects and a database while keeping them independent.
-- **[Eric Evans: Domain-Driven Design (The Repository Pattern)](https://www.domainlanguage.com/ddd/)** (2003). Chapter 6 formalizes the `AgentJobStore` trait as a Repository—a mechanism that encapsulates storage and retrieval to emulate an in-memory collection of jobs.
-- **[SQLx Documentation: Compiling with Type Safety](https://docs.rs/sqlx/latest/sqlx/index.html#type-safety)**. The practical reference for the library used in this chapter to execute SQL and decode rows into Rust structs.
-- **[Postgres Connection Pooling: PgBouncer vs. PgCat](https://github.com/postgresml/pgcat)**. An industry review of connection multiplexing, explaining the "Layered Pooling" strategy required when scaling the worker pools introduced in this chapter.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

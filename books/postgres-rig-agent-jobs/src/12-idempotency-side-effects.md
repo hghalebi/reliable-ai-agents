@@ -706,10 +706,6 @@ Idempotency separates "I saw the same request twice" from "there are two pieces 
 - **After this chapter:** a retry is safe only when the side effect has stable identity and the database can recognize previous execution.
 - **Keep:** inspect the idempotency key, unique constraint, side-effect receipt, and replay decision together.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Pat Helland: Life Beyond Distributed Transactions—An Apostate's Opinion](https://waitingforai.com/wp-content/uploads/2021/05/helland-life-beyond-distributed-transactions.pdf)** (2007). The seminal paper explaining why scale and reliability require "at-least-once" messaging combined with idempotent entities rather than distributed locks.
-- **[Airbnb Engineering: Avoiding Double Payments in a Distributed System](https://medium.com/airbnb-engineering/avoiding-double-payments-in-a-distributed-system-29c35d03e536)**. A detailed technical case study of **Orpheus**, Airbnb's idempotency library, which achieves "five nines" consistency using the exact key and lease patterns described in this chapter.
-- **[Garcia-Molina & Salem: Sagas](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf)** (1987). The academic foundation for the "Compensation Actions" introduced in this chapter. It formalizes how to manage long-lived transactions by breaking them into smaller steps with explicit rollback actions.
-- **[Chris Richardson: The Transactional Outbox Pattern](https://microservices.io/patterns/data/transactional-outbox.html)**. The definitive guide to solving the "Dual-Write Problem" where internal state and external notifications must be kept consistent.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Chapter 11 explains why "exactly-once" is physically impossible in asynchronous networks and why idempotency is the only robust alternative.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

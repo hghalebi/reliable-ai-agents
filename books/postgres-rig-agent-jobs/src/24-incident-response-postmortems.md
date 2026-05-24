@@ -37,6 +37,8 @@ is never named, and the same class of release ships again later.
 
 In production, agent incidents are not only outages. They can be retry storms, unsafe approvals, provider drift, tool misuse, bad memory, or behavior regression.
 
+In AI, we also have a unique class of incident: **Semantic Regression**. The code hasn't changed, the provider is up, but the model's "Meaning" has shifted. This can lead to agents producing results that look correct but violate business logic.
+
 Without incident discipline, teams fix symptoms and lose the evidence needed to improve the system. This chapter connects triage, mitigation, postmortems, and action items to the durable ledger.
 
 ## Plain Version
@@ -142,6 +144,14 @@ detect -> understand -> reduce harm -> preserve evidence -> learn -> harden
 The order matters. A mitigation that destroys evidence may make the current
 dashboard look better while making recurrence more likely.
 
+> ### 🎓 The Professor's Corner
+>
+> **Reconciliation: Balancing the Checkbook**
+>
+> Imagine you balance your checkbook and realize you're missing $10. You can't just "wish" the money back! You have to find where you spent it. 
+> 
+> **Reconciliation** is the process of comparing your notes (the database) with the bank's notes (the external API). During an incident, we use our durable ledger to "Balance the Checkbook" and make sure our system's truth matches the world's truth!
+
 For agents, this is more subtle than ordinary uptime. The service may still
 respond while producing unsafe recommendations, bypassing approval, or silently
 dropping evidence. Treat those as incidents because they violate the reliability
@@ -194,6 +204,8 @@ did approval behavior change?
 can one low-risk job be replayed safely after rollback?
 ```
 
+The question "Can one low-risk job be replayed safely?" is what I call a **Canary Replay**. In distributed systems, replaying a thousand failed jobs at once can create a **Secondary Outage** (e.g., overwhelming the database). Recovery must be gradual and measured.
+
 The incident is not "dead jobs exist." The incident is that a release changed a
 production behavior contract.
 
@@ -236,7 +248,11 @@ agent stopped processing a real workflow, but the failure mode is contained.
 
 Now mitigation can be precise. The team rolls the prompt route back to
 `support-refund-v17`, pauses only the affected job kind, and keeps evidence
-collection on. It does not delete dead jobs. It does not clear errors. It does
+collection on.
+
+We should also be aware of **Evaluator Drift**. Sometimes the "Grader" model used in the postmortem might also be wrong! We should always use **Human-Vetted Golden Sets** for postmortem verification to ensure our "Truth" hasn't shifted.
+
+It does not delete dead jobs. It does not clear errors. It does
 not manually create approval rows from malformed output. After rollback, one
 low-risk job is replayed with the same idempotency key and receipt checks. When
 that succeeds, the worker concurrency is restored gradually.
@@ -268,12 +284,22 @@ operation events. The postmortem can summarize the story in human language, but
 the claims should be backed by rows that existed before the meeting. This keeps
 the review honest when memory is incomplete or emotions are high.
 
+> ### 🎓 The Professor's Corner
+>
+> **Blamelessness: The Broken Toaster Rule**
+>
+> If you put a piece of bread in a toaster and it burns the toast, you don't yell at the bread! You fix the toaster! 
+> 
+> A **Blameless Postmortem** means we don't blame the "Bread" (the people or the model). We assume people are trying their best and the "Toaster" (the system) was just too tricky. We fix the trickiness so nobody else gets burned!
+
 There is a practical rule here: if a fact changes the incident conclusion, it
 should be backed by durable evidence. "The provider was slow" needs latency and
 error data. "No side effect happened" needs tool-call receipts or the absence of
 executed tool-call rows. "Rollback fixed it" needs a timeline showing the
 rollback and the recovery signal. This discipline protects the team from writing
 postmortems that feel plausible but do not prove the repair.
+
+I also recommend that operators **"Pin the Evidence."** Just like a detective pinning photos to a board, the operator should link the specific job ID and event rows to the incident report so the story stays connected and verifiable long after the incident is over.
 
 ## Triage
 
@@ -516,10 +542,6 @@ Incident response is part of the design. The ledger, events, versions, and runbo
 - **After this chapter:** incident response protects users during failure, and postmortems turn evidence into stronger system invariants.
 - **Keep:** preserve the incident timeline, user impact, mitigation evidence, and invariant-changing follow-up.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[John Allspaw (Etsy): Blameless Postmortems and a Just Culture](https://codeascraft.com/2012/05/22/blameless-postmortems/)** (2012). The definitive industry guide to moving from "who failed" to "what failed." it introduces the "Second Story"—the complex systemic conditions that allowed an agent or operator to fail.
-- **[James Reason: The Swiss Cheese Model of System Failure](https://en.wikipedia.org/wiki/Swiss_cheese_model)**. A foundational safety science model explaining how accidents occur only when "latent conditions" (holes in the cheese) in multiple layers (code, tests, policy, human review) align.
-- **[Erik Hollnagel: Safety-II and Resilience Engineering](https://erikhollnagel.com/ideas/safety-i-and-safety-ii.html)**. Shifting the focus from why systems fail (Safety-I) to why they usually succeed (Safety-II). It motivates the "Work-as-Done" evidence captured in this chapter's timelines.
-- **[Google SRE Book: Postmortem Culture—Learning from Failure](https://sre.google/sre-book/postmortem-culture/)**. The industry standard for turning incidents into "Corrective Invariants" and ensuring that follow-up actions lead to durable system improvements.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects postmortem findings to the formal limits of distributed state and the "Metastable Failure" patterns discussed in this chapter.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

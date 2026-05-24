@@ -690,10 +690,6 @@ rollout.
 - **After this chapter:** deployment is a controlled change to code, schema, workers, prompts, models, policies, and operational gates.
 - **Keep:** check the release gate across code, schema, prompt, model, policy, eval, and rollback evidence.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Google SRE Book: Release Engineering](https://sre.google/sre-book/release-engineering/)**. The definitive guide to building fast, repeatable, and automated deployment pipelines using hermetic builds and immutable artifacts.
-- **[AWS Builders' Library: Automating Safe, Hands-off Deployments](https://aws.amazon.com/builders-library/automating-safe-hands-off-deployments/)**. Explains the "One-Box" and "AZ-by-AZ" rollout strategies used to limit blast radius during production changes.
-- **[GoCardless Engineering: Zero-Downtime Postgres Migrations](https://gocardless.com/blog/zero-downtime-postgres-migrations-the-hard-parts/)**. A practical deep-dive into the "Expand and Contract" pattern and the importance of `lock_timeout` when changing schema under live traffic.
-- **[NIST SP 800-57: Recommendation for Key Management](https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final)**. Provides the formal vocabulary and lifecycle (generation, usage, rotation, destruction) for the secrets and credentials introduced in this chapter.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 10: Batch Processing). Connects worker drain behavior and "Lease Expiry" to the formal requirements of fault-tolerant offline systems.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

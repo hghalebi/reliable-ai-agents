@@ -676,10 +676,6 @@ Leases recover crashed workers. Heartbeats prove long operations are still alive
 - **After this chapter:** a lease is temporary ownership, a heartbeat is proof of life, and cancellation is a durable control request.
 - **Keep:** inspect locked_by, locked_until, heartbeat evidence, and cancellation event before declaring ownership.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Hayashibara et al.: The Phi ($\phi$) Accrual Failure Detector](https://dl.acm.org/doi/10.1145/1028174.1028177)** (2004). A landmark algorithm that moves beyond binary "Up/Down" heartbeats to a probabilistic "suspicion level." It is the foundation for how systems like Cassandra and Akka handle network jitter without losing cluster consistency.
-- **[Gray & Cheriton: Leases—An Efficient Mechanism for Distributed Consistency](https://dl.acm.org/doi/10.1145/74850.74870)** (1989). The seminal paper that formalizes the "time-bound contract" for resource ownership used to prevent the "Zombie Worker" problem in this chapter.
-- **[Tokio Official Guide: Graceful Shutdown](https://tokio.rs/tokio/topics/shutdown)**. The definitive practical reference for the "Cooperative Cancellation" pattern used in this chapter, explaining the interaction between `select!`, `CancellationToken`, and RAII.
-- **[Martin Fowler: Pattern—Heartbeat](https://martinfowler.com/articles/patterns-of-distributed-systems/heartbeat.html)**. A clear, pattern-based review of using periodic liveness signals to maintain sessions and detect silent process crashes.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 8: The Trouble with Distributed Systems). Explains the critical role of "Fencing Tokens" (which leases provide) to ensure that a stale worker cannot corrupt state after a long GC pause.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

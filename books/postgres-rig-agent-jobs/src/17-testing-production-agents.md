@@ -635,10 +635,6 @@ fixtures, eval receipts, and failure drills block regressions.
 - **After this chapter:** production agent testing combines unit tests, integration tests, contract tests, evals, and failure drills.
 - **Keep:** require every important behavior to have a unit, persistence, regression, or evaluation proof.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Principles of Chaos Engineering](https://principlesofchaos.org/)**. The foundational industry manifesto (pioneered by Netflix) for building resilience by deliberately injecting failure to test system invariants—the core logic behind the "Failure Drills" in this chapter.
-- **[OpenAI: Contextual Evals and the Evals API](https://github.com/openai/evals)**. The primary reference for moving from manual prompt testing to repeatable "Behavior Evaluations" using task-specific datasets and "LLM-as-a-Judge" grading patterns.
-- **[The proptest book: Property-Based Testing in Rust](https://proptest-rs.github.io/proptest/intro.html)**. Explains how to use random input generation to find deep boundary bugs (e.g., in lease expiry or retry logic) that manual unit tests often miss.
-- **[AgentBench: A Comprehensive Benchmark for LLMs as Agents](https://arxiv.org/abs/2308.03688)** (ICLR 2024). The academic foundation for evaluating agents across diverse environments (OS, Database, Web), providing the rubric for the "middle ring" of testing discussed in this chapter.
-- **[FoundationDB: Testing the Untestable (Simulation)](https://www.youtube.com/watch?v=4fFDFbi3toc)**. Re-visiting this seminal industry talk to ground the chapter's "Deterministic Local Run" in the rigorous simulation practices of world-class distributed databases.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

@@ -716,10 +716,6 @@ problem.
 - **After this chapter:** systems run for years when ownership, maintenance cadence, drift detection, data hygiene, and recovery practice keep the invariants alive.
 - **Keep:** inspect the maintenance cadence for ownership, drift, recovery practice, and data-retention evidence.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Meir M. Lehman: Laws of Software Evolution](https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution)**. The foundational academic research (1974-1996) describing the inevitable decline in quality and increase in complexity of long-lived software systems. It provides the "reality check" for the maintenance cadence described in this chapter.
-- **[Crunchy Data: Postgres Autovacuum Tuning](https://www.crunchydata.com/blog/postgres-autovacuum-tuning)**. The definitive industry guide to preventing "Database Bloat" in high-traffic task queues, explaining how to adjust scale factors for million-row tables.
-- **[EDPB: Guidelines on Data Protection by Design and by Default](https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-42019-article-25-data-protection-design-and_en)**. The regulatory and technical standard for implementing the "Storage Limitation" and "Erasure" workflows discussed in this chapter's privacy review section.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 4: Encoding and Evolution). The primary reference for Schema Evolution (backward and forward compatibility) used to ensure old agent rows remain parseable by new worker code.
-- **[ICO: Storage Limitation Guidance](https://ico.org.uk/for-organisations/guide-to-data-protection/guide-to-the-general-data-protection-regulation-gdpr/principles/storage-limitation/)**. A high-signal practical guide for developers on setting retention periods and implementing "Crypto-shredding" for data in backups.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

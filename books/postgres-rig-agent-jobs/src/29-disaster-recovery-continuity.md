@@ -180,6 +180,14 @@ restore state -> inspect evidence -> verify compatibility -> resume safely
 The dangerous moment is not only the outage. It is the first restart after the
 outage, when workers may act on restored or partially stale state.
 
+> ### 🎓 The Professor's Corner
+>
+> **Checkpoints vs. Journals: The Snapshot and the Story**
+>
+> Imagine you're writing a book and your computer crashes. Your "Auto-Save" is the **Checkpoint**—it’s a snapshot of your work at 10:00 AM. But you also have your "Rough Notes" (the **Journal**) that you wrote until 10:03 AM! 
+> 
+> In our system, the database backup is the Checkpoint. But the external world (like the billing API) has the "Journal" of what actually happened after the backup. Recovery is the process of using the Journal to update the Checkpoint so the story stays true!
+
 ## RPO And RTO
 
 Start with two numbers:
@@ -194,6 +202,8 @@ can afford to lose. If the RPO is fifteen minutes, the business is saying that a
 restore may lose up to fifteen minutes of accepted work. That may be fine for a
 research summary. It is usually not fine for billing, approval, or external
 messages.
+
+In distributed systems, this is called **Tiered Recovery**. A "Tier 1" job (billing) has zero RPO tolerance, while a "Tier 3" job (summarization) can lose hours. I would explicitly mention that **RPO failure is a Data Integrity failure**, while **RTO failure is a Liveness failure**.
 
 RTO means recovery time objective. It asks how long the system can be
 unavailable. A support summarizer may tolerate hours. An incident triage
@@ -255,7 +265,11 @@ measure time to safe processing
 ```
 
 The most important step is starting paused. After restore, you want to inspect
-state before workers resume writes or external side effects. A worker that starts
+state before workers resume writes or external side effects. 
+
+I call this **"Fire Drill Friday."** You don't want to read the instruction manual for the fire extinguisher while the building is on fire! Practice your restore drills in a safe environment so that when the "Bad Day" arrives, you already know exactly where the buttons are.
+
+A worker that starts
 too early can turn a successful restore into a duplicate billing action, repeated
 email, stale approval, or unsafe replay.
 
@@ -319,6 +333,8 @@ resume from durable state. A restored job with an existing receipt needs
 reconciliation. A restored job that expected a side effect but has no receipt
 is quarantined. Terminal work does not replay.
 
+I call this **Human-Assisted Reconciliation**. In AI, if we aren't sure if a reasoning step finished, we shouldn't guess. Quarantining the job and asking a human to review the "Half-finished thought" is the safest path to truth.
+
 The restore drill then records whether the system met its recovery objective
 and whether any replay candidate was unsafe:
 
@@ -345,6 +361,14 @@ This is the same rule as the rest of the book:
 raw outside -> typed inside -> controlled side effect
 ```
 
+> ### 🎓 The Professor's Corner
+>
+> **Double-Checking Homework: Reconciliation**
+>
+> Imagine you finish your homework and hand it in, but the teacher loses it! Do you do it all again? No! You check your backpack (the API) to see if you have a copy (the receipt). 
+> 
+> **Reconciliation** is just "Double-Checking the Homework." The database says one thing, the API says another, and you have to be the judge to decide what is true.
+
 After restore, workers should start paused. The first decision is not "run
 everything again." The first decision is "which rows have enough evidence to
 resume without duplicating a side effect?"
@@ -364,6 +388,8 @@ rate limit -> backpressure instead of retry storm
 Provider fallback is not free. A fallback model needs its own evaluation
 receipt and policy decision. Otherwise failover can trade availability for bad
 behavior.
+
+We must also ensure **Feature Parity**. If you fallback from a large model to a small one during an outage, the agent might "forget" how to use certain tools. This is a **Graceful Degradation** strategy that must be evaluated *before* the disaster happens, not during the incident.
 
 ## Formal Definition
 
@@ -546,9 +572,6 @@ and operator decisions are practiced from durable evidence.
 **Keep:** prove restore and replay with backups, checkpoints, RPO/RTO targets,
 receipt checks, quarantine decisions, and reconciliation queries.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[FEMA: Continuity of Operations (COOP) Planning](https://www.fema.gov/pdf/about/org/ncp/coop_brochure.pdf)**. While focused on government, this standard provides the foundational vocabulary for "Business Continuity Planning" (BCP) and the "Orders of Succession" used to manage the operator sign-off in this chapter.
-- **[Google SRE Book: Data Integrity—What You Read is What You Wrote](https://sre.google/sre-book/data-integrity/)**. Explains the formal relationship between backups, checksums, and the "Receipt Reconciliation" needed to prevent side-effect duplication during recovery.
-- **[AWS Builders' Library: Ensuring Rollback Safety](https://aws.amazon.com/builders-library/ensuring-rollback-safety-during-deployments/)**. Although focused on code, the principles of "Compatibility" and "Evidence" apply directly to the restored database rows discussed in this chapter.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 10: Batch Processing). Connects "Fault Tolerance" to the formal ability to resume a multi-step workflow from a durable checkpoint.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

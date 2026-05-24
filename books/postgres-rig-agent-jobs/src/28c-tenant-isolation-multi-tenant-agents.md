@@ -545,9 +545,6 @@ typed, persisted, tested, queried, and audited.
 **Keep:** one tenant's data can enter another tenant's workflow only through
 explicit, durable, reviewable policy.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[AWS Whitepaper: SaaS Tenant Isolation Strategies](https://docs.aws.amazon.com/whitepapers/latest/saas-tenant-isolation-strategies/welcome.html)**. The definitive industry guide to the "Silo," "Pool," and "Bridge" isolation models. It explains why the "Pool" model used in this chapter requires the rigorous, deterministic authorization checks implemented here.
-- **[PostgreSQL: Row-Level Security (RLS) Documentation](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)**. The practical reference for the database-level hardening mentioned in this chapter, which ensures that even a compromised application cannot cross tenant boundaries.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 12: The Future of Data Systems). Connects multi-tenancy to the formal "System of Systems" view, where data ownership must be preserved across multiple coordination points (Postgres, workers, models).
-- **[Non-Interference (Formal Security Model)](https://en.wikipedia.org/wiki/Non-interference_(security))**. The academic "Gold Standard" for isolation. It proves that a system is secure if "high-level" (Tenant A) inputs cannot affect "low-level" (Tenant B) observable behavior.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

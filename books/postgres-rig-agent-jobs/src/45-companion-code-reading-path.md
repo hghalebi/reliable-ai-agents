@@ -1117,6 +1117,4 @@ production invariants will be easier to see.
 
 ## Further Reading and Sources
 
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) supports the appendix's operational review habits and production-readiness vocabulary.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) keeps the appendix grounded in durable state, transactions, logs, and evidence histories.
-- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) supports the appendix's emphasis on explicit boundaries, named types, and maintainable interfaces.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

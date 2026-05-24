@@ -546,13 +546,4 @@ Before reading this chapter, Kafka may have looked like simply the next logical 
 
 ## Further Reading and Sources
 
-- [Apache Kafka Introduction](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because it defines Kafka as an event-streaming platform with topics, events, producers, consumers, partitions, and durable retention.
-- [Apache Kafka Documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because topic, partition, consumer, protocol, operations, and security details must come from primary project documentation.
-- [Apache Kafka Protocol](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because offsets, partitions, consumer groups, and transactions are operational interfaces, not only vocabulary.
-- [Apache Kafka Design](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because partition-level ordering, consumer positions, rewind, replication, and transaction mechanics are the practical limits behind this chapter's adoption rules.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because Kafka adoption is a logs, ordering, replay, and consistency design decision.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because events crossing Postgres, Kafka, consumers, and side effects need correlated traces and metrics.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because Kafka should be operated with SLOs, ownership, runbooks, incident response, and toil controls.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because Kafka should be operated with SLOs, ownership, runbooks, incident response, and toil controls.
-t because Kafka should be operated with SLOs, ownership, runbooks, incident response, and toil controls.
-hip, runbooks, incident response, and toil controls.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

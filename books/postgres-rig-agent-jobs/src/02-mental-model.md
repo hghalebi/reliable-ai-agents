@@ -357,9 +357,6 @@ Moving forward, remember the golden rule: when aggressively debugging an agent i
 
 Before reading this chapter, an agent probably looked like a magical, incredibly smart conversational loop. After this chapter, you should understand that a production agent is essentially just a highly probabilistic worker trapped inside a rigidly deterministic control system. Moving forward, keep in mind that you must always fiercely separate model reasoning from product control, reliability control, and durable evidence.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Gul Agha: Actors—A Model of Concurrent Computation in Distributed Systems](https://mitpress.mit.edu/9780262010924/actors/)** (1986). The academic foundation for the "Agent as Worker" model. It formalizes why actors (workers) must be decoupled in time and space, communicating only through messages (jobs) to ensure safety and scalability.
-- **[Stripe Engineering: Scaling Idempotency](https://stripe.com/blog/idempotency)**. A practical industry reference for how to build high-availability systems where "Intelligence" (the user request) is separated from "Execution" (the payment) via stable idempotency keys.
-- **[Anthropic: Building Effective Agents](https://www.anthropic.com/research/building-effective-agents)** (2025). Distinguishes between workflows and agents, helping identify which boundary should own the reasoning step.
-- **[ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)** (2022). Research into interleaving reasoning and action, providing the intuition for the Rig/Worker boundary.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

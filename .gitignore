@@ -1,0 +1,16 @@
+.env
+.DS_Store
+*.log
+__pycache__/
+*.pyc
+.idea/
+.private/
+private/
+private-notes/
+author-notes/
+implementation-reports/
+reports/
+*.local.md
+books/*/book/
+examples/*/target/
+examples/*/.env

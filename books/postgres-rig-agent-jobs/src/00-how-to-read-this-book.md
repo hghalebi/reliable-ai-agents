@@ -641,9 +641,6 @@ far:
 If the system cannot be explained at all three distances, it is not ready to
 run for years.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[John Sweller: Cognitive Load Theory and Computer Science Education](https://dl.acm.org/doi/10.1145/2839509.2844652)** (2016). A foundational paper explaining why explicit instruction and "Worked Examples" are superior to discovery-based learning for complex technical subjects. It provides the academic basis for the book's short, focused chapters.
-- **[CAST: The Universal Design for Learning (UDL) Guidelines](https://udlguidelines.cast.org/)**. The industry standard for creating learning materials that provide multiple means of representation, action, and engagement. This book applies UDL by offering plain-language summaries, code artifacts, and formal proofs for every concept.
-- **[Paas & van Merrienboer: Cognitive-Load Theory and Instructional Design](https://www.sciencedirect.com/science/article/pii/S095947520400030X)**. Research into the "Split-Attention Effect," which motivates the book's goal of keeping code and explanation in one visual field to reduce mental tax.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Grounding the book's reliability claims in established data-systems vocabulary.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

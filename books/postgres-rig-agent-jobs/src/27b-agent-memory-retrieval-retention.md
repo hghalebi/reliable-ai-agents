@@ -161,6 +161,8 @@ policy note:
 A production system should not store them as anonymous strings. It should name
 their kind, source, scope, confidence, and retention rule.
 
+I also recommend accounting for **Memory Confidence Decay**. Facts like "Billing contact is X" might be true today but wrong in six months. Long-term memory needs a "Review by" date to ensure **Reasoning Freshness**. We treat memory as a **Reasoning Asset** that must be audited periodically.
+
 Read the tiny case as:
 
 ```text
@@ -211,7 +213,7 @@ Was sensitive content redacted?
 Did it come from a trusted tool result or from untrusted model output?
 ```
 
-Without those answers, memory becomes invisible policy.
+Without those answers, memory becomes invisible policy. If a memory record is used to justify a high-risk action, the **Evidence Chain** must link the original run to the new action. We call this **Data Provenance**.
 
 ## The Naive Solution
 
@@ -257,6 +259,14 @@ lifecycle policy, optional embedding reference, timestamps, and redacted
 content. The important feature is not vector search. The important feature is
 meaning.
 
+> ### 🎓 The Professor's Corner
+>
+> **The Sticky Note Rule: Signed and Dated**
+>
+> Think of memory like putting "Sticky Notes" on your monitor. If you have too many, you can't see the screen! And if someone else puts a note there, you might think it's yours! 
+> 
+> **The Sticky Note Rule** says you should always "Sign your notes and put a date on them." This ensures we know who to blame (or thank) later, and we can throw away the old ones when the monitor gets too crowded!
+
 ## Database Boundary
 
 Postgres stores memory in storage-friendly columns and JSON. That is acceptable
@@ -300,6 +310,14 @@ content is redacted or safe for prompt use
 Vector similarity can help rank candidates. It cannot decide authority. A
 memory retrieved from an embedding index still needs the same typed metadata
 checks as a memory retrieved by SQL.
+
+> ### 🎓 The Professor's Corner
+>
+> **Read-Your-Own-Writes: The Stale Memory Problem**
+>
+> Imagine you write a note to yourself: "Buy milk." Then, one second later, you look at your notes and the note isn't there! That's a **Consistency** problem. 
+> 
+> In a distributed system, if you use an asynchronous vector database, your agent might "Write" a memory and then immediately "Read" it back, only to find the old version. We call this **Read-Your-Own-Writes** consistency. It's the secret to making sure your agent doesn't "Forget" what it just did!
 
 ## Operational Query
 
@@ -369,7 +387,7 @@ In the book's system model:
 | Signal | Production meaning |
 | --- | --- |
 | Design smell | Memory is stored as raw strings or embeddings without source, scope, confidence, horizon, retention, or review policy. |
-| Production symptom | A poisoned, stale, cross-tenant, or model-guessed memory silently changes future behavior. |
+| Production symptom | A poisoned, stale, cross-tenant, or model-guessed memory silently changes future behavior. I call this **Knowledge Poisoning**: when an untrusted model output is stored as a "long-term fact" and poisons all future reasoning for that tenant. |
 | Corrective invariant | A memory must be typed, scoped, sourced, retained, confidence-scored, redacted, and policy-checked before it can influence a run. |
 | Evidence to inspect | `agent_memory_records`, row conversion tests, retention constraints, embedding reference, trace id, operation event, audit event, and the memory-by-scope runbook query. |
 
@@ -414,8 +432,9 @@ reference, and out-of-range confidence.
 
 Regression tests should recreate the failure modes: cross-tenant retrieval,
 model-generated policy memory, stale long-term memory, missing source, and a
-memory candidate used before authorization. The negative test should prove that
-unsafe memory cannot become prompt context.
+memory candidate used before authorization. 
+
+I call the cross-tenant test **"The Neighbor's Mail"** test. You don't want to read your neighbor's mail just because you live in the same building! A negative test should prove that unsafe memory cannot become prompt context for a different scope.
 
 Postgres tests should prove retention constraints and metadata queries. Rust
 tests should prove retrieval policy and row conversion agree with the SQL model.
@@ -508,10 +527,6 @@ Agent memory is useful only when it is bounded. In production, memory is typed d
 - **After this chapter:** memory is governed evidence with scope, provenance, confidence, retention, and permission boundaries.
 - **Keep:** inspect memory scope, source, confidence, retention policy, retrieval reason, and deletion path.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[A-MemGuard: A Defense Framework for Agent Memory](https://mem0.ai/)** (2025). Emerging research on detecting and mitigating memory poisoning. It highlights why LLM-based detectors often miss 66% of malicious entries, reinforcing the need for the "Provenance and Confidence" fields used in this chapter.
-- **[Morris et al.: Text Embeddings Reveal (Almost) As Much As Text](https://arxiv.org/abs/2310.06816)** (ACL 2024). Academic research on "Embedding Inversion." It proves that 50-70% of original words can be recovered from raw vectors, justifying the chapter's rule that vector similarity is not a security boundary.
-- **[MINJA: Memory Injection Attacks on Large Language Model Agents](https://arxiv.org/abs/2406.01258)** (2024). Foundational research on the 95% success rate of persistent memory poisoning attacks, providing the threat model for the "Memory Write Policy" implemented here.
-- **[Reflexion: Language Agents with Verbal Reinforcement Learning](https://arxiv.org/abs/2303.11366)** (2023). Shows how reflective memory improves agent performance, while this chapter adds the production-critical "Horizon" and "Retention" controls needed to scale it safely.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects memory retrieval to the formal semantics of "Derived Data" and the maintenance of materialized views (like vector indices).
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

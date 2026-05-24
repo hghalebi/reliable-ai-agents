@@ -707,9 +707,6 @@ Reliable agent systems are built from small mechanisms, but they are judged by t
 - **After this chapter:** a worked scenario is a traceable chain of states, decisions, side effects, approvals, and evidence.
 - **Keep:** trace the scenario through each durable state, decision, approval, side effect, and receipt.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Pat Helland: Memories, Guesses, and Apologies](https://arxiv.org/abs/2005.02103)** (2020). A foundational paper for the "Worked Scenario" in this chapter. It explains how to build reliable systems where agents (memories) propose actions based on uncertain information (guesses) and how to handle failures (apologies) via compensation.
-- **[Google SRE Book: Testing for Reliability (Composition)](https://sre.google/sre-book/testing-for-reliability/)**. Supports the chapter's goal of end-to-end scenario tracing to prove that individual controls (idempotency, leases, retries) compose correctly under live traffic.
-- **[Anthropic: Building Effective Agents (Workflows)](https://www.anthropic.com/research/building-effective-agents)**. Industry guidance for the multi-step "Orchestration" workflow traced in this scenario, emphasizing the separation of reasoning from tool execution.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 11: Stream Processing). Provides the formal vocabulary for the "Timeline of Transitions" reconstructed by the operator at the end of the scenario.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

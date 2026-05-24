@@ -39,13 +39,21 @@ machine, where retries are counted, or how to reconstruct one agent run.
 
 In production, scaling should follow a strained invariant, not a desire to add
 infrastructure.
-
 A queue, workflow engine, collector, console, stream, or worker pool changes who
 owns evidence. That is the important point. Scaling is not only about moving
 more work. It is about moving responsibility for state, retries, leases,
 visibility, replay, side effects, and audit evidence.
 
+> ### 🎓 The Professor's Corner
+>
+> **The Moving Van: Packing Your Data**
+>
+> Imagine you're moving to a bigger house. You don't just throw everything in a pile! You pack your boxes (your data) carefully, label them, and make sure nothing gets broken in the **Moving Van** (the new queue or engine). 
+> 
+> Scaling is just like moving house: you have to make sure the "Baton of Truth" is handed over safely from the old system to the new one!
+
 Without a migration map, new components can hide the state machine the book
+... (omitted) ...
 worked to make explicit. The system may become faster while becoming harder to
 explain. Operators may lose the SQL query that proved a job was safe to replay.
 Developers may lose the domain type that distinguished a retryable failure from
@@ -145,6 +153,14 @@ where those migrations can be independently proved.
 **Persistence:** Persist baseline metrics, coexistence rules, migration notes,
 rollback conditions, and ownership evidence. The migration itself is production
 state.
+
+> ### 🎓 The Professor's Corner
+>
+> **SSOT vs. SOR: Truth and History**
+>
+> There's a difference between a **Single Source of Truth (SSOT)** and a **System of Record (SOR)**. 
+> 
+> A queue can move the data around (it's the "Truth" for right now), but the database still owns the full history (the "Record"). If you lose the queue, you can always go back to the Record to find out what happened. Never let a new tool become your only memory!
 
 **Check:** Verify the new infrastructure preserves the old proof before
 replacing it. If Postgres previously proved idempotency, approval, replay safety,
@@ -280,6 +296,8 @@ The old runbook used SQL evidence, but the new system has no equivalent query.
 
 The result is more infrastructure and less accountability.
 
+Every new component adds **Network Partition Risk**. Scaling is an act of **Increasing Complexity** to achieve **Higher Capacity**. You should only do it when the benefit outweighs the cost of the new failure modes. If you don't have an idempotent consumer, a new queue will only make your "Duplicate Execution" problem faster and harder to find.
+
 ## The Production-Grade Concept
 
 Use an evidence-preserving migration map.
@@ -365,6 +383,8 @@ Keep the same Postgres ledger. Add admission limits, queue metrics, and SLOs by
 job kind. This is the least disruptive scaling move because it changes worker
 topology before changing the source of truth.
 
+I also recommend **Resource Isolation**. You don't want a heavy "Document Analysis" agent to steal all the CPU or provider quota from a time-sensitive "Incident Triage" agent. Splitting worker pools ensures that one agent family cannot "starve" another.
+
 ### Pattern 2: Add A Dedicated Dispatch Queue
 
 Use this when dispatch throughput, not workflow semantics, is the bottleneck.
@@ -394,12 +414,14 @@ cross-service orchestration
 deterministic replay needs
 standardized cancellation across teams
 ```
-
 Do not move to a workflow engine because the word "workflow" appears in a
 diagram. Move when the engine owns a hard invariant better than your current
 code.
 
+In complex multi-agent orchestration, we often need **Long-Lived Sleep**. If an agent needs to "wait for a human response" for 3 days, you shouldn't keep a database lease open. A workflow engine is the right tool for **Temporal Decoupling**. I call this **Managing the Agent's Patience**.
+
 The product ledger still matters. Agent runs, tool calls, approvals, side-effect
+... (omitted) ...
 receipts, evaluation receipts, and audit events are product evidence. A workflow
 history is not automatically a product audit trail.
 
@@ -659,9 +681,9 @@ Use this quick retrieval drill before moving on:
 
 ## Summary
 
-Scaling a reliable agent system is not a tool shopping exercise. It is a
-responsibility migration. The Postgres-first design teaches which invariant each
-later component must preserve.
+Scaling a reliable agent system is not an **Infrastructure Shopping** exercise. It is a responsibility migration. The Postgres-first design teaches which invariant each later component must preserve.
+
+I call this the **"Boring is Beautiful"** mantra. If your system is fast and simple on Postgres, keep it that way! Don't add a "Ferrari" (Kafka) if you only need a "Bicycle" (a simple SQL query). Only scale when the math forces you to.
 
 Invariant: adding a queue, workflow engine, collector, console, or worker pool
 preserves or improves the evidence contract.
@@ -687,9 +709,4 @@ rollback condition, and preserved evidence contract.
 
 ## Further Reading and Sources
 
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because scaling changes are really changes to durability, logs, transactions, and ownership of state.
-- [Temporal documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because workflow engines are the main optional evolution path when timers, replay, and orchestration dominate the system.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because scaling decisions should be driven by SLOs, operational pain, incidents, toil, and explicit ownership.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because central observability must preserve trace, metric, and log correlation across old and new components.
-- [PostgreSQL transaction isolation documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because coexistence and migration plans still depend on correct transaction boundaries in the product ledger.
-- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) is relevant because architecture migrations should still expose clear Rust boundaries, typed states, and reviewable public contracts.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

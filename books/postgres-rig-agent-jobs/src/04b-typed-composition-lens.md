@@ -404,9 +404,6 @@ Moving forward, remember the golden rule: strict type discipline is profoundly n
 
 Before reading this chapter, composition likely looked exactly like casually chaining functions together simply because the compiler allowed it. After this chapter, you should understand that genuinely safe composition means every single step rigorously transforms one formally validated type into the next lawful, prerequisite type. Moving forward, keep in mind that you must always read each pipeline arrow as a highly validated transformation between explicitly typed states.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[The Embedded Rust Book: Typestate Programming](https://docs.rust-embedded.org/book/static-guarantees/typestate-programming.html)**. The primary industry reference for using the type system to enforce valid state transitions (e.g., ensuring a job is leased before it is executed).
-- **[Cliff L. Biffle: The Typestate Pattern in Rust](https://cliffle.com/blog/rust-typestate/)**. A definitive explanation of how Rust's ownership and move semantics enable "un-misusable" APIs.
-- **[Edwin Brady: Type-Driven Development with Idris](https://www.manning.com/books/type-driven-development-with-idris)**. Although Idris-specific, this research-backed guide explores how types can be used to describe and verify stateful protocols and concurrent communication orders.
-- **[Kohei Honda: Session Types and Distributed Computing](https://dl.acm.org/doi/10.1145/2103736.2103744)** (2012). The seminal academic work on "Session Types," which treat distributed protocols as types that can be verified at compile time.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

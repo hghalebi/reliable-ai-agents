@@ -511,9 +511,6 @@ The runnable local system proves the core mechanics before adding real infrastru
 - **After this chapter:** local execution is the first proof that the durable job, worker, database, and evidence path fit together.
 - **Keep:** run the local system until one job leaves durable evidence before and after worker execution.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[FoundationDB: Deterministic Simulation Testing](https://www.youtube.com/watch?v=4fFDFbi3toc)**. The definitive industry case study on why local, deterministic proof paths are the only way to build truly reliable distributed systems. This chapter's "boring local store" is a first step toward that vision.
-- **[Will Wilson: Testing the Untestable](https://www.youtube.com/watch?v=fFSPwJFXVlU)**. An in-depth look at how to use simulation to find deep concurrency bugs before they reach production infrastructure.
-- **[PostgreSQL: Row-Level Security (RLS) Documentation](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)**. Reference for the real-world Postgres boundary that the local run rehearsals.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Explains the formal semantics of state machines and "Event Sourcing" simulated by the local run's event trail.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

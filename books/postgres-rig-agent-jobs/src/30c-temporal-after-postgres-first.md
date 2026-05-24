@@ -419,27 +419,4 @@ Before reading this chapter, Temporal may have simply looked like a much bigger,
 
 ## Further Reading and Sources
 
-- [Temporal Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because workflow definitions, executions, commands, events, replay, and activities are the concepts this chapter maps to the book's product ledger.
-- [Temporal Event History](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because the chapter depends on understanding workflow history as execution evidence, not automatic business audit evidence.
-- [Temporal Activities](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because model calls, tool calls, API calls, and database writes must live behind activity boundaries rather than deterministic workflow logic.
-- [Temporal Rust SDK Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because Rust readers need to see where Temporal's Rust workflow surface begins and where the book's typed product evidence remains separate.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because the migration is a data-system responsibility change around logs, state, and consistency.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow-engine adoption should be justified by reliability, toil, incident response, and ownership evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-, events, replay, and activities are the concepts this chapter maps to the book's product ledger.
-- [Temporal Event History](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because the chapter depends on understanding workflow history as execution evidence, not automatic business audit evidence.
-- [Temporal Activities](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because model calls, tool calls, API calls, and database writes must live behind activity boundaries rather than deterministic workflow logic.
-- [Temporal Rust SDK Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because Rust readers need to see where Temporal's Rust workflow surface begins and where the book's typed product evidence remains separate.
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) is relevant because the migration is a data-system responsibility change around logs, state, and consistency.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow-engine adoption should be justified by reliability, toil, incident response, and ownership evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-d by reliability, toil, incident response, and ownership evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-vant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-ogs, state, and consistency.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow-engine adoption should be justified by reliability, toil, incident response, and ownership evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-d by reliability, toil, incident response, and ownership evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
-rship evidence.
-- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) is relevant because workflow execution, activities, product rows, and tool calls need one trace context during migration.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

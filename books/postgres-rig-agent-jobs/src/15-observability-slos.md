@@ -740,10 +740,6 @@ Observability is not logging more. It is designing state, events, metrics, trace
 - **After this chapter:** operators need traces, metrics, logs, audit events, and SLOs that answer production questions from evidence.
 - **Keep:** answer an operator question with trace id, metric, log field, audit event, and SLO evidence.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Google Technical Report: Dapper, a Large-Scale Distributed Systems Tracing Infrastructure](https://research.google/pubs/dapper-a-large-scale-distributed-systems-tracing-infrastructure/)** (2010). The foundational academic paper for modern tracing. it introduces the concepts of "Traces," "Spans," and "Context Propagation" used to connect the agent lifecycle in this chapter.
-- **[W3C Recommendation: Trace Context](https://www.w3.org/TR/trace-context/)**. The official standard for the `traceparent` and `tracestate` headers used to propagate correlation identifiers across service boundaries.
-- **[Charity Majors (Honeycomb): Observability vs. Monitoring](https://www.honeycomb.io/blog/observability-vs-monitoring)**. A definitive industry guide explaining why "Monitoring" (dashboards) is for known-unknowns, while "Observability" (traces/events) is for the unknown-unknowns encountered in agent systems.
-- **[Google SRE Book: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)**. The canonical reference for turning raw metrics into meaningful business promises (SLOs) and using error budgets to drive release safety.
-- **[OpenTelemetry: Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/)**. The standard for naming structured fields (e.g., `db.operation`, `service.name`, `error.type`) so that telemetry stays consistent across different backends.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

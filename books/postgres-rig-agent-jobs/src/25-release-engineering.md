@@ -199,16 +199,33 @@ tool contract
 policy contract
 approval contract
 ```
-
 Safe release engineering keeps old work readable while new behavior is being
 introduced, measured, and potentially rolled back.
 
+> ### 🎓 The Professor's Corner
+>
+> **N-1 Compatibility: The "Old and New" Rule**
+>
+> Imagine you're building a new bridge while people are still driving on the old one. For a while, the road has to work for both the old cars and the new trucks! 
+> 
+> In production, your system should always follow the **N-1 Rule**: it must be able to run Version N (the new one) and Version N-1 (the old one) at the same time. This is the only way to avoid crashing during a rolling upgrade.
+
 This is the core mental model. A release is not a moment. It is an overlap
 period where old rows, old workers, old prompts, new workers, new prompts, and
-in-flight jobs may exist at the same time. The release process is the discipline
-that keeps that overlap safe.
+in-flight jobs may exist at the same time. 
 
-For normal software, release engineering often focuses on code and schema. For
+> ### 🎓 The Professor's Corner
+>
+> **The Hand-off Window: Passing the Baton (Again!)**
+>
+> Remember our relay race? A release is like the **Hand-off Window** where two runners are both holding the baton for a few seconds. 
+> 
+> If they don't hold it correctly together, the baton falls! "Shipping" isn't a single point in time; it's a transition period where your database acts as the shared ground between the two runners.
+
+The release process is the discipline that keeps that overlap safe.
+
+For normal software, release engineering often focuses on code and schema.
+... (omitted) ...
 agent systems, behavior can change without code changing at all. A new prompt can
 alter tool choice. A new model can change refusal behavior. A new policy can
 change what requires approval. Those changes need the same seriousness as a
@@ -331,8 +348,9 @@ before deploy and resume only after migration.
 
 Version skew is normal, not exceptional. During a rolling deploy, there may be a
 moment when worker A understands the old contract and worker B writes the new
-contract. The design should make that overlap boring. If it cannot, the rollout
-needs a pause, a migration phase, or a narrower canary.
+contract. The design should make that overlap boring. 
+
+If it cannot, you face a **Mixed-Mode Failure**. In such cases, the rollout needs a pause, a migration phase, or a narrower canary. Being able to "Pause the world, migrate, and resume" is a valid engineering trade-off that is often safer than a complex rolling upgrade.
 
 ## Canary Workers
 
@@ -359,7 +377,11 @@ oldest pending age breaches SLO
 
 A canary without rollback criteria is only a smaller gamble. Decide in advance
 what evidence means "continue," what evidence means "hold," and what evidence
-means "roll back." The operator should not invent those rules while the release
+means "roll back." 
+
+I recommend **Canary Evaluations** and **Shadow Mode**. Before you give 100% of traffic to a new model, you should run a "Shadow" version where the new model processes real inputs in parallel, and its answers are compared against the production model by an automated grader. This is the only way to catch "Semantic Regressions" before they hit users.
+
+The operator should not invent those rules while the release
 is already failing.
 
 ## Typed Release Gate
@@ -404,8 +426,9 @@ gate blocks because the evidence is about different releases.
 
 This is why the gate must bind evidence to versions. "The eval passed" is too
 weak. Which prompt version passed? Which model route? Which tool schema? Which
-dataset? Which worker build? A release gate should reject evidence that belongs
-to a different candidate.
+dataset? Which worker build? 
+
+I call this **Behavioral Lineage**. If an agent starts hallucinating, I want to see the **Release Receipt** that proved it was "Safe" before it shipped. A release gate should reject evidence that belongs to a different candidate to prevent "Silent Regressions."
 
 ## Durable Release Gate Evidence
 
@@ -578,6 +601,14 @@ Test release gates with old and new evidence together:
   queried for one release candidate.
 - **Regression test:** attempt to promote a prompt, model, schema, or policy change without matching evaluation and compatibility receipts; promotion must fail.
 
+> ### 🎓 The Professor's Corner
+>
+> **The Proof of Guard: Testing the Gate**
+>
+> Imagine you have a security guard at a gate, but they're asleep! Anyone can just walk past them. That's not a very good gate, is it? 
+> 
+> I call this **The Proof of Guard** test. We intentionally try to "Ship" something that is missing its proof (like a failed evaluation). If the system lets us do it, then our guard is sleeping! We only trust a gate that knows how to say "No."
+
 ## Observability Strategy
 
 Observe releases as gated evidence bundles.
@@ -661,10 +692,6 @@ Safe release engineering keeps old rows readable, new behavior measurable, and r
 - **After this chapter:** agent release engineering versions and gates code, schema, prompts, models, policies, evals, and rollback evidence.
 - **Keep:** version code, schema, prompt, model, policy, evaluator, dataset, and rollback plan as one release packet.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Walter F. Tichy: Tools for Software Configuration Management](https://dl.acm.org/doi/10.5555/54366.54370)** (1988). The foundational academic paper for version and configuration control. It formalizes the concepts of "Source vs. Derived Objects" and "Immutability" used to manage the behavior packets in this chapter.
-- **[Martin Fowler: The Expand and Contract Pattern](https://martinfowler.com/bliki/ParallelChange.html)**. The definitive practical guide to "Parallel Change"—implementing backward-incompatible schema and worker changes without downtime.
-- **[Netflix Technology Blog: Automated Canary Analysis at Netflix with Kayenta](https://netflixtechblog.com/automated-canary-analysis-at-netflix-with-kayenta-3260bc7acc69)**. Explains the statistical approach to comparing "Baseline" and "Canary" metrics to ensure release safety.
-- **[Anthropic: Prompt Engineering Best Practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)**. Industry guidance for treating prompts as versioned code artifacts, including the use of "Golden Datasets" for regression testing.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 4: Encoding and Evolution). The primary reference for managing version skew and the formal limits of forward/backward compatibility.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

@@ -180,8 +180,4 @@ invisible.
 
 ## Further Reading and Sources
 
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) supports the appendix's focus on turning failures into durable state, transactions, logs, and replayable evidence.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) supports the failure-first habit because SRE practice starts from user-visible reliability problems and operational evidence.
-- [Google SRE chapter: Testing for Reliability](./31-credible-resources-further-reading.md#reliability-and-operations) supports the appendix's insistence that each failure maps to a test, drill, or readiness gate.
-- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) supports the security rows by naming agent-specific failures around prompt injection, tool use, memory, and data exposure.
-- [IES: Organizing Instruction and Study to Improve Student Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) supports the map's active recall pattern: concrete problem, explanation, application, and evidence.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

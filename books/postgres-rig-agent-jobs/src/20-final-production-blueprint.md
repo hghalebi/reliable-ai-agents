@@ -582,9 +582,6 @@ An AI agent in production is a durable state machine wrapped around an unreliabl
 - **After this chapter:** the blueprint is a set of contracts between API, database, worker, Rig, policy, observability, and operators.
 - **Keep:** review the blueprint by contracts: API, Postgres, worker, Rig, policy, observability, and operator surfaces.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Michael Wooldridge: An Introduction to Multiagent Systems](https://www.wiley.com/en-us/An+Introduction+to+Multiagent+Systems%2C+2nd+Edition-p-9780470519462)**. The definitive academic textbook on how agents coordinate, negotiate, and share responsibility—the theoretical basis for the "Blueprint" in this chapter.
-- **[Andrew Ng: Agentic Workflows](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/)** (2024). A high-signal industry reference explaining why iterative, step-by-step workflows (the "System" approach) outperform autonomous "One-Shot" agent loops.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 12: The Future of Data Systems). Connects the complete blueprint to the formal "System of Systems" view, where separate components coordinate via a shared durable log.
-- **[Google SRE Book: The Holistic View](https://sre.google/sre-book/table-of-contents/)**. Provides the industrial framework for connecting the API, worker, and database boundaries into a single observable production service.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

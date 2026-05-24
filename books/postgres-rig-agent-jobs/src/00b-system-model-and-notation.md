@@ -551,9 +551,6 @@ The notation is a small language for production reasoning: state changes, an act
 - **After this chapter:** an agent system is a set of typed actors, states, transitions, evidence records, and invariants.
 - **Keep:** prove each agent concept with a state, actor, transition, evidence record, and invariant.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Leslie Lamport: The Temporal Logic of Actions (TLA)](https://lamport.azurewebsites.net/tla/tla.html)** (1994). The formal inspiration for the "State, Actor, Transition, Evidence, Invariant" grammar. It defines a system as a mathematical formula describing all possible future states.
-- **[Leslie Lamport: Specifying Systems](https://lamport.azurewebsites.net/tla/book.html)**. The definitive guide to state-transition modeling for hardware and software engineers. It grounds the book's notation in rigorous computer science.
-- **[Hillel Wayne: Learn TLA+](https://learntla.com/)**. A high-signal industry resource for applying formal modeling to real-world distributed systems, bridging the gap between math and code.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Provides the data-systems vocabulary for states, logs, and invariants.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

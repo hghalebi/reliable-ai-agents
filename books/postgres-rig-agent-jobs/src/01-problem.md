@@ -418,10 +418,6 @@ Moving forward, remember the golden rule: every single later reliability mechani
 
 Before reading this chapter, a simple model call may have looked exactly like the primary unit of agent work. After this chapter, you should understand that the unglamorous, durable job row is the true unit of reliability; the expensive model call is merely one observable transition hidden safely inside it. Moving forward, keep in mind that you must always aggressively inspect the durable intake row, the trace id, the idempotency key, and the very first operation event.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Anthropic: Building Effective Agents](https://www.anthropic.com/research/building-effective-agents)** (2025). This is the canonical industry guide for distinguishing between simple LLM workflows and autonomous agentic behavior. It advocates for starting with deterministic scaffolds—the "worker with tools" model used in this book.
-- **[Brandur Leach: Transactionally Staged Job Drains in Postgres](https://brandur.org/job-drains)** (2017). A foundational engineering post explaining why writing a "durable fact" to Postgres is the only way to avoid losing work during process crashes. This is the origin of the "Postgres Ledger" pattern.
-- **[Temporal: What is Durable Execution?](https://temporal.io/blog/what-is-durable-execution)**. An industry-standard explanation of why traditional RPC (Remote Procedure Call) is insufficient for reliable work. It defines the "Fail-over" vs "Fail-fast" models discussed in this chapter.
-- **[AWS Builders' Library: Timeouts, Retries, and Backoff with Jitter](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)**. While focused on networking, this guide explains the "Idempotency" and "State" requirements needed to survive the ordinary failures introduced in this chapter.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 11: Stream Processing). Explains the data-systems vocabulary behind durable state, logs, and recoverable workflows.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

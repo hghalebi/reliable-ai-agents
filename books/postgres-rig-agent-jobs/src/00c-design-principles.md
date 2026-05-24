@@ -186,149 +186,43 @@ approval is required before the side effect happens.
 
 ## Principle 1: Durable Before Intelligent
 
-Work must exist before a model call begins.
-
-If work exists only in process memory, a restart can erase it. If the model
-returns before the result is stored, a crash can make the system forget what
-happened. Durable state is the foundation under every later reliability claim.
-
-Production artifact:
-
-```text
-agent_jobs row exists before the worker calls the agent
-```
+Work must exist securely before a model call ever begins. If work exists exclusively in volatile process memory, a simple service restart can permanently erase it. If the complex model returns a result just milliseconds before the database successfully stores it, a violent crash can make the entire system completely forget what just happened. Durable state is the absolute, unshakeable foundation under every single reliability claim that follows. The primary production artifact proving this is ensuring the `agent_jobs` row decisively exists in the database long before the worker is allowed to call the agent.
 
 ## Principle 2: Typed Before Clever
 
-The system can protect only the concepts it can name.
-
-If job kind, state, attempt count, lease duration, model name, policy version,
-and failure class are raw strings or booleans at boundaries, the code can
-compile while the architecture is ambiguous. Newtypes and enums are not style
-decoration. They are a way to make illegal states harder to express.
-
-Production artifact:
-
-```text
-domain APIs expose JobKind, JobState, WorkerId, RetryDisposition, and version types
-```
+Your system can safely protect only the specific concepts it can explicitly name. If crucial facts like job kind, current state, attempt count, lease duration, model name, strict policy version, and failure class are passed around as raw strings or booleans at system boundaries, your code will proudly compile while the architecture remains disastrously ambiguous. Rust newtypes and strict enums are profoundly not decorative style choices; they are a mechanical way to make illegal states mathematically much harder to express. The core production artifact requires domain APIs to fiercely expose `JobKind`, `JobState`, `WorkerId`, `RetryDisposition`, and version types instead of primitives.
 
 ## Principle 3: Ownership Before Concurrency
 
-Parallel workers are safe only when ownership is explicit.
-
-A worker should not complete, retry, or heartbeat a job because it knows the
-job id. It should do those actions only because it owns the current lease.
-Cancellation is a separate control surface: the stop intent should be durable
-before the job is stopped. Concurrency without ownership becomes accidental
-shared mutation.
-
-Production artifact:
-
-```text
-SQL predicates require locked_by and locked_until for running-job transitions
-```
+Parallel, aggressive workers are safe only when ownership is explicitly and formally declared. A worker should never attempt to complete, blindly retry, or lazily heartbeat a job simply because it happens to know the job id. It should execute those actions only because it currently owns a mathematically valid lease on that exact job. Cancellation represents a completely separate control surface: the intention to stop work must be highly durable *before* the job is actually stopped. Rampant concurrency without strict ownership rapidly degenerates into accidental, disastrous shared mutation. The production artifact for this principle requires explicit SQL predicates enforcing `locked_by` and `locked_until` checks for all running-job transitions.
 
 ## Principle 4: Boundary Before Policy
 
-External systems should enter through adapters, not leak through the core.
-
-Provider errors, model outputs, tool responses, and database rows often have
-messy shapes. The core worker should not know those shapes. It should receive
-domain decisions: retryable failure, permanent failure, validated result,
-approval required, or policy denied.
-
-Production artifact:
-
-```text
-provider responses convert to AgentResult or typed failure before worker policy
-```
+External systems must strictly enter the architecture through dedicated adapters, absolutely never leaking their raw implementations through the core logic. Provider errors, raw model outputs, complex tool responses, and underlying database rows frequently possess incredibly messy shapes. The core worker logic should not know or care about those messy shapes. Instead, it must receive pristine, typed domain decisions: a retryable failure, a permanent failure, a validated result, an approval required flag, or a policy denied status. The key production artifact here proves that provider responses aggressively convert to an `AgentResult` or a typed failure long before the core worker policy evaluates them.
 
 ## Principle 5: Idempotent Before Retried
 
-Retry repeats uncertainty. Idempotency makes repetition safe.
-
-Retries are useful only when duplicate intent maps to one durable action path.
-Without an idempotency key and side-effect receipt, retry can duplicate emails,
-tickets, payments, approvals, or operational commands.
-
-Production artifact:
-
-```text
-duplicate enqueue returns the existing job and side-effect replay checks a receipt
-```
+A retry simply repeats uncertainty, whereas idempotency mathematically makes that repetition safe. Automated retries are operationally useful only when a duplicate intention flawlessly maps to exactly one single durable action path. Without a strict idempotency key and a durable side-effect receipt, a casual retry loop can accidentally duplicate sensitive emails, support tickets, financial payments, internal approvals, or highly dangerous operational commands. The production artifact proving this ensures that a duplicate enqueue attempt merely returns the existing job, and any side-effect replay strictly checks a durable receipt before acting.
 
 ## Principle 6: Evidence Before Operations
 
-Operators need persisted facts, not guesses.
-
-Logs are useful, but they are not the authority. A serious runbook should be
-able to answer questions from durable rows, event timelines, metrics, traces,
-receipts, and version records. If the system cannot explain what happened, it
-cannot be operated with confidence.
-
-Production artifact:
-
-```text
-runbook queries reconstruct queue health, lease state, dead jobs, and event timeline
-```
+Human operators desperately need persisted facts during an incident, not vague guesses extracted from a Slack channel. While logs are useful context, they are not the definitive authority. A serious, production-grade runbook must be able to answer any critical operational question directly from durable database rows, formal event timelines, metrics, traces, receipts, and strict version records. If the system cannot unequivocally explain exactly what happened, it cannot be operated with confidence at 3 AM. The production artifact here proves that runbook queries can flawlessly reconstruct queue health, current lease state, dead jobs, and the full event timeline.
 
 ## Principle 7: Evaluation Before Behavior Release
 
-Availability does not prove behavior quality.
-
-An agent can answer quickly and still produce unsafe, stale, or unsupported
-recommendations. Prompt, model, tool, retrieval, and policy changes need
-behavior evaluation before they become the default path for real work.
-
-Production artifact:
-
-```text
-prompt and model versions have evaluation receipts before promotion
-```
+High system availability absolutely does not prove behavior quality. An agent can answer a query incredibly quickly and still produce unsafe, dangerously stale, or completely unsupported recommendations. Changes to prompts, models, tools, retrieval logic, and policies demand strict behavior evaluation *before* they ever become the default path for real work. The production artifact aggressively requires that specific prompt and model versions definitively possess evaluation receipts before formal promotion is allowed.
 
 ## Principle 8: Approval Is State, Not Conversation
 
-Human approval is reliable only when it is recorded.
-
-A chat message saying "approved" is not enough. The system needs the proposal,
-risk level, policy version, approver, timestamp, reason, and resulting state
-transition. Approval should be replayable evidence, not an informal side
-conversation.
-
-Production artifact:
-
-```text
-risky action waits for an approval record before side-effect execution
-```
+Human approval is only reliable when it is formally recorded as database state. A chat message saying "looks good" is simply not enough for an automated system. The system strictly needs the formal proposal, the calculated risk level, the exact policy version applied, the verifiable approver identity, the timestamp, the provided reason, and the resulting state transition. Approval must be replayable, auditable evidence, not an informal side conversation. The production artifact proving this dictates that any risky action must actively wait for a formal approval record to exist in the database before side-effect execution can begin.
 
 ## Principle 9: Release With Old Work In Mind
 
-Long-running systems always have old work.
-
-When code, schema, prompts, policies, or provider routes change, pending and
-running jobs still exist. Release engineering for agents must preserve old
-payloads, old versions, old decisions, and safe replay paths.
-
-Production artifact:
-
-```text
-schema, prompt, model, policy, and worker versions are stored with the job
-```
+Long-running systems always, inevitably, have old work currently in flight. When core code, database schema, complex prompts, active policies, or provider routes fundamentally change, pending and running jobs still actively exist. Release engineering for agents must therefore meticulously preserve old payloads, old versions, old decisions, and highly safe replay paths for this legacy work. The production artifact requires that the schema, prompt, model, policy, and specific worker versions are explicitly stored tightly alongside the job.
 
 ## Principle 10: Recovery Must Be Practiced
 
-Backup is not recovery.
-
-Recovery means the team can restore data, resume workers, replay safe work,
-avoid duplicate side effects, and explain the remaining gaps. The only credible
-proof is a restore drill with measured RPO, RTO, and replay behavior.
-
-Production artifact:
-
-```text
-restore drill records RPO, RTO, replay rules, receipt handling, and operator signoff
-```
+Having a backup script is emphatically not the same thing as having recovery capability. True recovery means the operations team can actually restore data, safely resume workers, effectively replay safe work, aggressively avoid duplicate side effects, and clearly explain any remaining gaps to stakeholders. The only credible proof of this capability is a formal restore drill with measured Recovery Point Objective (RPO), Recovery Time Objective (RTO), and perfectly verified replay behavior. The production artifact is the documented restore drill that meticulously records RPO, RTO, replay rules, receipt handling, and formal operator signoff.
 
 ## How The Principles Compose
 
@@ -449,9 +343,11 @@ Moving forward, remember the golden rule: actively use these principles as a str
 
 Before reading this chapter, reliability may have simply looked like extra, tedious infrastructure bolted on after the model already "works." After this chapter, you should understand that reliability is a strict, upfront design discipline: you must be durable before you are intelligent, typed before you are clever, and observable before you are trusted. Moving forward, keep in mind that you must use this design-principle checklist ruthlessly before accepting any new agent feature.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Skelton & Pais: Team Topologies](https://teamtopologies.com/)** (2019). Grounded in Cognitive Load Theory, this book argues that software boundaries should be designed to fit within human working-memory limits—the "Typed Before Clever" and "Pedagogical" mission of this book.
-- **[Google SRE Book: The 5 Pillars of Quality](https://sre.google/sre-book/table-of-contents/)**. Provides the industry-standard foundation for the principles of observability, automation, and release safety discussed in this chapter.
-- **[Anthropic: Building Effective Agents](https://www.anthropic.com/research/building-effective-agents)** (2025). The industry guide for the "Durable Before Intelligent" principle, emphasizing deterministic scaffolds over model-only autonomy.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects these principles to broader distributed systems invariants.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+g forward, keep in mind that you must use this design-principle checklist ruthlessly before accepting any new agent feature.
+
+## Further Reading and Sources
+
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

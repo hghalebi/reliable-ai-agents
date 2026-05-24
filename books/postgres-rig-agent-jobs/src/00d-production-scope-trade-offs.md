@@ -295,9 +295,6 @@ Moving forward, remember the golden rule: move to queues, complex workflow engin
 
 Before reading this chapter, a serious, production-grade agent may have seemed to mechanically require a massive distributed platform from day one. After this chapter, you should understand that a rigorously disciplined Rust, Postgres, and Rig system can easily and safely carry the first production version, provided its internal state machine is explicit and audited. Moving forward, keep in mind that you must always write the formal operating-envelope decision document before you ever add a second infrastructure component.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Michael Nygard: Architecture Decision Records (ADR)](https://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions)** (2011). The canonical reference for documenting architectural trade-offs and the "Operating Envelope" discussed in this chapter.
-- **[AWS Builders' Library: Workload Isolation and Reliability](https://aws.amazon.com/builders-library/workload-isolation-and-reliability/)**. Explains the mechanical constraints that force a move from a single-database design to distributed platforms.
-- **[Temporal: Why Workflow Engines?](https://temporal.io/blog/why-is-workflow-orchestration-hard)**. An industry-leading explanation of the scaling paths (retries, timers, history) that exceed the Postgres-first operating envelope.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects these trade-offs to the formal limits of RDBMS vs. distributed streaming systems.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

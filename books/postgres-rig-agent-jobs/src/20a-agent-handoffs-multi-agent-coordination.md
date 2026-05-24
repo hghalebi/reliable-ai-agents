@@ -573,9 +573,6 @@ Multi-agent reliability is not created by letting models talk to each other. It 
 - **After this chapter:** handoffs are typed work transfers with ownership, permissions, evidence, and failure semantics.
 - **Keep:** inspect the handoff record for source owner, target owner, permission, status, and replay rule.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Michael Wooldridge: Coordination Protocols in Multi-Agent Systems](https://dl.acm.org/doi/10.5555/543666)**. Academic research into the "Joint Intentions" and "Social Laws" required to ensure that responsibility transfer between agents is mathematically verifiable.
-- **[Hancock et al.: A Meta-Analysis of Factors Affecting Trust in Human-Robot Interaction](https://journals.sagepub.com/doi/10.1177/0018720811417254)**. While focused on robotics, this research identifies the pillars of trust (Competence, Benevolence, Integrity) that must be preserved during the agent-to-agent handoffs in this chapter.
-- **[LangChain: Multi-Agent Orchestration Patterns](https://python.langchain.com/docs/concepts/multi_agent/)**. Industry documentation on "Supervisor" vs "Hierarchical" orchestration, providing the practical context for the durable handoff state implemented here.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 9: Consistency and Consensus). Explains the fundamental distributed systems problem of "Consensus" (agreeing who owns a job) during the handoff transition.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

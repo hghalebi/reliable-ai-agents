@@ -124,7 +124,4 @@ evidence.
 
 ## Further Reading and Sources
 
-- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) supports the appendix's focus on durable state, transactions, logs, and recoverable evidence.
-- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) grounds the definitions in operational review, incident response, and reliability practice.
-- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) supports the typed-boundary definitions used for newtypes, error contracts, and maintainable Rust interfaces.
-- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) anchors the ledger and worker-claim definitions in the row-locking behavior used by the companion system.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

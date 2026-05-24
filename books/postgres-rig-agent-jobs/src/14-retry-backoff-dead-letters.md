@@ -555,10 +555,6 @@ Retries should convert temporary failure into future work. Dead letters should c
 - **After this chapter:** retry policy is bounded recovery, backoff is load control, and dead-letter state is evidence for human inspection.
 - **Keep:** inspect attempts, max attempts, next_run_at, last_error, and dead-letter reason as one retry record.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Metcalfe & Boggs: Ethernet—Distributed Packet Switching for Local Computer Networks](https://dl.acm.org/doi/10.1145/360248.360253)** (1976). The seminal academic paper that introduced the **Binary Exponential Backoff** algorithm. It proves why dynamic retransmission delays are necessary to prevent congestive collapse in shared systems.
-- **[Marc Brooker (AWS): Exponential Backoff and Jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)**. The definitive industry guide to why pure exponential backoff is insufficient. It introduces "Jitter" (randomness) as the critical mechanism to break synchronization and prevent retry storms.
-- **[Google SRE Book: Addressing Cascading Failures (Retry Budgets)](https://sre.google/sre-book/addressing-cascading-failures/#id-Vv9I8)**. Formalizes the concept of a "Retry Budget" (e.g., limiting retries to 10% of total traffic) to ensure that failures do not amplify load.
-- **[Uber Engineering: Kafka Retry and Dead Letter Topics](https://www.uber.com/blog/reliable-reprocessing-via-kafka-retry-topics/)**. A high-scale case study on the "Multi-tiered Retry" pattern, which prevents head-of-line blocking by moving failed work to dedicated delay topics.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Connects retry policy to the "Poison Pill" problem and explains why some failures must become terminal to protect the fleet.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

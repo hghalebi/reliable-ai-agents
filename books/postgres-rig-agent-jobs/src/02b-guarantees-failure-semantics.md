@@ -497,9 +497,6 @@ The honest production model is at-least-once execution with idempotent boundarie
 - **After this chapter:** every useful guarantee needs a named state, failure semantic, and recovery rule.
 - **Keep:** attach each guarantee to a failure semantic, owner, and recovery evidence path.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Chris Richardson: The Transactional Outbox Pattern](https://microservices.io/patterns/data/transactional-outbox.html)**. The canonical reference for ensuring that state changes and side effects (like agent tool calls) are decoupled yet consistent.
-- **[Milan Jovanović: Exactly-once is impossible, but Idempotency is not](https://www.milanjovanovic.tech/blog/idempotent-consumer-pattern-in-dotnet)**. A clear, high-signal explanation of why distributed systems must embrace "at-least-once" delivery and solve for safety via idempotency.
-- **[Pat Helland: Life Beyond Distributed Transactions—An Apostate's Opinion](https://waitingforai.com/wp-content/uploads/2021/05/helland-life-beyond-distributed-transactions.pdf)** (2007). A seminal paper explaining why scale and reliability require "entities" (agent jobs) that are managed through messaging rather than distributed locks.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann, Chapter 7: Transactions). Provides the formal vocabulary for isolation, atomicity, and the "Exactly-once" myth in distributed systems.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

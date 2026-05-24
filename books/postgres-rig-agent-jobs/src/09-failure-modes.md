@@ -480,11 +480,6 @@ A production agent should fail visibly, retry intentionally, and stop safely whe
 - **After this chapter:** failures are design inputs; each one should point to an invariant the system can enforce or observe.
 - **Keep:** record each failure as design smell, symptom, corrective invariant, and evidence to inspect.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Eric Brewer: CAP Twelve Years Later—How the Rules Have Changed](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/)**. The academic foundation for why "Lost Ownership" (Consistency) and "Lost Terminality" (Availability) are fundamental trade-offs in distributed systems.
-- **[Google SRE Book: Postmortem Culture](https://sre.google/sre-book/postmortem-culture/)**. The industry standard for turning symptoms into "Corrective Invariants"—the exact process described in this chapter's taxonomy.
-- **[Abadi: PACELC—A More Complete Basis for Database Tradeoffs](https://en.wikipedia.org/wiki/PACELC_theorem)**. Formal research on how latency (during heartbeats) and consistency (during leases) interact during failure modes.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Provides the vocabulary for "Split-Brain" and "Silent Corruption" failure modes.
- latency (during heartbeats) and consistency (during leases) interact during failure modes.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). Provides the vocabulary for "Split-Brain" and "Silent Corruption" failure modes.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

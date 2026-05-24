@@ -500,8 +500,6 @@ The production pattern is simple: make the job durable before it starts, make ev
 - **After this chapter:** they form one control loop: durable intake, typed domain model, worker execution, Rig boundary, and production evidence.
 - **Keep:** follow one request from intake row through worker, Rig boundary, side effect, and audit evidence.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Gunnar Hillert: Minimum Viable Architecture](https://www.infoq.com/articles/minimum-viable-architecture/)**. Explains why a "Serious MVP" must include the cross-layer artifacts (schema, types, tests) described in this capstone, rather than just code.
-- **[Brandur Leach: The Serious MVP](https://brandur.org/serious-mvp)**. A foundational blog post advocating for building the "reliability shell" (Postgres, workers, idempotency) before the features, exactly as Part I of this book has demonstrated.
-- **[Designing Data-Intensive Applications](https://dataintensive.net/)** (Martin Kleppmann). The "Capstone" text for modern software engineering, grounding the end-to-end evidence chain in the formal theory of distributed data systems.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.

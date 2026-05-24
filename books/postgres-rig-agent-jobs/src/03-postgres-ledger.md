@@ -623,10 +623,6 @@ Moving forward, remember the golden rule: treat the database aggressively as the
 
 Before reading this chapter, Postgres probably looked like simple, reliable storage hiding somewhere behind the "smart" agent. After this chapter, you should understand that Postgres is actually the fierce, primary coordination layer: it explicitly records work, strictly enforces state transitions, manages leases, bounds retries, and permanently stores the evidence. Moving forward, keep in mind that when debugging, you must always check the Postgres rows that rigorously record jobs, tool calls, retries, leases, and audit events first.
 
-## Further Reading & Credible References
+## Further Reading and Sources
 
-- **[Jim Gray: Queues are Databases](https://arxiv.org/abs/cs/0701158)** (1995). The seminal academic paper arguing that queuing mechanisms should be built into database systems rather than separate middleware. It provides the foundational logic for the "Postgres Ledger" approach.
-- **[Craig Ringer (2ndQuadrant): What is SELECT SKIP LOCKED?](https://www.enterprisedb.com/blog/what-is-select-skip-locked-postgresql-9-5)**. The definitive technical explanation of the feature that turned Postgres into a high-concurrency task engine by the engineer who helped implement it.
-- **[RudderStack: Lessons from Scaling PostgreSQL Queues to 100k Events Per Second](https://www.rudderstack.com/blog/postgresql-as-our-main-streaming-engine-and-queuing-system/)**. A high-scale industry case study on using Postgres as an append-only ledger of job statuses to minimize bloat and maximize throughput.
-- **[Brandur Leach: Postgres Job Queues & Advisory Locks](https://brandur.org/postgres-queues)**. An architectural review comparing row-level locking (`SKIP LOCKED`) with session-level advisory locks for long-running background tasks.
-- **[PostgreSQL Documentation: The `FOR UPDATE` clause](https://www.postgresql.org/docs/current/sql-select.html#SQL-FOR-UPDATE-SHARE)**. The primary source for understanding row-level lock modes and the interaction between concurrent transactions.
+- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
