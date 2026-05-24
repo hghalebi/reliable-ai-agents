@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-ROOT = Path("/Users/hamzeghalebi/selfhost/windmill")
+ROOT = Path(__file__).resolve().parents[1]
 BOOK_SRC = ROOT / "books" / "postgres-rig-agent-jobs" / "src"
 FURTHER_READING_NAME = "31-credible-resources-further-reading.md"
 

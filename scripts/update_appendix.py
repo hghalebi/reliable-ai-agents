@@ -1,7 +1,9 @@
 import os
 import re
+from pathlib import Path
 
-PATH = "books/postgres-rig-agent-jobs/src/31-credible-resources-further-reading.md"
+ROOT = Path(__file__).resolve().parents[1]
+PATH = ROOT / "books/postgres-rig-agent-jobs/src/31-credible-resources-further-reading.md"
 with open(PATH, 'r') as f:
     content = f.read()
 
@@ -46,7 +48,7 @@ new_stuff = """
   Read this because: Contextualizes failures within distributed systems theory.
 - **10. Capstone:** [Brandur Leach: The Serious MVP](https://brandur.org/serious-mvp).
   Read this because: Manifesto for building database-first reliability shells before feature complexity.
-
+ 
 ### Part II. Production Engineering
 - **11. The Real Postgres Store:** [Martin Fowler: Data Mapper](https://martinfowler.com/eaaCatalog/dataMapper.html), [Repository Pattern](https://www.domainlanguage.com/ddd/).
   Read this because: Formalizes the conversion layer and job collection interface.
@@ -72,7 +74,7 @@ new_stuff = """
   Read this because: Verifiable work transfer and trust pillars in agent delegation.
 - **20.2 Worked Production Scenario:** [Pat Helland: Memories, Guesses, and Apologies](https://arxiv.org/abs/2005.02103) (2020).
   Read this because: Architectural logic for uncertainty and compensation in distributed runs.
-
+ 
 ### Part III. Operating the System
 - **21. SLIs, SLOs, and Error Budgets:** [Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/), [The SRE Workbook: Implementing SLOs](https://sre.google/workbook/implementing-slos/).
   Read this because: The primary source for defining user-centric reliability targets.
@@ -86,7 +88,7 @@ new_stuff = """
   Read this because: Foundational taxonomy for version control and statistical rollout validation.
 - **26. Toil, Automation, and Ownership:** [Google SRE: Eliminating Toil](https://sre.google/sre-book/eliminating-toil/), [Lisanne Bainbridge: Ironies of Automation](https://en.wikipedia.org/wiki/Ironies_of_Automation) (1983).
   Read this because: Defines sustainable operation and pitfalls of over-automation.
-
+ 
 ### Part IV. World-Class Reliability
 - **27. Evaluation and Behavior Reliability:** [Zheng et al.: Judging LLM-as-a-Judge](https://arxiv.org/abs/2306.05685), [Hamel Husain: Evaluation-Driven Development](https://hamel.dev/blog/posts/evals/).
   Read this because: Practical guides to automated judge-based evaluation and binary pipeline grading.
