@@ -27,6 +27,7 @@ REQUIRED_PHRASES = (
     "actions/deploy-pages@v4",
     "pages: write",
     "id-token: write",
+    "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true",
     "github-pages",
 )
 
