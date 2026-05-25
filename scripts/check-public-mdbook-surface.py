@@ -124,6 +124,21 @@ NON_LEARNER_RULES = (
     ),
     phrase_rule(
         "assistant workflow wording",
+        "Goal for Codex",
+        "Move assistant instructions to private notes.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "Definition Of Done",
+        "Move implementation acceptance criteria to private notes or rewrite as learner outcomes.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "Final Output Expected From Codex",
+        "Move assistant delivery instructions to private notes.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
         "implementation report",
         "Move implementation reports to private notes; keep only learner-facing explanations.",
     ),
@@ -191,6 +206,56 @@ NON_LEARNER_RULES = (
         "assistant workflow wording",
         "authoring workflow",
         "Move authoring workflow notes to private memory.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "source of inspiration",
+        "Rewrite as a cited source or remove authoring-process language.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "writing constraints",
+        "Move authoring instructions to private notes or rewrite as reader guidance.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "pedagogical style",
+        "Move authoring instructions to private notes or rewrite as reader guidance.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "core philosophy",
+        "Move authoring instructions to private notes or rewrite as a principle.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "Hamze,",
+        "Remove direct author-chat residue from learner-facing chapters.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "monsieur",
+        "Remove direct author-chat residue from learner-facing chapters.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "criminally boring",
+        "Rewrite colloquial author-chat residue as textbook prose.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "spicy",
+        "Rewrite colloquial author-chat residue as textbook prose.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "deliciously",
+        "Rewrite colloquial author-chat residue as textbook prose.",
+    ),
+    phrase_rule(
+        "assistant workflow wording",
+        "beige O'Reilly clone",
+        "Remove direct author-chat residue from learner-facing chapters.",
     ),
     SurfaceRule(
         label="assistant workflow wording",

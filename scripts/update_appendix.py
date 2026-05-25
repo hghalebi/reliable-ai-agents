@@ -68,7 +68,7 @@ new_stuff = """
   Read this because: Principles of safe, automated rollout and backward compatibility.
 - **19. Running for Years:** [Lehman: Laws of Software Evolution](https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution), [Crunchy Data: Autovacuum Tuning](https://www.crunchydata.com/blog/postgres-autovacuum-tuning).
   Read this because: Foundational research on the inevitable forces governing long-lived systems.
-- **20. Final Production Blueprint:** [Michael Wooldridge: Multiagent Systems](https://www.wiley.com/en-us/An+Introduction+to+Multiagent+Systems%2C+2nd+Edition-p-9780470519462), [Andrew Ng: Agentic Workflows](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/).
+- **20. Final Production Blueprint:** [Michael Wooldridge: Multiagent Systems](https://www.wiley.com/en-us/An+Introduction+to+Multiagent+Systems%2C+2nd+Edition-p-9780470519462), [DeepLearning.AI: Agentic Workflows](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/).
   Read this because: Textbook coordination and iterative agent orchestration guides.
 - **20.1 Agent Handoffs and Coordination:** [Wooldridge: Coordination Protocols](https://dl.acm.org/doi/10.5555/543666), [Hancock et al.: Trust in HRI](https://journals.sagepub.com/doi/10.1177/0018720811417254).
   Read this because: Verifiable work transfer and trust pillars in agent delegation.
