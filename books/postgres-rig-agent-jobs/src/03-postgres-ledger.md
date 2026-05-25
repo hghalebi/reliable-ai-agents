@@ -133,7 +133,7 @@ proof: Postgres can answer ownership, progress, retries, and history for one job
 If the next section feels large, keep only these five lines in view. Then read
 the mechanism as the detailed proof.
 
-## Worked Walkthrough
+## Tiny Scenario
 
 Imagine a highly active production queue where two separate, completely independent worker processes wake up at the exact same millisecond. They query the database and both see the exact same lucrative job, `job-1`, sitting there patiently in a `pending` state.
 
@@ -142,6 +142,15 @@ If the architecture is naive and lacks row-level locking, both workers will happ
 However, by leveraging the raw power of Postgres, we completely eliminate this risk at the database layer. When the workers query the table, they do not just read the row; they issue a `SELECT ... FOR UPDATE SKIP LOCKED` statement. The very first worker to reach the database transactionally locks the row, updating the `locked_by` and `locked_until` columns. The second worker, arriving milliseconds later, sees the lock and gracefully skips over `job-1`, moving on to the next available task without throwing an error or blocking. 
 
 The database has effortlessly turned a chaotic concurrency race into an explicit, perfectly coordinated ownership decision. The evidence is pristine: if an operator queries the table, they will clearly see the `locked_by` ID, the expiration timestamp, the incremented attempt count, and an updated event timeline that definitively identifies the sole owner. The invariant holds flawlessly: one attempt always possesses exactly one active owner, guaranteed entirely by the database engine long before any application code executes.
+
+Read the tiny case as:
+
+```text
+setup: job-1 exists as a pending row in the agent_jobs table
+transition: worker-a transactionally updates the status to running and sets locked_by
+evidence: the database row reflects worker-a ownership and has an associated audit event
+invariant: no other worker can acquire or update the job until worker-a's lease expires
+```
 
 ## Schema
 
@@ -561,11 +570,19 @@ kinds before claiming work.
 
 For this chapter, the precise, formal definition of the architecture is incredibly grounded. A Postgres ledger is the strictly durable coordination layer that unapologetically stores current system state, transition history, retry state, worker leases, and idempotency identity.
 
-In the book's overarching system model, the **State** mapping is precise: Postgres rows definitively track current job state, transition history, retries, active leases, idempotency, execution runs, steps, and dangerous tool calls. The **Actor** interactions are restricted so that the API, the worker, the recovery loop, and frantic human operators can only mutate the ledger through tightly constrained SQL. The core **Transition** dictates that work is only enqueued, claimed, heartbeated, completed, retried, cancelled, or recovered through strictly atomic database operations. The **Evidence** ensures that SQL constraints, row locks, indexes, tracking tables, and immutable event rows mathematically prove the state machine actually ran. Ultimately, the governing **Invariant** guarantees that durable state and transition evidence seamlessly survive sudden process death and highly concurrent, aggressive workers.
+In the book's overarching system model, the **State** mapping is precise: Postgres rows definitively track current job state, transition history, retries, active leases, idempotency, execution runs, steps, and dangerous tool calls. The **Actor** interactions are restricted so that the API, the worker, the recovery loop, and frantic human operators can only mutate the ledger through tightly constrained SQL. The core **Transition** dictates that work is only enqueued, claimed, heartbeated, completed, retried, cancelled, or recovered through strictly atomic database operations.
+
+The **Evidence** ensures that SQL constraints, row locks, indexes, tracking tables, and immutable event rows mathematically prove the state machine actually ran. Ultimately, the governing **Invariant** guarantees that durable state and transition evidence seamlessly survive sudden process death and highly concurrent, aggressive workers. For this chapter, the precise definition is: required production anchor for this chapter.
+
 
 ## What Can Fail
 
-When treating a database as a workflow engine, several critical failure modes can emerge. The most common design smell occurs when a team simply adds a `status` string column to a table and proudly declares it a queue, completely ignoring ownership, history, or duplicate identity. The production symptom of this tragedy is that operators will stare at a perpetually stuck status at 2 AM, completely unable to explain exactly who currently owns the job or why it originally changed state. The corrective invariant to ruthlessly enforce is that the ledger must explicitly store current state alongside lease ownership, strict idempotency, retries, and events. If a failure occurs, the operational evidence you must inspect includes the schema and specific queries exposing `agent_jobs`, `agent_job_events`, leases, attempt budgets, and the idempotency key.
+When treating a database as a workflow engine, several critical failure modes can emerge. The most common design smell occurs when a team simply adds a `status` string column to a table and proudly declares it a queue, completely ignoring ownership, history, or duplicate identity. The production symptom of this tragedy is that operators will stare at a perpetually stuck status at 2 AM, completely unable to explain exactly who currently owns the job or why it originally changed state.
+
+The corrective invariant to ruthlessly enforce is that the ledger must explicitly store current state alongside lease ownership, strict idempotency, retries, and events. If a failure occurs, the operational evidence you must inspect includes the schema and specific queries exposing `agent_jobs`, `agent_job_events`, leases, attempt budgets, and the idempotency key. **Design smell:** the design names a mechanism but not the invariant it protects. **Production symptom:** operators cannot explain what changed or which evidence proves it. **Corrective invariant:** every important transition must be owned, durable, and reviewable.
+
+**Evidence to inspect:** inspect the row, event, receipt, policy decision, trace, or runbook output.
+
 
 ## Production Contract
 
@@ -581,11 +598,15 @@ In the naive version, the table merely stores a transient status, blissfully ign
 
 The safer version dramatically improves upon this by forcefully coupling the current state directly with lease ownership, explicit retry attempts, strict idempotency, and an append-only event log.
 
-The final, production-grade version hardens this integration entirely. The team exposes a robust schema featuring `agent_jobs`, `agent_job_events`, leases, attempts, and idempotency keys via strict queries. At this stage, Postgres constraints and the magical `SKIP LOCKED` queries graduate from being mere storage mechanisms to serving as the unshakeable first coordination contract. Use the naive row when a table only needs to store a passive status. Use the safer row when the table must actively coordinate work. Use the full production row when multiple aggressive workers and panicked operators must simultaneously share authority over the system.
+The final, production-grade version hardens this integration entirely. The team exposes a robust schema featuring `agent_jobs`, `agent_job_events`, leases, attempts, and idempotency keys via strict queries. At this stage, Postgres constraints and the magical `SKIP LOCKED` queries graduate from being mere storage mechanisms to serving as the unshakeable first coordination contract. Use the naive row when a table only needs to store a passive status. Use the safer row when the table must actively coordinate work.
+
+Use the full production row when multiple aggressive workers and panicked operators must simultaneously share authority over the system. **Naive version:** the mechanism works once but does not leave enough evidence for recovery. **Safer version:** the mechanism names ownership, state, and proof before execution. **Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
 
 ## Testing Strategy
 
-You must aggressively test the ledger strictly as your coordination contract. In your unit or type tests, you must prove that your Rust row conversion strictly rejects missing statuses, mathematically invalid attempt budgets, missing idempotency keys, or lease data magically appearing on the wrong state. Your persistence or boundary tests must vigorously execute Postgres query tests for idempotency enqueueing, atomic claims utilizing `SKIP LOCKED`, safe retries, verified completions, duplicate suppression, and pristine event insertion. Furthermore, your regression tests must preserve a terrifying two-worker claim case, definitively proving that one due job absolutely cannot be jointly owned by two eager workers following a query refactor.
+You must aggressively test the ledger strictly as your coordination contract. In your unit or type tests, you must prove that your Rust row conversion strictly rejects missing statuses, mathematically invalid attempt budgets, missing idempotency keys, or lease data magically appearing on the wrong state. Your persistence or boundary tests must vigorously execute Postgres query tests for idempotency enqueueing, atomic claims utilizing `SKIP LOCKED`, safe retries, verified completions, duplicate suppression, and pristine event insertion.
+
+Furthermore, your regression tests must preserve a terrifying two-worker claim case, definitively proving that one due job absolutely cannot be jointly owned by two eager workers following a query refactor. **Unit:** test the smallest typed transition and the invariant it preserves. **Persistence:** test the database row, query, or receipt that proves the transition survives process death. **Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -594,6 +615,7 @@ You must actively observe the ledger as the absolute system of record. Emit stru
 ## Security and Safety Considerations
 
 The ledger is a critical security boundary, not just a convenient table. You must violently treat raw SQL rows, JSON payloads, status strings, and lease fields as inherently untrusted data until strict constraints and Rust row conversion thoroughly validate them. Crucially, authorization, sandboxing, and approval decisions must be formally stored as separate, durable evidence rows, rather than lazily inferred from a simple job status alone. Always meticulously redact sensitive payload columns from your operational queries, while fiercely preserving the job id, actor, transition state, lease, and audit evidence required for the inevitable compliance review.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -605,11 +627,21 @@ Third, rehearse your **Failure** modes: ensure that duplicate enqueues, expired 
 
 ## Exercises
 
-To test your operational mastery, write a negative test where two aggressive workers simultaneously try to claim the exact same pending job, and strictly prove that only one safely receives the lease with the idempotency key entirely intact. You must explicitly explain which idempotency key, receipt, or atomic state transition successfully prevented the duplicate work. Next, sketch the exact Postgres evidence: the `scheduled_jobs`, `agent_runs`, `tool_calls`, retry state, and `operation_events` rows for one single, complex job. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents the critical `DbScheduledJobRow` to `ScheduledJob<Pending>` or `ScheduledJob<Running>` conversion, complete with explicit validation errors. Then, meticulously name the runbook question that proves this enforcement mechanism actually works.
+To test your operational mastery, write a negative test where two aggressive workers simultaneously try to claim the exact same pending job, and strictly prove that only one safely receives the lease with the idempotency key entirely intact. You must explicitly explain which idempotency key, receipt, or atomic state transition successfully prevented the duplicate work. Next, sketch the exact Postgres evidence: the `scheduled_jobs`, `agent_runs`, `tool_calls`, retry state, and `operation_events` rows for one single, complex job.
+
+Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents the critical `DbScheduledJobRow` to `ScheduledJob<Pending>` or `ScheduledJob<Running>` conversion, complete with explicit validation errors. Then, meticulously name the runbook question that proves this enforcement mechanism actually works.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your ledger understanding. First, recall exactly which database fields prove current state, duplicate identity, worker ownership, and retry timing. Next, be able to clearly explain why Postgres is actively acting as a robust coordination layer, and not merely as passive blob storage. Then, forcefully simulate two workers simultaneously trying to claim the same due job in your head. Finally, explicitly point to the row lock, the lease fields, the attempt count, the idempotency key, and the event timeline that safely resolves the race condition.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -619,10 +651,24 @@ The core invariant to remember is that Postgres remains the undisputed, first du
 
 Moving forward, remember the golden rule: treat the database aggressively as the core coordination backbone of your system, not as a passive, dumb storage bucket.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, Postgres probably looked like simple, reliable storage hiding somewhere behind the "smart" agent. After this chapter, you should understand that Postgres is actually the fierce, primary coordination layer: it explicitly records work, strictly enforces state transitions, manages leases, bounds retries, and permanently stores the evidence. Moving forward, keep in mind that when debugging, you must always check the Postgres rows that rigorously record jobs, tool calls, retries, leases, and audit events first.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1995). The seminal academic paper arguing that queuing mechanisms should be built into database systems rather than separate middleware. It provides the foundational logic for the "Postgres Ledger" approach.
+- [PostgreSQL explicit locking documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The definitive technical explanation of the feature that turned Postgres into a high-concurrency task engine by the engineer who helped implement it.
+- [PostgreSQL High Availability, Load Balancing, and Replication](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A high-scale industry case study on using Postgres as an append-only ledger of job statuses to minimize bloat and maximize throughput.
+- [PostgreSQL synchronous commit documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: An architectural review comparing row-level locking (`SKIP LOCKED`) with session-level advisory locks for long-running background tasks.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The primary source for understanding row-level lock modes and the interaction between concurrent transactions.

@@ -193,4 +193,10 @@ meet on the same durable evidence.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: supports the role split between model-directed agent behavior and deterministic workflow controls.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: grounds the role paths in durable state, evidence histories, and explicit data-system contracts.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the platform, ownership, SLO, incident, toil, and launch-readiness responsibilities in the paths.
+- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the governance path's focus on accountability, risk, and trustworthy AI evidence.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: supports the Rust path's focus on typed APIs, explicit constructors, and maintainable domain boundaries.

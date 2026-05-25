@@ -111,4 +111,11 @@ chain is what turns the book from a set of ideas into a production manual.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Rig: Build AI Applications in Rust](./31-credible-resources-further-reading.md#agent-architecture) Read this because: supports the matrix's separation between the model/tool interaction layer and the surrounding reliability system.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: grounds the Postgres coordination rows in real locking and `SKIP LOCKED` behavior.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports the matrix's focus on durable state, transactions, logs, schemas, and evidence history.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the operational evidence, SLO, incident, toil, and readiness controls in the matrix.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the security rows around prompt injection, tool abuse, memory poisoning, and data leakage.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: supports the matrix's emphasis on explicit types, constructors, trait boundaries, and maintainable Rust APIs.

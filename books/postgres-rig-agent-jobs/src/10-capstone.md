@@ -502,4 +502,8 @@ The production pattern is simple: make the job durable before it starts, make ev
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Brandur Leach: The Serious MVP](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Explains why a "Serious MVP" must include the cross-layer artifacts (schema, types, tests) described in this capstone, rather than just code.
+- [Brandur Leach: The Serious MVP](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A foundational blog post advocating for building the "reliability shell" (Postgres, workers, idempotency) before the features, exactly as Part I of this book has demonstrated.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). The "Capstone" text for modern software engineering, grounding the end-to-end evidence chain in the formal theory of distributed data systems.

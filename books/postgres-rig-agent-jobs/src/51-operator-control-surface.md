@@ -288,4 +288,10 @@ event.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the appendix's emphasis on operator action, incident evidence, ownership, toil, and safe production controls.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports separating traces, metrics, logs, and events when building the read side of the operator surface.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports the durable-state and audit-history expectations behind console actions.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the permission, access-control, logging, exceptional-condition, and misconfiguration concerns in an operator console.
+- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the governance expectation that risky AI-assisted actions remain accountable and reviewable.

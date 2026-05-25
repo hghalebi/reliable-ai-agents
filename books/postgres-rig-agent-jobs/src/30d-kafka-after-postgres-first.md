@@ -97,28 +97,60 @@ Build or inspect this artifact before moving on:
 ## Implementation Map
 
 When you move from reading to implementation, use this map as your guide. The primary surfaces you will interact with are the `outbox_events` table in Postgres, the designated Kafka topic, the consumer group configuration, the consumer receipt table, and the tracing context. The core state transition occurs when a committed product event becomes an outbox row; the publisher then writes this row to Kafka, and subsequently, each consumer records that it has performed idempotent processing. The evidence path for this transition is clear: a Postgres outbox id must map directly to a Kafka topic-partition-offset and its corresponding consumer receipts.
+Use this map when you move from reading to implementation:
+- **Primary surface:** the code, schema, chapter artifact, or runbook that owns this concept.
+- **State transition:** the named move that changes durable state.
+- **Evidence path:** the row, event, receipt, trace, or test that proves the move.
+
 
 ## Operator Question
 
 Before you ship this architecture, you must answer one vital operational question: Which consumers actually need event replay, and what specific mechanism prevents that replay from duplicating real-world side effects? To answer this, you must inspect the evidence: the outbox row, the Kafka topic, the partition key, the offset, the event schema version, the consumer group, the consumer receipt, the operation event, and the trace id. You should escalate the design if you find that consumers are treating stream replay as inherently safe without utilizing robust idempotency records.
+Before you ship this idea, answer one operational question:
+- **Question:** what production fact changed, and who was allowed to change it?
+- **Evidence to inspect:** the durable row, trace, receipt, policy decision, or audit event.
+- **Escalate if:** the answer depends on memory, chat, terminal scrollback, or model explanation.
+
 
 ## Runtime Walkthrough
 
 Follow the concept through a single runtime pass to see it in action. First, a trigger occurs when an agent run emits a product event within the exact same Postgres transaction that records the state change. Next, the action phase begins as an outbox publisher reads these unsent rows and publishes the typed events to Kafka. For persistence, the publisher meticulously records the exact Kafka topic, partition, offset, and publish status back to the database. Finally, the check phase requires that each consumer processes the event exactly once per consumer purpose, recording a durable receipt to prove it.
+Follow the concept as one runtime pass:
+1. **Trigger:** the system receives work or a reviewer inspects a design.
+2. **Action:** the mechanism changes typed state under an explicit owner.
+3. **Persistence:** the change leaves durable evidence.
+4. **Check:** an operator verifies the invariant from evidence.
+
 
 ## Acceptance Gate
 
 Do not move on until you can produce the minimum required evidence. You must be able to trace one product event from its initial Postgres state change, through the outbox row, to the Kafka offset, and finally to the consumer receipt, projection update, and any necessary audit evidence. To validate this path, you must publish one event, explicitly replay it, restart one consumer, and conclusively prove that no duplicate side effects occurred. Stop the adoption process immediately if Kafka publication can happen before the product transaction commits, or if consumer replay has the power to change the external world twice.
+Do not move on until this minimum evidence exists:
+- **Minimum evidence:** the mechanism has one inspectable artifact and one named invariant.
+- **Validation path:** run or inspect the smallest check that proves the artifact exists.
+- **Stop if:** the proof depends on a unverified note, chat message, or unverified assumption.
+
 
 ## Micro-Lesson
 
 If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises when many independent consumers need durable event distribution and replay. The guiding rule is that Postgres records the immutable product truth, while Kafka is used merely to distribute selected typed facts. A tiny example of this is the flow from an outbox event, to a Kafka topic offset, to a consumer receipt. The resulting artifact is a Kafka adoption record detailing the topic, schema, key, replay, and rollback policies. The ultimate proof of success is that replaying the stream does not duplicate any side effects.
+Use this five-line version before the heavier mechanism:
 
-## Worked Walkthrough
+```text
+pain: the production failure becomes unclear without this concept
+rule: name the invariant and the evidence before adding machinery
+tiny example: one job changes state under one owner
+artifact: one row, type, receipt, policy, or runbook query
+proof: another engineer can inspect the artifact and explain the result
+```
+If the next section feels large, keep only these five lines in view and then return to the detailed proof.
+
+
+## Tiny Scenario
 
 Imagine a support triage agent that has just successfully finished classifying an urgent customer case. In a modern architecture, several downstream systems immediately want to know about this classification: the search index wants to update the searchable case status, the analytics team wants to compute aggregate volume counts, the operations dashboard needs fresh queue metrics, and the fraud monitor is scanning for suspicious pattern signals. 
 
-In a naive architecture, the team might simply instruct the agent to publish a JSON blob directly to a Kafka topic named `agent-events` and hope the downstream consumers figure it out. However, if the agent process crashes immediately after publishing to Kafka but *before* committing the case status to the database, the downstream systems will react to a "fact" that never actually happened in the product ledger. This causes severe data corruption.
+In a naive architecture, the team might simply instruct the agent to publish a JSON blob directly to a Kafka topic named `agent-events` and hope the downstream consumers figure it out. However, if the agent process crashes immediately after publishing to Kafka but *before* committing the case status to the database, the downstream systems will react to a "fact" that never actually happened in the product ledger. This causes data corruption.
 
 Instead, the Postgres-first system strictly enforces a sequence. It writes one canonical product event directly into the database within the exact same transaction that updates the case status: an `agent_case_classified` event containing the `event_id`, `agent_run_id`, `case_id`, `classification`, `model_version`, `trace_id`, and a timestamp. 
 
@@ -127,6 +159,15 @@ Once that transaction safely commits, an outbox publisher process reads that row
 Crucially, the consumers must still prove they are safe. When the search index or the fraud monitor reads this event, they do not just blindly update their internal state. They must explicitly record a `consumer_receipt` in their own database, noting the `event_id`, the `topic`, the `partition`, the `offset`, and an `idempotency_key`. 
 
 Why is this robust design mandatory? Because if a network partition causes the Kafka broker to resend the event, or if an engineer intentionally rewinds the offset to rebuild a broken projection, the invariant holds: replaying the event does not duplicate a business side effect. The consumer simply checks its receipts, sees the `idempotency_key`, and safely ignores the duplicate message. The event stream acts as a powerful mechanism to help many systems react simultaneously, but it entirely relies on the foundation of typed events, idempotent consumers, and undeniable product evidence.
+
+Read the tiny case as:
+
+```text
+setup: an agent completes a case classification and writes a product row
+transition: the outbox publisher reads the committed event and writes it to Kafka
+evidence: a KafkaOffset publish receipt maps the event ID to a topic-partition-offset
+invariant: stream replay or consumer restart cannot duplicate external customer actions
+```
 
 ## Mental Model
 
@@ -531,6 +572,11 @@ Third, rehearse your **Failure** modes: document exactly what happens when the s
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your understanding. First, recall exactly what Kafka owns in this architecture versus what Postgres still permanently owns. Next, be able to clearly explain why a data stream is not automatically equivalent to a compliant audit log. Then, apply this knowledge to your own systems by deciding whether a specific agent event should be a Postgres-only event, a Kafka event, or both. Finally, ensure you can explicitly name the outbox id, event id, topic, partition, offset, consumer receipt, operation event, and trace id that correlate to one single product event.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -540,10 +586,22 @@ The core invariant to remember is that Kafka replay and duplicate delivery must 
 
 Moving forward, remember the golden rule: publish only typed facts through an outbox, and never publish raw uncertainty directly into a long-retention stream.
 
+**Invariant:** Kafka replay and duplicate delivery must not create duplicate side effects or untraceable product state.
+
+**Evidence:** outbox rows, topic-partition-offsets, consumer receipts, operation events, audit events, traces, and runbooks prove safe distribution.
+
 ## Changed Understanding
 
 Before reading this chapter, Kafka may have looked like simply the next logical queue to adopt after Postgres. After this chapter, you should understand that Kafka is an optional, advanced event-streaming layer meant exclusively for distribution, replay, and fanout, and only *after* product truth is already explicitly modeled in the database. Moving forward, keep in mind that event streaming will multiply whatever you feed it—both good facts and bad ambiguity—so you must strictly publish only typed, validated, and governed events.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+- [Apache Kafka Introduction](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: it defines Kafka's core event-streaming concepts before the chapter uses topics, producers, consumers, partitions, and retention.
+- [Apache Kafka Documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: it is the primary project documentation for Kafka APIs, configuration, operations, and security.
+- [Apache Kafka Protocol](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: offsets, partitions, consumer groups, and transactions become evidence fields after Kafka joins the system.
+- [Apache Kafka Design](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: it explains partition-level ordering, consumer positions, rewind, replication, and transaction mechanics.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: Kafka adoption is a log, ordering, replay, and consistency design decision.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: event-streaming infrastructure still needs ownership, SLOs, runbooks, incident response, and toil controls.

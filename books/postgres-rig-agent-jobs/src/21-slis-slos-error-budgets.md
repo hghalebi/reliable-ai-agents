@@ -205,16 +205,7 @@ measurement. The SLO is the threshold that says what good enough means. The erro
 budget is the margin between normal imperfection and a system that needs
 attention now.
 
-> ### 🎓 The Professor's Corner
->
-> **Percentiles vs. Averages: The Lying Average**
->
-> In distributed systems, the "Average" is a liar! If half your jobs take 1 second and half take 1 hour, the average is 30 minutes. But *none* of your users waited 30 minutes! 
-> 
-> You need **Percentiles** (like P95 and P99) to see the **Long Tail of Failure**. A P99 of 1 hour tells you that 1% of your users are having a terrible time. The average hides the pain; the percentile exposes it.
-
 Agent systems need this because they can fail in ways a normal uptime check will
-... (omitted) ...
 miss. The API can respond while jobs are stuck. The model can answer quickly
 while using stale memory. A tool can succeed technically while bypassing an
 approval rule. Reliable agent operations require measurements that follow user
@@ -249,10 +240,6 @@ Choose SLIs by asking what the user would call failure. If the user is waiting
 for an incident response, start latency matters. If the system promises recovery
 from transient provider errors, retry recovery latency matters. If the agent can
 perform side effects, approval bypasses matter more than server uptime.
-
-We should also measure **Quality SLIs**. For example, "99% of triage jobs result in a valid proposal." If the "Good Event" count drops because models are failing to parse, that's an SLO breach that requires a prompt engineer, not a SRE. These SLIs should be part of our **Continuous Evaluation** pipeline.
-
-In AI, performance is inextricably linked to cost. We should add a **Cost SLI**: for example, "99% of triage jobs cost less than $0.05." If a worker "loops" or "retries" with a larger model, causing a cost spike, our **Unit Cost** metric will catch it before it burns the budget.
 
 This is where agent reliability becomes different from ordinary web reliability.
 A web API can often start with request success rate and latency. An agent system
@@ -331,20 +318,12 @@ queue partitioning
 better backpressure
 operator automation
 ```
+
 The budget is not punishment. It is a planning tool. It lets a team move fast
 when the system is healthy and slow down when users are already absorbing too
 much failure.
 
-> ### 🎓 The Professor's Corner
->
-> **The Error Allowance: Candy vs. Movies**
->
-> Think of an **Error Budget** like an allowance your parents give you. If you spend it all on candy (unreliable code) on the first day, you can't go to the movies (ship new features) later in the week! 
-> 
-> The budget makes the concept of "Failure" personal. It teaches you that every bug has a cost, and if you're out of money, you have to stay home and clean your room (fix the reliability) before you can play again!
-
-For reliable agents, this matters because new model behavior
-... (omitted) ...
+For reliable agents, this matters because new model behavior, new tools, new
 prompts, and new background-job paths all add risk. If the budget is healthy, a
 small canary may be reasonable. If the budget is exhausted, the next release
 should improve reliability or wait.
@@ -576,8 +555,6 @@ bridge between measurement and action.
 The runbook query should reproduce the SLI numerator, denominator, window, and
 owner before anyone debates reliability from anecdotes.
 
-I call this the **"Check Your Math"** rule. If you have 11 apples and give away 10, you can't have -1 left! If your monitoring math produces impossible numbers, it must "Fail Closed" and stop the release. Defensive engineering applies even to the gauges on your dashboard.
-
 ## Security and Safety Considerations
 
 Reliability measurements can leak or distort safety signals.
@@ -646,4 +623,10 @@ SRE work starts when reliability is measured as a contract. For agent systems, l
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE: Service Level Objectives](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (Chapter 4). The foundational text for modern reliability engineering. It defines the quantitative relationship between indicators (SLIs), targets (SLOs), and agreements (SLAs).
+- [The SRE Workbook: Implementing SLOs](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (Chapter 2). Provides the practical "recipe" for establishing reliability targets, emphasizing Critical User Journeys (CUJs) over raw system metrics.
+- [The SRE Workbook: Implementing SLOs](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (Chapter 5). The industry-standard guide to **Burn Rate Alerting**. It explains the "Multi-Window" strategy used to distinguish between critical outages (high burn) and slow drift (low burn).
+- [The SRE Workbook: Implementing SLOs](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A high-signal resource for turning the principles in this chapter into executable code and dashboard configurations.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects SLOs to the formal "System of Systems" invariants and the limits of asynchronous communication.

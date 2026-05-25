@@ -99,22 +99,55 @@ Build or inspect this artifact before moving on:
 ## Implementation Map
 
 When you transition from reading to implementation, rely on this map as your guide. The primary surfaces you will interact with are `sql/enqueue_agent_job.sql`, `src/domain.rs`, and the intake path demonstrated in the companion crate. The core state transition here is meticulously persisting the raw user intent before ever calling the model or the worker. The evidence path demands that the incoming request unequivocally possesses an idempotency key, a durable database row, an active trace id, and an initial recorded event.
+Use this map when you move from reading to implementation:
+- **Primary surface:** the code, schema, chapter artifact, or runbook that owns this concept.
+- **State transition:** the named move that changes durable state.
+- **Evidence path:** the row, event, receipt, trace, or test that proves the move.
+
 
 ## Operator Question
 
 Before you ship any architectural idea based on this foundation, you must answer one vital operational question: Did the user request legitimately become durable before any model or worker step ran? To answer this, you must explicitly inspect the idempotency key, the specific intake row, the trace id, the created event, and the initial status. You should immediately escalate the design to leadership if a failed process or an unexpected provider call leaves behind absolutely no database row to explain the failed request.
+Before you ship this idea, answer one operational question:
+- **Question:** what production fact changed, and who was allowed to change it?
+- **Evidence to inspect:** the durable row, trace, receipt, policy decision, or audit event.
+- **Escalate if:** the answer depends on memory, chat, terminal scrollback, or model explanation.
+
 
 ## Runtime Walkthrough
 
 Follow the concept of durable intake as a single runtime pass. First, a trigger occurs when a user explicitly asks the agent to perform work. Next, the action requires the system to write that request into the database as durable work *before* the model is ever called. For persistence, the system must durably store the idempotency key, the trace context, the raw payload, and the initial status. Finally, the check requires verifying that the request remains completely explainable and recoverable even after an intentional, hard process death.
+Follow the concept as one runtime pass:
+1. **Trigger:** the system receives work or a reviewer inspects a design.
+2. **Action:** the mechanism changes typed state under an explicit owner.
+3. **Persistence:** the change leaves durable evidence.
+4. **Check:** an operator verifies the invariant from evidence.
+
 
 ## Acceptance Gate
 
 Do not move on until you can produce the minimum required evidence. You must be able to empirically prove that a user request effortlessly survives a hard process death injected before any model call starts. To validate this path, an operator must inspect the durable intake row, the explicit idempotency key, the trace id, and the initial event. Stop the design process immediately if the only proof that requested work ever existed is volatile process memory or transient provider logs.
+Do not move on until this minimum evidence exists:
+- **Minimum evidence:** the mechanism has one inspectable artifact and one named invariant.
+- **Validation path:** run or inspect the smallest check that proves the artifact exists.
+- **Stop if:** the proof depends on a unverified note, chat message, or unverified assumption.
+
 
 ## Micro-Lesson
 
-If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, a simple model call is absolutely not a reliable workflow. The guiding rule is that a reliable agent is fundamentally a worker equipped with tools, memory, permissions, and durable evidence surrounding a probabilistic model. A tiny example of this is ensuring a durable agent job row actively exists in the database *before* the model performs any work. The resulting artifact is a durable intake row explicitly containing an idempotency key created before any model call starts. The ultimate proof of success is that a user request demonstrably survives process death before any model call ever begins.
+If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, a simple model call is absolutely not a reliable workflow. The guiding rule is that a reliable agent is fundamentally a worker equipped with tools, memory, permissions, and durable evidence surrounding a probabilistic model. A tiny example of this is ensuring a durable agent job row actively exists in the database *before* the model performs any work.
+
+The resulting artifact is a durable intake row explicitly containing an idempotency key created before any model call starts. The ultimate proof of success is that a user request demonstrably survives process death before any model call ever begins. Use this five-line version before the heavier mechanism:
+
+```text
+pain: the production failure becomes unclear without this concept
+rule: name the invariant and the evidence before adding machinery
+tiny example: one job changes state under one owner
+artifact: one row, type, receipt, policy, or runbook query
+proof: another engineer can inspect the artifact and explain the result
+```
+If the next section feels large, keep only these five lines in view and then return to the detailed proof.
+
 
 ## The First Production Question
 
@@ -309,13 +342,9 @@ key exists, duplicate intake has a stable identity. If the trace id exists,
 operators can connect the intake event to later worker, model, policy, and tool
 events.
 
-> ### 🎓 The Professor's Corner
->
-> **Idempotency Keys: The "Don't Do It Twice" Stamp**
->
-> In the real world, if you give a letter to two different people to mail, you might end up sending it twice. In computing, "Idempotency" is a fancy word for a simple concept: no matter how many times you receive the same request, you only perform the work once. 
-> 
-> Think of the **Idempotency Key** (like `local-demo:failed-deployment`) as a unique name for a specific piece of work. If a worker sees a name it already has in its notebook, it knows it can safely ignore the duplicate or point to the existing result. It’s the "name of the work," not just a random string of characters!
+> ### 🎓 The Professor's Corner > > **Idempotency Keys: The "Don't Do It Twice" Stamp** > > In the real world, if you give a letter to two different people to mail, you might end up sending it twice. In computing, "Idempotency" is a fancy word for a simple concept: no matter how many times you receive the same request, you only perform the work once. > > Think of the **Idempotency Key** (like `local-demo:failed-deployment`) as a unique name for a specific piece of work.
+
+If a worker sees a name it already has in its notebook, it knows it can safely ignore the duplicate or point to the existing result. It’s the "name of the work," not just a random string of characters!
 
 These are small pieces of data. Together, they are the difference between a
 script that happened to run and a system that can be operated.
@@ -376,11 +405,18 @@ In the naive version, the model call is enthusiastically treated as the entire w
 
 The safer version improves upon this tragedy by ensuring durable work actually exists before intelligence runs. Suddenly, a durable job row gives the system something concrete to recover, retry, inspect, and mathematically own long before the expensive, unpredictable intelligence layer boots up.
 
-The final, production-grade version hardens this completely. The enqueue path explicitly writes a job row and a formal intake event *before* the model step even begins. At this stage, operators can definitively prove the intake, the execution path, and the terminal outcome, even if the model hallucinates, the worker violently crashes, or the entire process fails. Use the naive approach only when you are recording a neat demo starting with a prompt. Use the safer approach when the work demands actual identity. Use the full production approach the moment aggressive retries, compliance audits, or external side effects enter your system.
+The final, production-grade version hardens this completely. The enqueue path explicitly writes a job row and a formal intake event *before* the model step even begins. At this stage, operators can definitively prove the intake, the execution path, and the terminal outcome, even if the model hallucinates, the worker violently crashes, or the entire process fails. Use the naive approach only when you are recording a neat demo starting with a prompt.
+
+Use the safer approach when the work demands actual identity. Use the full production approach the moment aggressive retries, compliance audits, or external side effects enter your system. **Naive version:** the mechanism works once but does not leave enough evidence for recovery. **Safer version:** the mechanism names ownership, state, and proof before execution. **Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
 
 ## Testing Strategy
 
-You must ruthlessly test this first invariant long before any actual model logic is permitted to run. In your unit or type tests, explicitly prove that the Rust intake command physically cannot construct executable work without demanding a job identity, a job kind, a strict idempotency key, and a typed instruction. Your persistence or boundary tests must unequivocally prove the Postgres enqueue path successfully writes the job row and the intake event to disk *before* the worker or Rig boundary can even attempt to call the model. Finally, your regression tests must violently simulate a complete process death immediately after request receipt but before model execution; recovery must then smoothly find durable work, rather than frantically searching for lost prompt text in a recycled container.
+You must ruthlessly test this first invariant long before any actual model logic is permitted to run. In your unit or type tests, explicitly prove that the Rust intake command physically cannot construct executable work without demanding a job identity, a job kind, a strict idempotency key, and a typed instruction.
+
+Your persistence or boundary tests must unequivocally prove the Postgres enqueue path successfully writes the job row and the intake event to disk *before* the worker or Rig boundary can even attempt to call the model. Finally, your regression tests must violently simulate a complete process death immediately after request receipt but before model execution; recovery must then smoothly find durable work, rather than frantically searching for lost prompt text in a recycled container.
+**Unit:** test the smallest typed transition and the invariant it preserves.
+**Persistence:** test the database row, query, or receipt that proves the transition survives process death.
+**Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -388,7 +424,9 @@ You must closely observe the exact, fleeting moment when fragile intent becomes 
 
 ## Security and Safety Considerations
 
-Your absolute first safety boundary is the intake phase, placed firmly before the probabilistic model ever receives the work. You must treat the request body, the raw user instruction, the idempotency header, and any model-facing prompt input as wildly untrusted hostile data until it is strictly converted into typed job input. Mandatory authorization, secure sandboxing, and strict human approval decisions must be formally attached to the record before any job is permitted to execute a risky external tool or side effect. Always meticulously redact raw secrets from your intake logs, while strictly keeping the job id, idempotency key, job kind, and trace evidence perfectly visible for the inevitable compliance audit.
+Your absolute first safety boundary is the intake phase, placed firmly before the probabilistic model ever receives the work. You must treat the request body, the raw user instruction, the idempotency header, and any model-facing prompt input as wildly untrusted hostile data until it is strictly converted into typed job input.
+
+Mandatory authorization, secure sandboxing, and strict human approval decisions must be formally attached to the record before any job is permitted to execute a risky external tool or side effect. Always meticulously redact raw secrets from your intake logs, while strictly keeping the job id, idempotency key, job kind, and trace evidence perfectly visible for the inevitable compliance audit. Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -401,10 +439,18 @@ Third, rehearse your **Failure** modes: verify that a catastrophic crash occurri
 ## Exercises
 
 To test your operational mastery, write a decidedly negative test where the API receives a request, violently crashes right before Rig runs, and yet miraculously must not lose the idempotency record. You must explicitly explain which idempotency key, receipt, or state transition was supposed to prevent duplicate work from executing. Next, sketch the exact Postgres evidence: the `agent_jobs` and `operation_events` rows that undeniably prove the request actually became durable work. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that forcefully represents `AgentJobId`, `IdempotencyKey`, `JobKind`, and `IntakeAccepted` as completely distinct types. Then, meticulously name the runbook question that proves this enforcement mechanism actually works at 3 AM.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your operational paranoia. First, recall exactly what durable artifact must unconditionally exist before the model call begins. Next, be able to clearly explain why a "useful model output" is fundamentally not the unit of reliability. Then, apply this knowledge to a terrifying scenario: imagine the process crashes exactly after intake but exactly before Rig runs. What, precisely, should your recovery mechanism inspect? Finally, explicitly name the specific job row, idempotency key, trace id, and first event that categorically prove the work actually survived the crash.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -414,10 +460,24 @@ The core invariant to remember is that a raw request must become durable, typed 
 
 Moving forward, remember the golden rule: every single later reliability mechanism in this architecture stubbornly starts from this very first promise—work exists safely outside the volatile process.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, a simple model call may have looked exactly like the primary unit of agent work. After this chapter, you should understand that the unglamorous, durable job row is the true unit of reliability; the expensive model call is merely one observable transition hidden safely inside it. Moving forward, keep in mind that you must always aggressively inspect the durable intake row, the trace id, the idempotency key, and the very first operation event.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2025). This is the canonical industry guide for distinguishing between simple LLM workflows and autonomous agentic behavior. It advocates for starting with deterministic scaffolds—the "worker with tools" model used in this book.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (2017). A foundational engineering post explaining why writing a "durable fact" to Postgres is the only way to avoid losing work during process crashes. This is the origin of the "Postgres Ledger" pattern.
+- [Temporal Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: An industry-standard explanation of why traditional RPC (Remote Procedure Call) is insufficient for reliable work. It defines the "Fail-over" vs "Fail-fast" models discussed in this chapter.
+- [W3C Trace Context](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: While focused on networking, this guide explains the "Idempotency" and "State" requirements needed to survive the ordinary failures introduced in this chapter.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 11: Stream Processing). Explains the data-systems vocabulary behind durable state, logs, and recoverable workflows.

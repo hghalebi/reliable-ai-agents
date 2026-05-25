@@ -153,4 +153,11 @@ sentence the reader can verify.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they give multiple entry points into the same technical idea.
+- [CDC: ADHD in the Classroom](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they make expectations, organization, and restart routines explicit.
+- [Digital.gov: Short and Simple](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they use clear words while preserving exact production evidence.
+- [Paas and van Merrienboer: Cognitive-Load Theory](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they reduce unnecessary working-memory load before dense Rust and SQL.
+- [IES: Organizing Instruction and Study to Improve Student Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they connect worked examples, concrete artifacts, and active practice.
+- [Nature Reviews Psychology: Spacing and Retrieval Practice](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the cards because they are reusable prompts for spaced recall and proof practice.

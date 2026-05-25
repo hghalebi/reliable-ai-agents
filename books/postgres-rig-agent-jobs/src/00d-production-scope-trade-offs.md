@@ -5,10 +5,22 @@
 This chapter teaches you how to explicitly explain when a Postgres-first agent system is the correct initial production shape, and when it is not. You will learn how to rigorously inspect workload signals that indicate a dedicated queue, a complex workflow engine, or a distributed platform should instead own the work. Finally, you will learn how to verify that your architectural choices are tied to concrete operational evidence rather than personal taste or industry fashion. 
 
 The production evidence for this chapter is a formal operating envelope. This document explicitly records your architectural assumptions, considered alternatives, accepted trade-offs, and a reviewable evidence contract for the system.
+This chapter teaches you to:
+
+- explain the production concept in plain language;
+- inspect the artifact that proves it;
+- verify the invariant before relying on the design.
+
 
 ## Chapter Thread
 
 This chapter serves as a crucial boundary-setting link in the production chain. It builds directly upon the design principles, which named the strict reliability promises the system must inherently protect. Here, we add the formal operating envelope for a disciplined, Postgres-backed Rust system. By explicitly bounding the architecture, this chapter prepares you for the foundational durable job problem that motivates the very first core engineering chapter of this book.
+Read this chapter as one link in the production chain:
+
+- **Builds on:** the previous production invariant.
+- **Adds:** one deployable mechanism and its evidence.
+- **Prepares:** the next operational decision in the book.
+
 
 ## Motivation
 
@@ -115,13 +127,37 @@ At the absolute bottom is the simple script, which is excellent for fast experim
 
 Moving up this ladder can certainly add safety, but it unequivocally adds new contracts, massive operational surface area, and severe migration costs. Moving down the ladder can add rapid development speed, but it can dangerously hide the explicit state that a production operator will desperately need during a failure.
 
-## Worked Walkthrough
+## Tiny Scenario
 
 Imagine a scenario where an autonomous incident-response agent is designed to actively recommend rolling back a production service during an outage. This is a high-stakes operation with immediate, severe business consequences.
 
-If an engineer approaches this by simply writing a fast, one-off script for a local experiment—where the script reads an incident note, calls an LLM, and prints a recommendation to a terminal—the design is entirely appropriate for a localized proof-of-concept. However, it is utterly unacceptable for autonomous production action. When the script inevitably fails or behaves unexpectedly at 3 AM, the most important operational questions have absolutely no durable answers. Operators will desperately ask: Which specific network request actually created this recommendation? Which exact model and prompt version were used? Was human approval technically required for this environment? Who specifically approved the action? Was the rollback already executed by another process? Can safely replaying this script accidentally duplicate the destructive action? Because the script lacks an operating envelope defining its required state, the system provides zero answers.
+If an engineer approaches this by simply writing a fast, one-off script for a local experiment—where the script reads an incident note, calls an LLM, and prints a recommendation to a terminal—the design is entirely appropriate for a localized proof-of-concept. However, it is utterly unacceptable for autonomous production action. When the script inevitably fails or behaves unexpectedly at 3 AM, the most important operational questions have absolutely no durable answers. Operators will desperately ask: Which specific network request actually created this recommendation?
 
-A Postgres-first ledger fundamentally solves this by enforcing an architecture that matches the failure risk. It answers these critical questions by enforcing explicit, durable rows, immutable event timelines, tracked policy versions, formal approval records, and concrete side-effect receipts. A durable workflow engine could also answer many of these questions through its own workflow history and replay semantics. The correct architectural choice entirely depends on explicitly defining the operating envelope: the team must decide precisely which boundary they want to own directly, and at what scale the database itself becomes the bottleneck rather than the source of truth. The fundamental invariant is that the chosen architecture must mechanically match the severity of the failure that would harm users.
+Which exact model and prompt version were used? Was human approval technically required for this environment? Who specifically approved the action? Was the rollback already executed by another process? Can safely replaying this script accidentally duplicate the destructive action? Because the script lacks an operating envelope defining its required state, the system provides zero answers.
+
+A Postgres-first ledger fundamentally solves this by enforcing an architecture that matches the failure risk. It answers these critical questions by enforcing explicit, durable rows, immutable event timelines, tracked policy versions, formal approval records, and concrete side-effect receipts. A durable workflow engine could also answer many of these questions through its own workflow history and replay semantics.
+
+The correct architectural choice entirely depends on explicitly defining the operating envelope: the team must decide precisely which boundary they want to own directly, and at what scale the database itself becomes the bottleneck rather than the source of truth. The fundamental invariant is that the chosen architecture must mechanically match the severity of the failure that would harm users.
+
+Read the tiny case as:
+
+```text
+setup: a high-risk service rollback request is initiated during an active outage
+transition: the system enqueues the rollback job, validating its schema and setting up a lease
+evidence: a rollback job row with a unique ID, lease owner, and pending status is written to the ledger
+invariant: the agent cannot execute any rollback tools or prompt calls without first writing durable state to Postgres
+```
+
+
+## Architecture Ladder Anchors
+
+script: a local experiment with little or no durable production evidence.
+queue framework: a background-work tool that still needs product evidence around it.
+Postgres-first ledger: the book's default serious MVP where durable state, leases, retries, approvals, and receipts stay queryable.
+durable workflow engine: a later scaling path when workflow semantics become the strained invariant.
+distributed platform: a larger operating model for multi-service, multi-team, high-isolation systems.
+Architecture choice is serious only when it names the contract: state owner, transition owner, evidence owner, recovery owner, and rollback path.
+Which missing invariant would make you move up the ladder? Use this question before adding infrastructure.
 
 ## What This Book Assumes
 
@@ -233,11 +269,21 @@ replace part of it.
 
 For this chapter, the formal definition of an architecture choice is precise: An architecture choice is the explicit, documented assignment of strict responsibility for durable state, workflow coordination, dangerous side effects, disaster recovery, and operator evidence to specific, concrete system components.
 
-In the book's overarching system model, the **State** represents the exact architecture boundary where durable work, coordination logic, side effects, recovery mechanisms, and operator evidence actually live. The **Actor** is the architect or technical lead who actively makes the choice of whether the Postgres-first ledger, a simple script, a queue framework, or a massive workflow engine should fundamentally own the job. The critical **Transition** dictates that an architectural design is only formally accepted, definitively rejected, or safely upgraded after its specific operating envelope and evidence contract are explicitly named and documented. The resulting **Evidence** is the written operating envelope itself, which names exactly when the Postgres-first approach is sufficient, and precisely when another control surface must step in to own the harder problem. Ultimately, the governing **Invariant** guarantees that the deliberately chosen technology stack actively owns the real failure mode, rather than dangerously hiding it behind complex infrastructure vocabulary.
+In the book's overarching system model, the **State** represents the exact architecture boundary where durable work, coordination logic, side effects, recovery mechanisms, and operator evidence actually live. The **Actor** is the architect or technical lead who actively makes the choice of whether the Postgres-first ledger, a simple script, a queue framework, or a massive workflow engine should fundamentally own the job.
+
+The critical **Transition** dictates that an architectural design is only formally accepted, definitively rejected, or safely upgraded after its specific operating envelope and evidence contract are explicitly named and documented. The resulting **Evidence** is the written operating envelope itself, which names exactly when the Postgres-first approach is sufficient, and precisely when another control surface must step in to own the harder problem.
+
+Ultimately, the governing **Invariant** guarantees that the deliberately chosen technology stack actively owns the real failure mode, rather than dangerously hiding it behind complex infrastructure vocabulary. For this chapter, the precise definition is: required production anchor for this chapter.
+
 
 ## What Can Fail
 
-When defining production scope, several critical failure modes can emerge. The most common design smell occurs when an architecture is chosen based entirely on engineering preference or industry trends, rather than being bound to a strict operating envelope. The production symptom of this failure is that the system will inevitably require advanced replay capabilities, complex timers, or heavy orchestration that the carelessly chosen design never formally owned or supported. The corrective invariant to enforce is that the architecture document must explicitly state exactly which operational guarantees it natively provides, and crucially, which guarantees it deliberately does not. If a failure occurs, the operational evidence you must rigorously inspect includes the scope notes that definitively name whether a script, a queue framework, the Postgres ledger, a workflow engine, or a platform boundary was supposed to handle the load.
+When defining production scope, several critical failure modes can emerge. The most common design smell occurs when an architecture is chosen based entirely on engineering preference or industry trends, rather than being bound to a strict operating envelope. The production symptom of this failure is that the system will inevitably require advanced replay capabilities, complex timers, or heavy orchestration that the carelessly chosen design never formally owned or supported.
+
+The corrective invariant to enforce is that the architecture document must explicitly state exactly which operational guarantees it natively provides, and crucially, which guarantees it deliberately does not. If a failure occurs, the operational evidence you must rigorously inspect includes the scope notes that definitively name whether a script, a queue framework, the Postgres ledger, a workflow engine, or a platform boundary was supposed to handle the load. **Design smell:** the design names a mechanism but not the invariant it protects.
+
+**Production symptom:** operators cannot explain what changed or which evidence proves it. **Corrective invariant:** every important transition must be owned, durable, and reviewable. **Evidence to inspect:** inspect the row, event, receipt, policy decision, trace, or runbook output.
+
 
 ## Production Contract
 
@@ -253,11 +299,20 @@ In the naive version, system architecture is chosen largely by engineering prefe
 
 The safer version improves upon this by forcing the architecture documentation to explicitly state which guarantees it provides and, critically, which it deliberately does not. Here, the operating envelope formally names exactly which component definitively owns coordination, recovery mechanics, and side-effect evidence.
 
-The final, production-grade version hardens this integration entirely. The team creates rigorous scope notes that explicitly name the boundaries for a script, a queue framework, the Postgres ledger, a workflow engine, or a distributed platform. At this stage, engineering teams are permitted to move from a script, up to Postgres-first, and eventually to a workflow engine, but only when a explicitly named invariant demonstrably exceeds the current operating envelope. Use the naive row to aggressively catch preference-driven architecture, use the safer row to formally name the real operational contract, and use the production row as a strict gate before adding any new infrastructure to the critical reader path.
+The final, production-grade version hardens this integration entirely. The team creates rigorous scope notes that explicitly name the boundaries for a script, a queue framework, the Postgres ledger, a workflow engine, or a distributed platform. At this stage, engineering teams are permitted to move from a script, up to Postgres-first, and eventually to a workflow engine, but only when a explicitly named invariant demonstrably exceeds the current operating envelope.
+
+Use the naive row to aggressively catch preference-driven architecture, use the safer row to formally name the real operational contract, and use the production row as a strict gate before adding any new infrastructure to the critical reader path. **Naive version:** the mechanism works once but does not leave enough evidence for recovery. **Safer version:** the mechanism names ownership, state, and proof before execution. **Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
 
 ## Testing Strategy
 
-You must test your architecture scope by making the operating envelope itself fully executable. In your unit or type tests, you must create a Rust `ArchitectureChoice` or a strict policy enum that explicitly rejects any architectural choice that lacks a definitively named state owner, a recovery owner, and a side-effect evidence owner. Your persistence or boundary tests must utilize a Postgres review table or a rigid fixture row to durably record exactly why a specific job currently stays within the Postgres-first model, or conversely, exactly why it is allowed to move to a queue, a workflow engine, or a platform. Furthermore, your regression tests must preserve a historical case where infrastructure was improperly selected without naming a missing invariant, a baseline metric, or a rollback plan; this test should ensure that such a reckless move remains perpetually blocked by your CI pipeline.
+You must test your architecture scope by making the operating envelope itself fully executable. In your unit or type tests, you must create a Rust `ArchitectureChoice` or a strict policy enum that explicitly rejects any architectural choice that lacks a definitively named state owner, a recovery owner, and a side-effect evidence owner.
+
+Your persistence or boundary tests must utilize a Postgres review table or a rigid fixture row to durably record exactly why a specific job currently stays within the Postgres-first model, or conversely, exactly why it is allowed to move to a queue, a workflow engine, or a platform.
+
+Furthermore, your regression tests must preserve a historical case where infrastructure was improperly selected without naming a missing invariant, a baseline metric, or a rollback plan; this test should ensure that such a reckless move remains perpetually blocked by your CI pipeline.
+**Unit:** test the smallest typed transition and the invariant it preserves.
+**Persistence:** test the database row, query, or receipt that proves the transition survives process death.
+**Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -266,6 +321,7 @@ You must actively observe scope decisions long before any actual infrastructure 
 ## Security and Safety Considerations
 
 Architecture scope changes can severely weaken system security if technical authority is allowed to move silently between components. You must treat all new queues, workflow engines, operational dashboards, and simple scripts as fundamentally untrusted boundaries until their payload validation requirements and strict ownership are definitively named. Crucially, mandatory authorization, secure sandboxing, and strict human approval must actively move seamlessly alongside the state machine whenever technical responsibility officially leaves the Postgres-first path. Always meticulously redact infrastructure credentials and sensitive tenant payloads from your architecture reviews, while carefully preserving the architectural reasoning detailing exactly why the boundary was changed.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -278,10 +334,18 @@ Third, rehearse your **Failure** modes: ensure the team can explicitly explain e
 ## Exercises
 
 To test your mastery, write a negative test where a proposed queue migration accidentally drops the original idempotency key or receipt link. You must explicitly explain which idempotency key, receipt, or state transition was supposed to prevent duplicate work from executing. Next, sketch the exact Postgres evidence: a formal scope decision record that explicitly names the current durable owner, the specific strained invariant, and the exact migration trigger. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents an `ArchitectureChoice` type designed to strictly distinguish between a script, a PostgresLedger, a QueueFramework, a WorkflowEngine, and a DistributedPlatform. Then, meticulously name the runbook question that proves this enforcement mechanism actually works.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your understanding. First, recall exactly what constitutes the formal operating envelope of the Postgres-first design. Next, be able to clearly explain why adopting a workflow engine should be treated as a reactive scaling path, and never as the first default explanation for architecture. Then, apply this knowledge to your own systems by classifying one specific job as either a script, a Postgres-ledger job, a workflow-engine workflow, or a distributed-platform concern. Finally, explicitly name the specific failure pressure and the exact artifact that justifies that architectural choice, and identify which missing invariant would ultimately force you to move up the infrastructure ladder.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -291,10 +355,23 @@ The core invariant to remember is that any architecture choice must absolutely p
 
 Moving forward, remember the golden rule: move to queues, complex workflow engines, or heavy distributed platforms only when a explicitly named invariant is demonstrably strained by reality.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, a serious, production-grade agent may have seemed to mechanically require a massive distributed platform from day one. After this chapter, you should understand that a rigorously disciplined Rust, Postgres, and Rig system can easily and safely carry the first production version, provided its internal state machine is explicit and audited. Moving forward, keep in mind that you must always write the formal operating-envelope decision document before you ever add a second infrastructure component.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: (2011). The canonical reference for documenting architectural trade-offs and the "Operating Envelope" discussed in this chapter.
+- [PlanetScale: The principles of extreme fault tolerance](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: Explains the mechanical constraints that force a move from a single-database design to distributed platforms.
+- [Temporal Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: An industry-leading explanation of the scaling paths (retries, timers, history) that exceed the Postgres-first operating envelope.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects these trade-offs to the formal limits of RDBMS vs. distributed streaming systems.

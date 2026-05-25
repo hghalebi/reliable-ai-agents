@@ -678,4 +678,10 @@ Leases recover crashed workers. Heartbeats prove long operations are still alive
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Hayashibara et al.: The Phi Accrual Failure Detector](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2004). A landmark algorithm that moves beyond binary "Up/Down" heartbeats to a probabilistic "suspicion level." It is the foundation for how systems like Cassandra and Akka handle network jitter without losing cluster consistency.
+- [Gray & Cheriton: Leases—An Efficient Mechanism for Distributed Consistency](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (1989). The seminal paper that formalizes the "time-bound contract" for resource ownership used to prevent the "Zombie Worker" problem in this chapter.
+- [Tokio: Graceful Shutdown](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive practical reference for the "Cooperative Cancellation" pattern used in this chapter, explaining the interaction between `select!`, `CancellationToken`, and RAII.
+- [Martin Fowler: Pattern—Heartbeat](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A clear, pattern-based review of using periodic liveness signals to maintain sessions and detect silent process crashes.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 8: The Trouble with Distributed Systems). Explains the critical role of "Fencing Tokens" (which leases provide) to ensure that a stale worker cannot corrupt state after a long GC pause.

@@ -241,4 +241,10 @@ readiness command.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the drill design because it gives a small, repeated path into the same production concept.
+- [CDC: ADHD in the Classroom](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports clear expectations, organization, and fast feedback for readers with attention constraints.
+- [Digital.gov: Short and Simple](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports the use of short proof sentences that still tell the reader what to inspect.
+- [IES: Organizing Instruction and Study to Improve Student Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports worked practice, active recall, and concrete examples.
+- [Google SRE chapter: Testing for Reliability](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports treating each drill as a small reliability proof rather than a reading task.

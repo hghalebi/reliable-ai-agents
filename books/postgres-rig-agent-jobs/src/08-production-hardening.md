@@ -49,19 +49,34 @@ Read this as the simple version:
 
 ## What You Already Know
 
-Start by anchoring yourself in the hard-won mechanics you have already established. You know that your local job lifecycle can successfully run and be thoroughly tested in isolation. You know that moving to production immediately introduces duplicate intake requests, brutal process crashes, risky external actions, terrifying unknown failures, and highly sensitive secrets. Finally, you understand that a control is only actually useful if it strictly attaches to a mathematical state transition, rather than just floating in a log message.
+Start with these anchors:
 
-This chapter adds the crucial first hardening layer. By deliberately applying idempotency, explicit leases, strict approvals, heavy observability, and paranoid secret handling, you turn a fragile local system into a serious, production-grade service shape.
+- One local job lifecycle can now run and be tested.
+- Production adds duplicate intake, crashes, risky actions, unknown failures, and secrets.
+- A control is useful only if it attaches to a state transition.
+
+This chapter adds: the first hardening layer. Idempotency, leases, approvals,
+observability, and secret handling turn the local system into a serious service
+shape.
 
 ## Focus Cue
 
-Keep three critical elements fiercely in view as you read. Regarding **State**, recognize the specific controls that actively turn hidden, silent failures into durable state, policy decisions, metrics, traces, or actionable runbook alerts. Regarding the **Move**, understand that a cute demo behavior only legally becomes production behavior *after* its specific failure path is formally persisted, gated, observed, or repeatedly rehearsed. Finally, regarding **Proof**, remember that idempotency keys, leases, approval gates, observability pipelines, secret handling, and recovery paths must be glaringly visible in both your code and your operational runbooks.
+Keep three things in view:
 
-If you ever get lost in the list of features, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical hardening idea to a concrete production check at 2 AM.
+- **State:** the controls that turn hidden failure into durable state, policy decisions, metrics, traces, or runbook actions.
+- **Move:** a demo behavior becomes production behavior only after its failure path is persisted, gated, observed, or rehearsed.
+- **Proof:** Idempotency, leases, approval gates, observability, secret handling, and recovery paths are visible in code and runbooks.
+
+If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
+
 
 ## Production Artifact
 
-Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a comprehensive hardening checklist explicitly wired to idempotency, leases, approvals, secrets, traces, and failure visibility. This artifact matters intensely because a demo only truly becomes a service when heavily repeated work, risky actions, and sudden crashes have mathematically enforced controls. You will know this is "done" when the system automatically rejects unsafe requests, meticulously records key transitions, and loudly exposes stuck or risky work long before launch day.
+Build or inspect this artifact before moving on:
+
+- **Artifact:** a hardening checklist wired to idempotency, leases, approval, secrets, traces, and failure visibility.
+- **Why it matters:** a demo becomes a service only when repeated work, risky actions, and crashes have controls.
+- **Done when:** the system rejects unsafe requests, records key transitions, and exposes stuck or risky work before launch.
 
 
 ## Implementation Map
@@ -510,4 +525,9 @@ The production system is not bigger because it is fancy. It is bigger because it
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE: Eliminating Toil](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Provides the industrial framework for converting assumptions into explicit "Hardening Controls" like error budgets and SLIs.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: The standard for the structured observability fields (job id, worker id, trace id) introduced in this chapter's hardening section.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A definitive guide to implementing the first and most important hardening control for any production API.
+- [AWS Builders' Library: Avoiding Overload](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Explains the mechanical reason for "Bounded" work and "Leases" as protective controls.

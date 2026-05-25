@@ -732,4 +732,11 @@ to deployable artifacts.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports giving readers multiple ways to enter the same production concept.
+- [CDC: ADHD in the Classroom](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports predictable routines, organization, clear expectations, and quick feedback for ADHD learners.
+- [Digital.gov: Short and Simple](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports short sentences, clear words, and reader-centered organization.
+- [Paas and van Merrienboer: Cognitive-Load Theory](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports reducing unnecessary load before adding complex Rust and SQL detail.
+- [IES: Organizing Instruction and Study to Improve Student Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports worked examples, concrete representations, spacing, and active recall.
+- [Nature Reviews Psychology: Spacing and Retrieval Practice](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: supports retrieval practice and spaced review for durable learning.

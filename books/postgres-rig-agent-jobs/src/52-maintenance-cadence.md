@@ -206,4 +206,11 @@ runs. If they do not, reliability will drift quietly.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the cadence's focus on SLOs, toil, ownership, incident follow-up, and operations as software engineering.
+- [Google SRE chapter: Testing for Reliability](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports regular failure drills, restore checks, and reliability testing as repeated practice rather than one-time proof.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the trace, metric, and log evidence used in daily and weekly reviews.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports reviewing durable state, schemas, logs, retention, and long-lived data-system behavior over time.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports recurring review of prompt injection, tool abuse, memory poisoning, and data-exfiltration risks.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: supports periodic review of typed boundaries, public contracts, and maintainable Rust APIs as the code evolves.

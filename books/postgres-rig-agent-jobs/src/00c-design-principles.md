@@ -142,15 +142,28 @@ How does an operator recover the system at 03:00?
 The second team is doing production engineering. It still cares about model
 quality, but it treats the model as one component inside a controlled system.
 
-## Worked Walkthrough
+## Tiny Scenario
 
 Imagine a scenario where a user, perhaps due to a spotty network connection, accidentally sends the exact same request twice: "Analyze incident inc-123 and suggest the next action." 
 
 In a naive architecture built entirely around simple scripts, this immediately causes a catastrophic failure. The script receives both requests, calls the expensive model twice in parallel, generates two slightly different answers, and likely triggers two separate escalation paths. The customer is confused, the system wasted resources, and the external side effects were duplicated. This happened because the script was focused entirely on model quality rather than system durability.
 
-A reliable system, however, actively applies core design principles to survive this exact scenario. First, it enforces *durability* by writing one job row to the database before any execution begins. Then, it uses *identity* to map both incoming network requests to a single, deterministic idempotency key. When the workers attempt to process the work, *ownership* ensures that only one worker can successfully lease the job. If the provider times out during the single execution, the *boundary* principle dictates that the timeout is converted into a typed, understood retry decision rather than a raw crash. Throughout this entire process, *evidence* requires the system to record each transition in the event timeline. Before the agent takes any external action based on the model's analysis, *policy* demands human approval. Finally, when the action is taken, the *receipt* principle ensures the side effect is permanently recorded before the system can ever consider replaying the action.
+A reliable system, however, actively applies core design principles to survive this exact scenario. First, it enforces *durability* by writing one job row to the database before any execution begins. Then, it uses *identity* to map both incoming network requests to a single, deterministic idempotency key. When the workers attempt to process the work, *ownership* ensures that only one worker can successfully lease the job.
+
+If the provider times out during the single execution, the *boundary* principle dictates that the timeout is converted into a typed, understood retry decision rather than a raw crash. Throughout this entire process, *evidence* requires the system to record each transition in the event timeline. Before the agent takes any external action based on the model's analysis, *policy* demands human approval.
+
+Finally, when the action is taken, the *receipt* principle ensures the side effect is permanently recorded before the system can ever consider replaying the action.
 
 These principles are not abstract philosophical ideas; they are the literal, mechanical reasons why the duplicate network request does not become duplicate work, a duplicate escalation, or a duplicate customer impact. 
+
+Read the tiny case as:
+
+```text
+setup: a user accidentally sends the exact same incident triage request twice under a spotty network connection
+transition: the system maps both requests to a single idempotency key, enqueues a single job row, and leases it to a single worker
+evidence: a single durable job row in the database, with locked_by and locked_until set, along with a side-effect receipt
+invariant: only one worker can process the unique lease, ensuring no duplicate external action or duplicate model call runs
+```
 
 ## Reliable Agent Laws
 
@@ -186,43 +199,149 @@ approval is required before the side effect happens.
 
 ## Principle 1: Durable Before Intelligent
 
-Work must exist securely before a model call ever begins. If work exists exclusively in volatile process memory, a simple service restart can permanently erase it. If the complex model returns a result just milliseconds before the database successfully stores it, a violent crash can make the entire system completely forget what just happened. Durable state is the absolute, unshakeable foundation under every single reliability claim that follows. The primary production artifact proving this is ensuring the `agent_jobs` row decisively exists in the database long before the worker is allowed to call the agent.
+Work must exist before a model call begins.
+
+If work exists only in process memory, a restart can erase it. If the model
+returns before the result is stored, a crash can make the system forget what
+happened. Durable state is the foundation under every later reliability claim.
+
+Production artifact:
+
+```text
+agent_jobs row exists before the worker calls the agent
+```
 
 ## Principle 2: Typed Before Clever
 
-Your system can safely protect only the specific concepts it can explicitly name. If crucial facts like job kind, current state, attempt count, lease duration, model name, strict policy version, and failure class are passed around as raw strings or booleans at system boundaries, your code will proudly compile while the architecture remains disastrously ambiguous. Rust newtypes and strict enums are profoundly not decorative style choices; they are a mechanical way to make illegal states mathematically much harder to express. The core production artifact requires domain APIs to fiercely expose `JobKind`, `JobState`, `WorkerId`, `RetryDisposition`, and version types instead of primitives.
+The system can protect only the concepts it can name.
+
+If job kind, state, attempt count, lease duration, model name, policy version,
+and failure class are raw strings or booleans at boundaries, the code can
+compile while the architecture is ambiguous. Newtypes and enums are not style
+decoration. They are a way to make illegal states harder to express.
+
+Production artifact:
+
+```text
+domain APIs expose JobKind, JobState, WorkerId, RetryDisposition, and version types
+```
 
 ## Principle 3: Ownership Before Concurrency
 
-Parallel, aggressive workers are safe only when ownership is explicitly and formally declared. A worker should never attempt to complete, blindly retry, or lazily heartbeat a job simply because it happens to know the job id. It should execute those actions only because it currently owns a mathematically valid lease on that exact job. Cancellation represents a completely separate control surface: the intention to stop work must be highly durable *before* the job is actually stopped. Rampant concurrency without strict ownership rapidly degenerates into accidental, disastrous shared mutation. The production artifact for this principle requires explicit SQL predicates enforcing `locked_by` and `locked_until` checks for all running-job transitions.
+Parallel workers are safe only when ownership is explicit.
+
+A worker should not complete, retry, or heartbeat a job because it knows the
+job id. It should do those actions only because it owns the current lease.
+Cancellation is a separate control surface: the stop intent should be durable
+before the job is stopped. Concurrency without ownership becomes accidental
+shared mutation.
+
+Production artifact:
+
+```text
+SQL predicates require locked_by and locked_until for running-job transitions
+```
 
 ## Principle 4: Boundary Before Policy
 
-External systems must strictly enter the architecture through dedicated adapters, absolutely never leaking their raw implementations through the core logic. Provider errors, raw model outputs, complex tool responses, and underlying database rows frequently possess incredibly messy shapes. The core worker logic should not know or care about those messy shapes. Instead, it must receive pristine, typed domain decisions: a retryable failure, a permanent failure, a validated result, an approval required flag, or a policy denied status. The key production artifact here proves that provider responses aggressively convert to an `AgentResult` or a typed failure long before the core worker policy evaluates them.
+External systems should enter through adapters, not leak through the core.
+
+Provider errors, model outputs, tool responses, and database rows often have
+messy shapes. The core worker should not know those shapes. It should receive
+domain decisions: retryable failure, permanent failure, validated result,
+approval required, or policy denied.
+
+Production artifact:
+
+```text
+provider responses convert to AgentResult or typed failure before worker policy
+```
 
 ## Principle 5: Idempotent Before Retried
 
-A retry simply repeats uncertainty, whereas idempotency mathematically makes that repetition safe. Automated retries are operationally useful only when a duplicate intention flawlessly maps to exactly one single durable action path. Without a strict idempotency key and a durable side-effect receipt, a casual retry loop can accidentally duplicate sensitive emails, support tickets, financial payments, internal approvals, or highly dangerous operational commands. The production artifact proving this ensures that a duplicate enqueue attempt merely returns the existing job, and any side-effect replay strictly checks a durable receipt before acting.
+Retry repeats uncertainty. Idempotency makes repetition safe.
+
+Retries are useful only when duplicate intent maps to one durable action path.
+Without an idempotency key and side-effect receipt, retry can duplicate emails,
+tickets, payments, approvals, or operational commands.
+
+Production artifact:
+
+```text
+duplicate enqueue returns the existing job and side-effect replay checks a receipt
+```
 
 ## Principle 6: Evidence Before Operations
 
-Human operators desperately need persisted facts during an incident, not vague guesses extracted from a Slack channel. While logs are useful context, they are not the definitive authority. A serious, production-grade runbook must be able to answer any critical operational question directly from durable database rows, formal event timelines, metrics, traces, receipts, and strict version records. If the system cannot unequivocally explain exactly what happened, it cannot be operated with confidence at 3 AM. The production artifact here proves that runbook queries can flawlessly reconstruct queue health, current lease state, dead jobs, and the full event timeline.
+Operators need persisted facts, not guesses.
+
+Logs are useful, but they are not the authority. A serious runbook should be
+able to answer questions from durable rows, event timelines, metrics, traces,
+receipts, and version records. If the system cannot explain what happened, it
+cannot be operated with confidence.
+
+Production artifact:
+
+```text
+runbook queries reconstruct queue health, lease state, dead jobs, and event timeline
+```
 
 ## Principle 7: Evaluation Before Behavior Release
 
-High system availability absolutely does not prove behavior quality. An agent can answer a query incredibly quickly and still produce unsafe, dangerously stale, or completely unsupported recommendations. Changes to prompts, models, tools, retrieval logic, and policies demand strict behavior evaluation *before* they ever become the default path for real work. The production artifact aggressively requires that specific prompt and model versions definitively possess evaluation receipts before formal promotion is allowed.
+Availability does not prove behavior quality.
+
+An agent can answer quickly and still produce unsafe, stale, or unsupported
+recommendations. Prompt, model, tool, retrieval, and policy changes need
+behavior evaluation before they become the default path for real work.
+
+Production artifact:
+
+```text
+prompt and model versions have evaluation receipts before promotion
+```
 
 ## Principle 8: Approval Is State, Not Conversation
 
-Human approval is only reliable when it is formally recorded as database state. A chat message saying "looks good" is simply not enough for an automated system. The system strictly needs the formal proposal, the calculated risk level, the exact policy version applied, the verifiable approver identity, the timestamp, the provided reason, and the resulting state transition. Approval must be replayable, auditable evidence, not an informal side conversation. The production artifact proving this dictates that any risky action must actively wait for a formal approval record to exist in the database before side-effect execution can begin.
+Human approval is reliable only when it is recorded.
+
+A chat message saying "approved" is not enough. The system needs the proposal,
+risk level, policy version, approver, timestamp, reason, and resulting state
+transition. Approval should be replayable evidence, not an informal side
+conversation.
+
+Production artifact:
+
+```text
+risky action waits for an approval record before side-effect execution
+```
 
 ## Principle 9: Release With Old Work In Mind
 
-Long-running systems always, inevitably, have old work currently in flight. When core code, database schema, complex prompts, active policies, or provider routes fundamentally change, pending and running jobs still actively exist. Release engineering for agents must therefore meticulously preserve old payloads, old versions, old decisions, and highly safe replay paths for this legacy work. The production artifact requires that the schema, prompt, model, policy, and specific worker versions are explicitly stored tightly alongside the job.
+Long-running systems always have old work.
+
+When code, schema, prompts, policies, or provider routes change, pending and
+running jobs still exist. Release engineering for agents must preserve old
+payloads, old versions, old decisions, and safe replay paths.
+
+Production artifact:
+
+```text
+schema, prompt, model, policy, and worker versions are stored with the job
+```
 
 ## Principle 10: Recovery Must Be Practiced
 
-Having a backup script is emphatically not the same thing as having recovery capability. True recovery means the operations team can actually restore data, safely resume workers, effectively replay safe work, aggressively avoid duplicate side effects, and clearly explain any remaining gaps to stakeholders. The only credible proof of this capability is a formal restore drill with measured Recovery Point Objective (RPO), Recovery Time Objective (RTO), and perfectly verified replay behavior. The production artifact is the documented restore drill that meticulously records RPO, RTO, replay rules, receipt handling, and formal operator signoff.
+Backup is not recovery.
+
+Recovery means the team can restore data, resume workers, replay safe work,
+avoid duplicate side effects, and explain the remaining gaps. The only credible
+proof is a restore drill with measured RPO, RTO, and replay behavior.
+
+Production artifact:
+
+```text
+restore drill records RPO, RTO, replay rules, receipt handling, and operator signoff
+```
 
 ## How The Principles Compose
 
@@ -305,7 +424,9 @@ Use the naive row to spot decorative principles. Use the safer row to check orde
 
 ## Testing Strategy
 
-You must test the principles as active ordering rules, never as passive slogans. In your unit or type tests, you must represent one principle in Rust as a formal review rule that explicitly rejects a design artifact when a later control appears before its prerequisite invariant. Your persistence or boundary tests must store a Postgres design-review row that durably links the principle, the specific artifact, the failure prevented, the owner, and the evidence source. Furthermore, your regression tests must encode one actively rejected shortcut—such as attempting a retry before establishing idempotency, or measuring an SLO before implementing durable events—so the review gate structurally fails if the principle ever becomes merely decorative.
+You must test the principles as active ordering rules, never as passive slogans. In your unit or type tests, you must represent one principle in Rust as a formal review rule that explicitly rejects a design artifact when a later control appears before its prerequisite invariant. Your persistence or boundary tests must store a Postgres design-review row that durably links the principle, the specific artifact, the failure prevented, the owner, and the evidence source.
+
+Furthermore, your regression tests must encode one actively rejected shortcut—such as attempting a retry before establishing idempotency, or measuring an SLO before implementing durable events—so the review gate structurally fails if the principle ever becomes merely decorative. **Unit:** test the smallest typed transition and the invariant it preserves. **Persistence:** test the database row, query, or receipt that proves the transition survives process death. **Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -314,6 +435,7 @@ You must actively observe design principles as reviewable decisions. Emit struct
 ## Security and Safety Considerations
 
 Principles function as safety rules only when they demonstrably block unsafe shortcuts. You must treat any design proposal as inherently untrusted until it mathematically proves the prerequisite invariant named by the governing principle. Mandatory authorization, secure sandboxing, and strict human approval must be demanded by principle before risky tools, external systems, or human-controlled actions are allowed to execute. Always meticulously redact secrets and user data from review notes while keeping the violated principle, the accountable owner, and the corrective evidence perfectly visible to the team.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -326,10 +448,18 @@ Third, rehearse your **Failure** modes: a design review must be able to explicit
 ## Exercises
 
 To test your mastery, pick a scenario and write a negative test where a retry is accidentally added before the side effect possesses a receipt or an idempotency key. You must explicitly explain which idempotency key, receipt, or state transition prevents the duplicate work from executing. Next, sketch the exact Postgres evidence—one row or query—that proves each chosen principle has durable, inspectable evidence. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents a Principle enum or a review checklist type that automatically rejects principles lacking evidence links. Then, meticulously name the runbook question that proves this enforcement works.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your understanding. First, recall and name three specific principles that actively protect long-running agents from hidden failure. Next, be able to clearly explain why "durable before intelligent" is an enforceable design rule, not merely a motivational slogan. Then, apply this knowledge by picking one principle and explicitly describing the exact bug that inevitably appears when it is violated in code. Finally, ensure you can explicitly name the row, type, test, receipt, or runbook query that would unconditionally prove the principle is enforced.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -339,15 +469,23 @@ The core invariant to remember is that a production design is fundamentally not 
 
 Moving forward, remember the golden rule: actively use these principles as a strict review checklist whenever a design starts to feel like scattered tool selection instead of rigorous reliability engineering.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, reliability may have simply looked like extra, tedious infrastructure bolted on after the model already "works." After this chapter, you should understand that reliability is a strict, upfront design discipline: you must be durable before you are intelligent, typed before you are clever, and observable before you are trusted. Moving forward, keep in mind that you must use this design-principle checklist ruthlessly before accepting any new agent feature.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
-g forward, keep in mind that you must use this design-principle checklist ruthlessly before accepting any new agent feature.
 
-## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: (2019). Grounded in Cognitive Load Theory, this book argues that software boundaries should be designed to fit within human working-memory limits—the "Typed Before Clever" and "Pedagogical" mission of this book.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: Provides the industry-standard foundation for the principles of observability, automation, and release safety discussed in this chapter.
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2025). The industry guide for the "Durable Before Intelligent" principle, emphasizing deterministic scaffolds over model-only autonomy.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects these principles to broader distributed systems invariants.

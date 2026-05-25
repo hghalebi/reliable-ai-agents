@@ -692,4 +692,10 @@ rollout.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE: Release Engineering](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive guide to building fast, repeatable, and automated deployment pipelines using hermetic builds and immutable artifacts.
+- [AWS Builders' Library: Avoiding Overload](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Explains the "One-Box" and "AZ-by-AZ" rollout strategies used to limit blast radius during production changes.
+- [GoCardless: Zero-Downtime Postgres Migrations](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A practical deep-dive into the "Expand and Contract" pattern and the importance of `lock_timeout` when changing schema under live traffic.
+- [NIST SP 800-57 Part 1 Rev. 5: Recommendation for Key Management](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: Provides the formal vocabulary and lifecycle (generation, usage, rotation, destruction) for the secrets and credentials introduced in this chapter.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 10: Batch Processing). Connects worker drain behavior and "Lease Expiry" to the formal requirements of fault-tolerant offline systems.

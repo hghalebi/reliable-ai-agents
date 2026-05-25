@@ -579,4 +579,10 @@ Carry this forward: human-in-the-loop is durable state, not a chat message.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Amodei et al.: Concrete Problems in AI Safety](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2016). The foundational academic paper exploring "Scalable Oversight" and the role of human-in-the-loop systems in preventing agents from diverging from human intent.
+- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: The definitive industry standard for building trustworthy AI systems. It treats human oversight (HITL/HOTL) as a fundamental component of a socio-technical safety system.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: A core security protocol that mandates critical decisions be vets by at least two independent actors—the model (proposer) and the human (approver) in this chapter.
+- [OWASP: LLM02 Insecure Output Handling](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Explains the specific security risk of trusting model output as permission, which the "Approval Gate" pattern in this chapter directly remediates.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects human-in-the-loop state to the "Auditability" and "Non-repudiation" requirements of high-stakes automated systems.

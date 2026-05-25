@@ -547,6 +547,7 @@ central rule: model text is not authority.
 > Think of an **Idempotency Invariant** as a rule that says: "No matter how many times I do this, it only counts as one!" 
 > 
 > In your tests, you should try running the same job twice. If the *second* run does anything new—like sending a second email—the invariant is broken! It's like checking the mail: no matter how many times you open the box, you only get today's letters once.
+**Postgres:** verify the SQL evidence path, not only in-memory behavior.
 
 ## Observability Strategy
 
@@ -637,4 +638,10 @@ fixtures, eval receipts, and failure drills block regressions.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Principles of Chaos Engineering](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The foundational industry manifesto (pioneered by Netflix) for building resilience by deliberately injecting failure to test system invariants—the core logic behind the "Failure Drills" in this chapter.
+- [OpenAI Evals](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The primary reference for moving from manual prompt testing to repeatable "Behavior Evaluations" using task-specific datasets and "LLM-as-a-Judge" grading patterns.
+- [The proptest book](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Explains how to use random input generation to find deep boundary bugs (e.g., in lease expiry or retry logic) that manual unit tests often miss.
+- [AgentBench (ICLR 2024)](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (ICLR 2024). The academic foundation for evaluating agents across diverse environments (OS, Database, Web), providing the rubric for the "middle ring" of testing discussed in this chapter.
+- [Will Wilson: Testing the Untestable](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Re-visiting this seminal industry talk to ground the chapter's "Deterministic Local Run" in the rigorous simulation practices of world-class distributed databases.

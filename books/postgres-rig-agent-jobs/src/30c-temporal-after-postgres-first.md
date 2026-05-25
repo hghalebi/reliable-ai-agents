@@ -58,22 +58,45 @@ once.
 ## Plain Version
 
 The simple rule for this chapter is to adopt Temporal only when the actual shape of your workflow becomes significantly harder to manage than your standard job queue. This matters because while Temporal is exceptionally good at owning durable workflow progress, your product ledger must remain the sole owner of product truth. If you find your team constantly struggling to implement long timers, massive numbers of child workflows, complex cancellation rules, cross-service retries, or custom replay logic, and these issues are becoming your primary source of bugs, then it is time to consider a workflow engine.
+Read this as the simple version:
+- **Simple rule:** name the invariant before trusting the mechanism.
+- **Why it matters:** vague reliability claims fail during incidents.
+- **What to watch:** the proof must be a row, type, event, receipt, or runbook check.
+
 
 ## What You Already Know
 
 Start by grounding yourself in the concepts you have already mastered. You know that a job table is a durable promise ensuring work survives a process death. You understand that a retry is only safe when the operation possesses strict identity, and that a tool call is a dangerous side effect requiring a receipt. You have learned that human approval is a formal, durable control state rather than just a UI detail, and that audit events constitute formal business evidence rather than mere debug logs. 
 
 This chapter adds one crucial layer to this foundation: a workflow engine can entirely take over the mechanics of execution, but it must never be allowed to erase or obscure your typed product state.
+Start with these anchors:
+
+- Durable state is the first production boundary.
+- Typed values make production meaning explicit.
+- Evidence must survive process death.
+
+This chapter adds: one more production mechanism that can be inspected, tested, and operated.
+
 
 ## Focus Cue
 
 As you read, keep three critical concepts in view. Regarding **State**, remember that the core product state remains securely in Postgres, while the transient workflow execution state may move into Temporal. Regarding the **Move**, understand the sequence: a job starts or signals a workflow, the workflow schedules activities, and those activities explicitly write typed product evidence back into the database. Finally, regarding **Proof**, ensure that an operator can flawlessly reconcile a Temporal workflow id, a Postgres job id, an agent run id, a tool call id, an approval id, and an audit event id. 
 
 If you get lost in the details, return to state, move, and proof. Then, ask yourself one clarifying question: which specific history actually answers the product question?
+Keep three things in view:
+- **State:** the production fact that changes.
+- **Move:** the lawful transition from one state to another.
+- **Proof:** the evidence an operator can inspect later.
+
 
 ## Production Artifact
 
 Before you consider moving on, you must build or inspect a formal Temporal adoption decision record. This artifact is critical because introducing a workflow engine fundamentally changes the responsibility boundaries within your architecture. You will know this record is complete when it explicitly names the workflow id mapping, the product ledger mapping, the replay rules, activity idempotency constraints, approval behaviors, trace propagation paths, the rollback strategy, and the required runbook updates.
+Build or inspect this artifact before moving on:
+- **Artifact:** the concrete row, type, policy, receipt, or runbook query for this chapter.
+- **Why it matters:** learning becomes production skill only when it changes an inspectable artifact.
+- **Done when:** another engineer can inspect the artifact and explain the invariant it protects.
+
 
 ## Implementation Map
 
@@ -336,7 +359,12 @@ In the book's system model:
 
 ## What Can Fail
 
-When adopting Temporal, several critical failure modes can emerge. The most common design smell occurs when Temporal is introduced before the team has explicitly named which specific workflow invariant it is supposed to own. The production symptom of this mistake is that the Temporal workflow history will loudly declare that the work is "completed," but the underlying Postgres product rows cannot actually prove the approval state, the side effect execution, or the receipt state. The corrective invariant to enforce is that the workflow execution history and the product evidence must flawlessly reconcile for every single important transition. If a failure occurs, the operational evidence you must inspect includes the workflow id mapping, the search attributes, the activity receipts, the Postgres agent run, the tool call, the human approval, the formal audit event, the failure history, and the final runbook output.
+When adopting Temporal, several critical failure modes can emerge. The most common design smell occurs when Temporal is introduced before the team has explicitly named which specific workflow invariant it is supposed to own. The production symptom of this mistake is that the Temporal workflow history will loudly declare that the work is "completed," but the underlying Postgres product rows cannot actually prove the approval state, the side effect execution, or the receipt state.
+
+The corrective invariant to enforce is that the workflow execution history and the product evidence must flawlessly reconcile for every single important transition. If a failure occurs, the operational evidence you must inspect includes the workflow id mapping, the search attributes, the activity receipts, the Postgres agent run, the tool call, the human approval, the formal audit event, the failure history, and the final runbook output. **Design smell:** the design names a mechanism but not the invariant it protects.
+
+**Production symptom:** operators cannot explain what changed or which evidence proves it. **Corrective invariant:** every important transition must be owned, durable, and reviewable. **Evidence to inspect:** inspect the row, event, receipt, policy decision, trace, or runbook output.
+
 
 ## Production Contract
 
@@ -350,7 +378,9 @@ When adopting Temporal, do not start by moving every single job kind over all at
 
 Once you have selected a candidate, make the scope of adoption small enough to rigorously inspect. The minimum serious shape for this adoption requires explicit definitions. The workflow identity must be a stable `WorkflowExecutionRef` derived directly from a typed job identity, never a random string. The job mapping must ensure that the original `scheduled_jobs` row safely retains the product job id, the idempotency key, the trace id, and a formal migration marker. The agent run mapping requires that `agent_runs` either stores or can easily derive the workflow reference used by your operators. 
 
-Crucially, the activity boundary must be strictly enforced: every model call, tool call, database write, or external API call must happen exclusively within an activity, never within the deterministic workflow code itself. Each of these side-effecting activities must then write a formal activity receipt back to Postgres containing the activity reference, tool call id, idempotency key, operation event, and trace id. While a workflow signal may technically resume a pause, the actual approval signal must live as a decision row in `human_approval_requests` alongside the reviewer identity, reason, policy version, and audit event. Finally, you must have a reconciliation runbook capable of comparing the workflow status with all product evidence, and a clear rollback plan so new work can return to the pure Postgres path while in-flight workflows drain safely.
+Crucially, the activity boundary must be strictly enforced: every model call, tool call, database write, or external API call must happen exclusively within an activity, never within the deterministic workflow code itself. Each of these side-effecting activities must then write a formal activity receipt back to Postgres containing the activity reference, tool call id, idempotency key, operation event, and trace id.
+
+While a workflow signal may technically resume a pause, the actual approval signal must live as a decision row in `human_approval_requests` alongside the reviewer identity, reason, policy version, and audit event. Finally, you must have a reconciliation runbook capable of comparing the workflow status with all product evidence, and a clear rollback plan so new work can return to the pure Postgres path while in-flight workflows drain safely.
 
 This detailed shape enforces the smallest useful rule for the architecture: Temporal may advance execution *only* through activities that explicitly leave product evidence behind. That rule is what keeps Temporal a useful tool without allowing it to become an invisible, secondary business system.
 
@@ -364,7 +394,9 @@ The companion module `temporal_adoption.rs` provided in this book is intentional
 
 Do not add Temporal to your architecture simply because writing a workflow sounds like an important, enterprise-grade milestone. You should continue to rely on the simpler, Postgres-first worker loop for as long as possible if your primary architectural pain points are actually symptoms of underlying ambiguity rather than mechanical orchestration limits.
 
-For example, if your overall state machine is unclear, you must first explicitly name the states, transitions, owners, and evidence rows in Postgres. If your retries are occasionally duplicating work, you must add idempotency keys, side-effect receipts, and strict regression tests *before* adding a powerful workflow engine that will just retry those bugs faster. If operators currently cannot fully explain the history of a single agent run, you must first improve the `agent_runs`, `tool_calls`, `operation_events`, `audit_events`, trace propagation, and runbooks. If human approvals are currently inconsistent or getting lost, you must fix the approval state machine and ensure audit evidence is recorded before you move the "wait" state into a Temporal signal. Finally, if you just have one worker that is acting slowly, you should measure queue latency, split the worker pools, or tune the claim query before attempting a massive orchestration migration.
+For example, if your overall state machine is unclear, you must first explicitly name the states, transitions, owners, and evidence rows in Postgres. If your retries are occasionally duplicating work, you must add idempotency keys, side-effect receipts, and strict regression tests *before* adding a powerful workflow engine that will just retry those bugs faster. If operators currently cannot fully explain the history of a single agent run, you must first improve the `agent_runs`, `tool_calls`, `operation_events`, `audit_events`, trace propagation, and runbooks.
+
+If human approvals are currently inconsistent or getting lost, you must fix the approval state machine and ensure audit evidence is recorded before you move the "wait" state into a Temporal signal. Finally, if you just have one worker that is acting slowly, you should measure queue latency, split the worker pools, or tune the claim query before attempting a massive orchestration migration.
 
 Temporal is an excellent answer when the pure mechanics of workflow execution—the timers, the pauses, the complex retries—are the specific invariant under strain. It is a strictly incorrect answer when your underlying product model is still vague.
 
@@ -379,6 +411,24 @@ In the naive version of adoption, teams often put the entire agent loop inside a
 The safer version improves upon this by strictly starting workflows from typed Postgres jobs and forcing all activities to write formal product rows. Here, the workflow engine successfully owns the timers and retries, while Rust domain types and SQL rows continue to enforce strict business boundaries. 
 
 The final, production-grade version hardens this integration entirely. The team adds strict workflow id mapping, specific search attributes, fully idempotent activities, formalized approval signals, end-to-end trace propagation, reconciliation runbooks, explicit rollback criteria, and routine incident drills. At this stage, operators can confidently debug the exact same agent run simultaneously from Temporal history, Postgres rows, traces, and audit events, completely retaining the Postgres-first reliability model while gaining Temporal's execution power.
+**Naive version:** the mechanism works once but does not leave enough evidence for recovery.
+**Safer version:** the mechanism names ownership, state, and proof before execution.
+**Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
+
+## Testing Strategy
+
+You must test your Temporal integration by verifying both execution progress and evidence preservation. In your unit or type tests, you must model the workflow bridge and verify that conversion fails if any required reference (workflow ref, job ref, trace id) is missing. Your persistence tests must simulate activity executions and confirm they write proper idempotency records and side-effect receipts to Postgres.
+
+Finally, your regression tests must execute a mock workflow that triggers transient errors, verifying that activity retries correctly reuse receipts and do not duplicate external action. **Unit:** test the smallest typed transition and the invariant it preserves. **Persistence:** test the database row, query, or receipt that proves the transition survives process death. **Regression:** keep a failing case for the production bug this chapter is designed to prevent. **Rust:** use the companion crate to make invalid state hard to represent.
+
+## Observability Strategy
+
+You must observe your Temporal workflows by unifying workflow execution traces with database transactions. Emit structured `tracing` fields for the workflow ref, activity ref, job id, and trace id across both systems. You must record operation events when a workflow is started, signaled, or completed, and when activities write receipts. Ultimately, the runbook query must reconcile Temporal workflow status with Postgres rows and trace contexts to prove that no execution is undocumented.
+
+## Security and Safety Considerations
+
+Temporal adoption introduces a new execution surface that must not bypass security policies. You must treat workflow payloads and activity arguments as untrusted boundaries, validating them using typed Rust models before processing. Crucially, authorization, sandboxing, and human approval must be enforced inside activity execution, leaving durable decision records in Postgres. Always redact credentials and sensitive data from activity inputs while keeping the workflow ref, owner, and trace id visible for audit.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -404,6 +454,11 @@ Third, rehearse your **Failure** modes: document exactly what happens when the s
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your understanding. First, recall exactly what Temporal should own in this architecture versus what Postgres must still permanently own. Next, be able to clearly explain why a workflow's internal execution history is not automatically equivalent to a compliant product audit trail. Then, apply this knowledge to your own systems by deciding whether a specific long-running approval workflow needs Temporal or if it can be handled by a simpler Postgres job state. Finally, ensure you can explicitly name the workflow id, job id, run id, approval id, receipt id, audit event id, and trace id that correlate to one single execution run.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -413,10 +468,22 @@ The core invariant to remember is that workflow execution can safely move to Tem
 
 Moving forward, remember the golden rule: never replace a visible, queryable product ledger with an opaque, albeit durable, execution shell.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, Temporal may have simply looked like a much bigger, more powerful version of a standard job table. After this chapter, you should understand that Temporal is an optional execution engine whose internal history must always be rigorously mapped back to concrete product evidence. Moving forward, keep in mind that you should adopt Temporal only when complex workflow semantics truly dominate your engineering time, not when your underlying product state is still vague and undefined.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+- [Temporal Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because workflow definitions, executions, commands, events, replay, and activities are the concepts this chapter maps to the book's product ledger.
+- [Temporal Event History](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because the chapter depends on understanding workflow history as execution evidence, not automatic business audit evidence.
+- [Temporal Activities](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because model calls, tool calls, API calls, and database writes must live behind activity boundaries rather than deterministic workflow logic.
+- [Temporal Rust SDK Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because Rust readers need to see where Temporal's Rust workflow surface begins and where the book's typed product evidence remains separate.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because the migration is a data-system responsibility change around logs, state, and consistency.

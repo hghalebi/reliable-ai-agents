@@ -643,4 +643,9 @@ run for years.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: (2016). A foundational paper explaining why explicit instruction and "Worked Examples" are superior to discovery-based learning for complex technical subjects. It provides the academic basis for the book's short, focused chapters.
+- [CAST: Universal Design for Learning](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: The industry standard for creating learning materials that provide multiple means of representation, action, and engagement. This book applies UDL by offering plain-language summaries, code artifacts, and formal proofs for every concept.
+- [Paas and van Merrienboer: Cognitive-Load Theory](./31-credible-resources-further-reading.md#learning-design-and-plain-language) Read this because: Research into the "Split-Attention Effect," which motivates the book's goal of keeping code and explanation in one visual field to reduce mental tax.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Grounding the book's reliability claims in established data-systems vocabulary.

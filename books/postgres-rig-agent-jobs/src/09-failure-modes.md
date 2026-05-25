@@ -43,22 +43,44 @@ Without a failure model, the system either retries blindly or gives up without e
 ## Plain Version
 
 The simple rule for this chapter is that an architectural failure must become a concrete state the system can explicitly inspect, never a surprise hidden in scattered log lines. This matters deeply because reliable agents require meticulously planned behavior for hard crashes, unpredicted provider errors, bad model output, inherently unsafe tools, and permanently stuck work. As you read, aggressively watch whether each potential failure mode explicitly possesses a defined owner, a safe next action, a strict retry rule, a clear escalation path, and undeniable, durable database evidence.
+Read this as the simple version:
+- **Simple rule:** name the invariant before trusting the mechanism.
+- **Why it matters:** vague reliability claims fail during incidents.
+- **What to watch:** the proof must be a row, type, event, receipt, or runbook check.
+
 
 ## What You Already Know
 
 Start by anchoring yourself in the concepts you have already built. You know that the main hardening controls are now visible and enforceable within the architecture. You also know that most severe agent failures are simply missing facts: missing identity, lost ownership, broken sequence, bypassed authority, or undefined terminality. Furthermore, you understand that a hidden failure cannot be safely retried, securely escalated, or mechanically repaired. 
 
 This chapter adds the crucial skill of formal failure-mode diagnosis. You will learn to map any chaotic production symptom directly back to the specific missing invariant and identify the exact database evidence that should have prevented the failure in the first place.
+Start with these anchors:
+
+- Durable state is the first production boundary.
+- Typed values make production meaning explicit.
+- Evidence must survive process death.
+
+This chapter adds: one more production mechanism that can be inspected, tested, and operated.
+
 
 ## Focus Cue
 
 Keep three critical elements in view as you read. Regarding **State**, recognize the known, predictable ways the system can inadvertently lose ownership, identity, evidence, permission, terminality, or behavior quality. Regarding the **Move**, understand that a production symptom only becomes a reliable repair plan after both the missing invariant and the missing evidence are formally named. Finally, regarding **Proof**, remember that the overall system design must mathematically map each failure to a strict corrective invariant and highly inspectable database evidence. 
 
 If you ever get lost in the taxonomy, immediately return to state, move, and proof. They form the absolute shortest path from abstract failure analysis to a concrete production check.
+Keep three things in view:
+- **State:** the production fact that changes.
+- **Move:** the lawful transition from one state to another.
+- **Proof:** the evidence an operator can inspect later.
+
 
 ## Production Artifact
 
 Before moving on from this chapter, you must build or rigorously inspect a formal failure-mode table. This artifact maps each architectural design smell directly to a production symptom, a corrective invariant, and a concrete evidence query. This artifact matters intensely because production teams desperately need fast, reliable recognition of broken designs long before vague incidents turn into prolonged, unsolvable mysteries. You will know this record is "done" when every single named failure explicitly possesses a defined detection path, a corrective invariant, and an owner-facing diagnostic question.
+Build or inspect this artifact before moving on:
+- **Artifact:** the concrete row, type, policy, receipt, or runbook query for this chapter.
+- **Why it matters:** learning becomes production skill only when it changes an inspectable artifact.
+- **Done when:** another engineer can inspect the artifact and explain the invariant it protects.
 
 
 ## Implementation Map
@@ -482,4 +504,10 @@ A production agent should fail visibly, retry intentionally, and stop safely whe
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Eric Brewer: CAP Twelve Years Later](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The academic foundation for why "Lost Ownership" (Consistency) and "Lost Terminality" (Availability) are fundamental trade-offs in distributed systems.
+- [Google SRE book introduction](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: The industry standard for turning symptoms into "Corrective Invariants"—the exact process described in this chapter's taxonomy.
+- [Abadi: PACELC Theorem](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Formal research on how latency (during heartbeats) and consistency (during leases) interact during failure modes.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Provides the vocabulary for "Split-Brain" and "Silent Corruption" failure modes. latency (during heartbeats) and consistency (during leases) interact during failure modes.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Provides the vocabulary for "Split-Brain" and "Silent Corruption" failure modes.

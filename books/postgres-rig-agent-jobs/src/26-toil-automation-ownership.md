@@ -38,22 +38,10 @@ invariant, approval boundary, or rollback path.
 
 Automation can make an unsafe operation faster. A script that replays jobs
 without checking idempotency, approval state, or root cause does not reduce risk.
-It scales the risk. 
-
-This is the most dangerous failure mode in distributed systems: **Automated Cascading Failure**. A script that "automatically restarts all nodes" can turn a minor network partition into a total cluster collapse. This is why automation must be **Evidence-Backed**.
-
-> ### 🎓 The Professor's Corner
->
-> **Safety Interlocks: The Dead Man's Switch**
->
-> Imagine a train with no driver. How does it know when to stop? It has a **Dead Man's Switch**! If the switch isn't pressed, the train stops immediately. 
-> 
-> In our system, **Safety Interlocks** are the switches that automation must check. If the automation doesn't see the right signal (like an idempotency receipt), it *must* stop and ask for a human. It's the only way to keep the train on the tracks!
-
-The first question is not "can we automate this?" The first
+It scales the risk. The first question is not "can we automate this?" The first
 question is "which part is mechanical, and which part is judgment?"
 
-Design response: measure toil, assign ownership, automate only the safe
+**Design response:** measure toil, assign ownership, automate only the safe
 repeated parts, and preserve evidence for the human decisions that remain.
 
 The goal is not to remove humans from production. The goal is to stop wasting
@@ -194,14 +182,12 @@ If the next section feels large, keep only these five lines in view. Then read
 the mechanism as the detailed proof.
 
 ## Worked Walkthrough
+
 Toil is not just annoying work.
 It is repeated manual work that grows with the system and steals attention from reliability.
 In an agent platform, toil often appears as manual queue inspection, hand-written replay commands, repeated approval nudges, and ad hoc incident checks.
 
-In AI, we have a unique form of toil: **Semantic Maintenance**. This is when a developer has to manually rewrite a prompt every morning because the model started failing on new edge cases. This isn't just a "bug"; it’s a sign that the **Prompt Evaluation Pipeline** is incomplete.
-
 Do not automate it blindly.
-... (omitted) ...
 First ask what decision the human is making.
 If the human is applying judgment, keep the human in the loop.
 If the human is copying evidence from one table to another, the system probably needs a runbook query or a safe operator action.
@@ -214,18 +200,7 @@ It records what happened so the next incident review does not depend on memory.
 For example, pausing a risky job kind should not be a private shell trick.
 It should be a durable control with an actor, reason, timestamp, and resume path.
 The automation reduces toil because operators no longer repeat fragile manual steps.
-
-By making this a **Database State**, you ensure **Consistency of Intent** across the whole team. If one person pauses the queue in their terminal, everyone else can see *why* and *who* did it in the database.
-
 It improves reliability because the action becomes typed, auditable, and reversible.
-
-> ### 🎓 The Professor's Corner
->
-> **The Sous-Chef: Automation as a Helper**
->
-> Think of a professional kitchen. The Chef (the human) does the cooking and the tasting. But the **Sous-Chef** (the automation) chops the vegetables and prepares the ingredients! 
-> 
-> The Sous-Chef doesn't decide what's on the menu, but they make the Chef's job 10 times faster by doing the repetitive work. Good automation is a Sous-Chef: it gathers all the evidence so the human can make a fast, informed judgment!
 
 The lesson is simple: automate evidence-backed procedures, not hidden judgment.
 Ownership remains human; the repetitive mechanics become software.
@@ -278,8 +253,6 @@ A toil budget makes this visible before burnout becomes the monitoring system.
 For example, five minutes of manual triage per day may be acceptable while the
 system is small. Five minutes per customer per day is a scaling failure. The
 difference is not the task. The difference is how the task grows.
-
-In AI engineering, we should also measure **Human-in-the-Loop Latency**. If a human takes 2 hours to approve a 2-second AI recommendation, the human is the bottleneck. Measuring this latency as toil helps us decide where to invest in **Automated Policy Checking** to speed up the human's decision.
 
 ## Tiny Example
 
@@ -371,11 +344,7 @@ owner and escalation path assigned
 ```
 
 This checklist is not ceremony. It is the minimum proof that the job kind has a
-life after launch. 
-
-I call this **"The Driver's License Test."** You can't just drive a car because you know how to turn the wheel; you have to know the rules of the road! A job kind without an owner, a runbook, and a tested pause path hasn't passed the test yet. It’s not ready for the "Highway" of production traffic.
-
-A job kind without an owner becomes orphaned work. A job kind
+life after launch. A job kind without an owner becomes orphaned work. A job kind
 without a pause path becomes hard to stop. A job kind without replay rules
 creates judgment pressure during the worst moment.
 
@@ -541,4 +510,10 @@ collection and safe actions.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE: Eliminating Toil](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (Chapter 5). The definitive industry reference for defining, measuring, and limiting manual, repetitive work. It introduces the "50% Rule" to ensure teams have headroom for strategic engineering.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: (1983). A foundational academic paper identifying why automating "easy" tasks makes the remaining "hard" tasks even more difficult for humans, leading to skill atrophy and vigilance decrement.
+- [Sheridan & Verplank: Levels of Automation](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (1978). Formalizes the 10 levels of automation, from purely manual control to full autonomy. It provides the rubric for the "Judgment vs. Mechanical" distinction used in this chapter.
+- [Sheridan & Verplank: Levels of Automation](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2000). Research into how automation should be applied across different stages (Information, Analysis, Decision, Action) to preserve human situational awareness.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects ownership and automation to the formal requirements for "System of Systems" maintenance and the lifecycle of durable state.

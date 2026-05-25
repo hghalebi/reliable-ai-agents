@@ -547,4 +547,9 @@ explicit, durable, reviewable policy.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [AWS: SaaS Tenant Isolation Strategies](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive industry guide to the "Silo," "Pool," and "Bridge" isolation models. It explains why the "Pool" model used in this chapter requires the rigorous, deterministic authorization checks implemented here.
+- [PostgreSQL row-level security documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The practical reference for the database-level hardening mentioned in this chapter, which ensures that even a compromised application cannot cross tenant boundaries.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 12: The Future of Data Systems). Connects multi-tenancy to the formal "System of Systems" view, where data ownership must be preserved across multiple coordination points (Postgres, workers, models).
+- [Non-Interference](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: **. The academic "Gold Standard" for isolation. It proves that a system is secure if "high-level" (Tenant A) inputs cannot affect "low-level" (Tenant B) observable behavior.

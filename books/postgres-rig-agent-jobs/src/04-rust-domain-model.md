@@ -85,22 +85,55 @@ Build or inspect this artifact before moving on:
 ## Implementation Map
 
 When you transition from reading about these types to actual implementation, rely on this map as your guide. The primary surfaces you will interact with are `src/domain.rs`, along with the fierce row-conversion modules such as `src/agent_run.rs` and `src/tool_call.rs`. The core state transition here is ruthlessly converting raw, untrusted boundary data into strict newtypes, explicit enums, and validated domain objects. The evidence path mathematically guarantees that any invalid IDs, rogue statuses, impossible attempt counts, hallucinated versions, and unapproved decisions are violently rejected long before the core business logic is ever exposed to them.
+Use this map when you move from reading to implementation:
+- **Primary surface:** the code, schema, chapter artifact, or runbook that owns this concept.
+- **State transition:** the named move that changes durable state.
+- **Evidence path:** the row, event, receipt, trace, or test that proves the move.
+
 
 ## Operator Question
 
 Before you ship any architectural idea based on this domain model, you must answer one vital operational question: Which raw, primitive value currently in the codebase would instantly become dangerous if its meaning were accidentally confused with another? To answer this, you must explicitly inspect the newtype constructors, the enum variants, the typed errors, the row conversion tests, and the logs of specifically rejected invalid values. You should immediately escalate the design to leadership if any critical domain boundary still lazily accepts a raw string, a naked boolean, a raw integer count, an untyped JSON value, or a generic, unhelpful error string.
+Before you ship this idea, answer one operational question:
+- **Question:** what production fact changed, and who was allowed to change it?
+- **Evidence to inspect:** the durable row, trace, receipt, policy decision, or audit event.
+- **Escalate if:** the answer depends on memory, chat, terminal scrollback, or model explanation.
+
 
 ## Runtime Walkthrough
 
 Follow the concept of typed boundaries as a single runtime pass. First, a trigger occurs when raw, highly suspicious boundary data enters the Rust application from the database or the network. Next, the action requires the system to forcefully parse that data into strict newtypes, enums, and validated constructors. For persistence, the boundary must definitively return either perfectly typed domain values or explicitly typed validation errors. Finally, the check requires verifying that no important business concept is ever carried deeper into the system as a loose, raw primitive.
+Follow the concept as one runtime pass:
+1. **Trigger:** the system receives work or a reviewer inspects a design.
+2. **Action:** the mechanism changes typed state under an explicit owner.
+3. **Persistence:** the change leaves durable evidence.
+4. **Check:** an operator verifies the invariant from evidence.
+
 
 ## Acceptance Gate
 
 Do not move on until you can produce the minimum required evidence. You must be able to empirically prove that all important domain concepts are strictly typed *before* the business logic ever sees them. To validate this path, an operator must inspect the constructors, enums, typed errors, and the rigorous row-conversion tests. Stop the design process immediately if a meaningful ID, status, version, retry count, policy decision, or external payload is caught crossing a boundary while disguised as a raw primitive.
+Do not move on until this minimum evidence exists:
+- **Minimum evidence:** the mechanism has one inspectable artifact and one named invariant.
+- **Validation path:** run or inspect the smallest check that proves the artifact exists.
+- **Stop if:** the proof depends on a unverified note, chat message, or unverified assumption.
+
 
 ## Micro-Lesson
 
-If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, raw strings and numbers perfectly hide disastrous category errors. The guiding rule is that if a value has genuine production meaning, you must give it a strict Rust type instead of casually passing a raw primitive around. A tiny example of this is seeing typed Rust values explicitly represent job identity, worker ownership, model versions, retry decisions, failures, and results. The resulting artifact is a highly paranoid Rust domain module packed with newtypes, enums, validated constructors, and typed errors. The ultimate proof of success is that important domain concepts are mathematically typed long before the business logic is ever allowed to touch them.
+If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, raw strings and numbers perfectly hide disastrous category errors. The guiding rule is that if a value has genuine production meaning, you must give it a strict Rust type instead of casually passing a raw primitive around. A tiny example of this is seeing typed Rust values explicitly represent job identity, worker ownership, model versions, retry decisions, failures, and results.
+
+The resulting artifact is a highly paranoid Rust domain module packed with newtypes, enums, validated constructors, and typed errors. The ultimate proof of success is that important domain concepts are mathematically typed long before the business logic is ever allowed to touch them. Use this five-line version before the heavier mechanism:
+
+```text
+pain: the production failure becomes unclear without this concept
+rule: name the invariant and the evidence before adding machinery
+tiny example: one job changes state under one owner
+artifact: one row, type, receipt, policy, or runbook query
+proof: another engineer can inspect the artifact and explain the result
+```
+If the next section feels large, keep only these five lines in view and then return to the detailed proof.
+
 
 ## Worked Walkthrough
 
@@ -148,13 +181,9 @@ your first wall—rejecting any action that doesn't fit the strictly defined
 This is why types are not style in this book. They are part of the safety
 system around the model.
 
-> ### 🎓 The Professor's Corner
->
-> **The NewType Pattern: No More "Naked Strings"**
->
-> In many languages, you'd just use a "Naked String" for everything—names, IDs, emails, and phone numbers. But if everything is just text, you can accidentally use your phone number as your bank account balance, and the computer won't stop you!
-> 
-> The **NewType Pattern** is like putting a specific wrapper around a value. By creating a `WorkerId` type, we tell Rust: "This isn't just a string; it's a very specific kind of label." Now, if you try to put a phone number where a `WorkerId` belongs, the compiler will tap you on the shoulder and say, "Hey! That doesn't fit here!" It takes the stress away and lets you focus on the logic.
+> ### 🎓 The Professor's Corner > > **The NewType Pattern: No More "Naked Strings"** > > In many languages, you'd just use a "Naked String" for everything—names, IDs, emails, and phone numbers. But if everything is just text, you can accidentally use your phone number as your bank account balance, and the computer won't stop you! > > The **NewType Pattern** is like putting a specific wrapper around a value.
+
+By creating a `WorkerId` type, we tell Rust: "This isn't just a string; it's a very specific kind of label." Now, if you try to put a phone number where a `WorkerId` belongs, the compiler will tap you on the shoulder and say, "Hey! That doesn't fit here!" It takes the stress away and lets you focus on the logic.
 
 ## The Core Types
 
@@ -452,4 +481,11 @@ The database may store generic values, but the Rust boundary should recover mean
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: (2019). The foundational text for type-driven design. It explains why a system is safer when it transforms unstructured input (like a database string) into a structured type (like a `WorkerId`) rather than just checking a boolean property.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: While written for F#, this book is the industry standard for using Algebraic Data Types (ADTs) to make illegal states unrepresentable—a core principle of the Rust domain model in this chapter.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: The official community standard for when and how to wrap primitives in domain-specific types.
+- [thiserror documentation](./31-credible-resources-further-reading.md#rust-engineering) Read this because: The practical reference for defining the custom error enums that power the validated constructors used in this chapter. main model in this chapter.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: The official community standard for when and how to wrap primitives in domain-specific types.
+- [thiserror documentation](./31-credible-resources-further-reading.md#rust-engineering) Read this because: The practical reference for defining the custom error enums that power the validated constructors used in this chapter. in this chapter.

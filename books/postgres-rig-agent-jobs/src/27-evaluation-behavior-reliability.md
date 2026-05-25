@@ -23,7 +23,7 @@ Read this chapter as one link in the production chain:
 
 The agent is fast, available, and wrong.
 
-I call this the **"Fluent Failure."** An agent can sound perfectly confident and polite while giving an answer that violates every business policy. A new prompt improves tone but makes the agent miss required escalation in
+A new prompt improves tone but makes the agent miss required escalation in
 high-risk cases. Infrastructure metrics stay healthy while behavior regresses.
 
 **What breaks:** service reliability was mistaken for behavior reliability.
@@ -47,8 +47,6 @@ graders, human samples, and promotion decisions as production release evidence.
 The evaluation artifact should be as reviewable as a build artifact. It should
 answer: what did we test, which behavior version did we test, what failed, who
 reviewed the risky samples, and why was promotion allowed or blocked?
-
-We should also respect **Evaluator Asymmetry**. The **Evaluator Model** should usually be "Larger/Smarter" than the **Worker Model**. For example, you might use GPT-4o to grade the outputs of GPT-4o-mini. This ensures the judge has the "Reasoning Headroom" to spot subtle mistakes.
 
 ## Motivation
 
@@ -225,9 +223,8 @@ the database only if rollback does not reduce the error rate.
 
 The system needs a way to distinguish those answers before production users do.
 
-Notice that both answers are fluent. That is why style is not enough. I call this **The Polite Liar Problem**. Students need to know that "Politeness" is just a mask. We are grading the **Action**, not the **Tone**! A "Good Grade" in this book means "Safety," not just "Grammar."
-
-The evaluation must check the operational decision: open the incident, freeze
+Notice that both answers are fluent. That is why style is not enough. The
+evaluation must check the operational decision: open the incident, freeze
 deploys, roll back the payment service, and only then inspect the database if
 rollback does not help.
 
@@ -239,14 +236,6 @@ transition: evaluation compares behavior against expected cases before release
 evidence: golden dataset, shadow run, human sample, failure case, and eval receipt decide promotion
 invariant: agent behavior changes need CI-style evidence before production exposure
 ```
-
-> ### 🎓 The Professor's Corner
->
-> **The Tuning Fork: The Calibration Loop**
->
-> Think of a guitarist tuning their instrument before a show. They don't just "assume" the strings are right because they were right yesterday! 
-> 
-> **Evaluation** is our **Tuning Fork**. It provides a standard "Note" (the golden dataset) that we use to check if our agent is still in tune. If the agent sounds "flat" (gives a wrong answer), we turn the knobs (adjust the prompt) until it matches the fork again!
 
 ## Evaluation Surfaces
 
@@ -277,8 +266,6 @@ blast radius. Post-incident evals make sure the same failure is not forgotten.
 A golden dataset is the small set of cases that must keep working across prompt,
 model, tool, and policy changes. It is not every historical payload. It is the
 curated set of examples that define "we must never regress this behavior."
-
-I recommend **Boundary Case Curation**. You should prioritize examples that are "Right on the Edge" of a policy—for example, a refund request that is exactly $1 over the automatic limit. These are the cases that actually test the agent's reasoning depth and consistency.
 
 For a support agent, the golden dataset might include:
 
@@ -379,14 +366,6 @@ prompt/model/tool/policy version
 The receipt records the dataset version, evaluator version, prompt/model/tool
 versions, case results, pass/fail counts, and promotion decision. That makes an
 evaluation a production artifact rather than an informal notebook.
-
-> ### 🎓 The Professor's Corner
->
-> **Semantic Assertions: The Taste Test**
->
-> A normal test is like checking the "Color" of a soup—it's easy but doesn't tell you much. A **Semantic Assertion** is like a "Taste Test." You can't just look at the code; you have to check the flavor! 
-> 
-> Because we can't use a simple "Diff" to check model output, we use a smarter model to perform the taste test. It asks: "Does this answer satisfy the business goal?" It turns a fuzzy "Maybe" into a solid "Yes" or "No."
 
 The persistence boundary should store the versions directly on the evaluation
 run. Joining to a nearby agent run is useful context, but a behavior release
@@ -615,6 +594,16 @@ you whether the agent deserved to run.
 - **Evidence:** golden datasets, case results, rubric scores, model and prompt versions, grader outputs, review samples, and release receipts explain the decision.
 - **Carry forward:** a green queue does not prove a good agent; evaluation evidence does.
 
+For coding agents, include execution-backed and repository-backed evaluation.
+Evaluating Large Language Models Trained on Code introduced HumanEval as a
+simple but important lesson: code-agent behavior should be checked by running
+the code, not only by reading the model answer.
+
+SWE-bench: Can Language Models Resolve Real-World GitHub Issues? adds the next
+production lesson. A serious coding agent must be evaluated on real repository
+changes, failing tests, issue context, patch quality, and regression behavior,
+not only on isolated function-completion tasks.
+
 ## Changed Understanding
 
 - **Before this chapter:** evaluation looked like an offline quality score.
@@ -623,4 +612,10 @@ you whether the agent deserved to run.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Zheng et al.: Judging LLM-as-a-Judge](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2023). The seminal academic paper formalizing the use of strong models to evaluate others. It identifies the "Verbosity" and "Position" biases that the rubrics in this chapter are designed to mitigate.
+- [Hamel Husain: Evaluation-Driven Development](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A definitive industry guide advocating for "Error Analysis" and binary (Pass/Fail) metrics over generic benchmarks—the exact philosophy behind the "Scorecard" in this chapter.
+- [OpenAI Evals](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2024). Research into the "Atomic Claim" and "Grounding" patterns used to verify that agent responses rely only on provided durable evidence.
+- [Cohen's Kappa ($\kappa$)](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The statistical gold standard for measuring how well an automated judge (LLM) aligns with a human expert, providing the mathematical "North Star" for the evaluation receipts in this chapter.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects behavior evaluation to the formal requirements for "Event Sourcing" and the reconstruction of state from historical traces.

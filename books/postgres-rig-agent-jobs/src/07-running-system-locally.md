@@ -513,4 +513,9 @@ The runnable local system proves the core mechanics before adding real infrastru
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [FoundationDB: Deterministic Simulation Testing](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive industry case study on why local, deterministic proof paths are the only way to build truly reliable distributed systems. This chapter's "boring local store" is a first step toward that vision.
+- [Will Wilson: Testing the Untestable](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: An in-depth look at how to use simulation to find deep concurrency bugs before they reach production infrastructure.
+- [PostgreSQL row-level security documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: Reference for the real-world Postgres boundary that the local run rehearsals.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Explains the formal semantics of state machines and "Event Sourcing" simulated by the local run's event trail.

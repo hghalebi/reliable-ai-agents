@@ -47,19 +47,34 @@ Read this as the simple version:
 
 ## What You Already Know
 
-Start by anchoring yourself in the hard-won architecture you have already built. You know that the system finally possesses durable rows and fiercely typed domain values. You also know that a worker is only legally allowed to change the work it explicitly owns. Finally, you understand that every single state transition, no matter how small, absolutely must leave behind queryable evidence.
+Start with these anchors:
 
-This chapter adds the engine to the car: the execution loop. The worker will relentlessly claim exactly one job, run exactly one attempt, formally record exactly one outcome, and aggressively keep its ownership highly visible through active leases and events.
+- The system now has durable rows and typed domain values.
+- A worker is allowed to change only the work it owns.
+- Every state transition should leave evidence.
+
+This chapter adds: the execution loop. The worker claims one job, runs one
+attempt, records one outcome, and keeps ownership visible through leases and
+events.
 
 ## Focus Cue
 
-Keep three critical elements fiercely in view as you read. Regarding **State**, recognize that the worker lifecycle perfectly models one due, leased, running, retrying, terminal, or recovered job. Regarding the **Move**, understand the rigid sequence: the worker claims the work, records the events, runs exactly one agent step, and permanently commits a success, retry, cancellation, or dead-letter state. Finally, regarding **Proof**, remember that the pick, heartbeat, success, retry, cancellation, and recovery transitions physically require proof of ownership and emit explicit events to the database.
+Keep three things in view:
 
-If you ever get lost in the loop logic, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical idea to a concrete production check at 2 AM.
+- **State:** one due, leased, running, retrying, terminal, or recovered job in the worker lifecycle.
+- **Move:** the worker claims work, records events, runs one agent step, and commits success, retry, cancellation, or dead-letter state.
+- **Proof:** Pick, heartbeat, success, retry, cancellation, and recovery transitions require ownership and emit events.
+
+If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
+
 
 ## Production Artifact
 
-Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a bulletproof worker loop that strictly claims one job, meticulously records events, runs one single attempt, and commits exactly one outcome. This artifact matters intensely because passive, durable rows only ever become reliable, useful work when a disciplined worker actively advances them through explicit transitions. You will know this is "done" when the success, retry, cancellation, heartbeat, dead-letter, and recovery paths all mathematically demand undeniable lease ownership evidence before writing to the database.
+Build or inspect this artifact before moving on:
+
+- **Artifact:** a worker loop that claims one job, records events, runs one attempt, and commits one outcome.
+- **Why it matters:** durable rows become reliable work only when a worker advances them through explicit transitions.
+- **Done when:** success, retry, cancellation, heartbeat, dead-letter, and recovery paths all require lease ownership evidence.
 
 
 ## Implementation Map
@@ -506,4 +521,10 @@ The worker is not an AI abstraction. It is a reliable state-transition machine t
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1989). The seminal academic paper that introduced the "lease" as a time-limited contract for resource ownership—the exact mechanism used by the worker loop to manage job locks.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1996). Foundational research on how to detect failed processes in asynchronous systems using heartbeats and eventual accuracy.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The definitive architectural reference for scaling message processing by having multiple workers pull from a single channel.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A clear, pattern-based explanation of using time-bound leases to coordinate cluster state and handle process crashes.
+- [Temporal Workflows](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: Industry documentation on using heartbeats to record progress and maintain ownership during long-running agent tasks.

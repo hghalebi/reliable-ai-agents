@@ -575,4 +575,9 @@ Multi-agent reliability is not created by letting models talk to each other. It 
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Michael Wooldridge: Multiagent Systems](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Academic research into the "Joint Intentions" and "Social Laws" required to ensure that responsibility transfer between agents is mathematically verifiable.
+- [Hancock et al.: Trust in HRI](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: While focused on robotics, this research identifies the pillars of trust (Competence, Benevolence, Integrity) that must be preserved during the agent-to-agent handoffs in this chapter.
+- [DeepLearning.AI: Agentic Workflows](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Industry documentation on "Supervisor" vs "Hierarchical" orchestration, providing the practical context for the durable handoff state implemented here.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 9: Consistency and Consensus). Explains the fundamental distributed systems problem of "Consensus" (agreeing who owns a job) during the handoff transition.

@@ -85,22 +85,55 @@ Build or inspect this artifact before moving on:
 ## Implementation Map
 
 When you transition from reading this mental model to actual implementation, rely on this map as your guide. The primary surfaces you will interact with are `src/worker.rs`, `src/agent.rs`, `src/rig_runner.rs`, `src/security.rs`, and `src/audit.rs`. The core state transition here is the rigorous routing of a single request explicitly through strictly separated state, execution, model, policy, and evidence boundaries. The evidence path mathematically guarantees that absolutely no component silently owns both probabilistic reasoning and explicit business authority.
+Use this map when you move from reading to implementation:
+- **Primary surface:** the code, schema, chapter artifact, or runbook that owns this concept.
+- **State transition:** the named move that changes durable state.
+- **Evidence path:** the row, event, receipt, trace, or test that proves the move.
+
 
 ## Operator Question
 
 Before you ship any architectural idea based on this mental model, you must answer one vital operational question: Exactly which boundary definitively owns this specific decision: state, worker, model, policy, or evidence? To answer this, you must explicitly inspect the agent run row, the worker event log, the raw provider result, the strict policy decision, and the formal audit event. You should immediately escalate the design to leadership if you ever discover that one single component silently owns reasoning, authority, and durable database mutation all together.
+Before you ship this idea, answer one operational question:
+- **Question:** what production fact changed, and who was allowed to change it?
+- **Evidence to inspect:** the durable row, trace, receipt, policy decision, or audit event.
+- **Escalate if:** the answer depends on memory, chat, terminal scrollback, or model explanation.
+
 
 ## Runtime Walkthrough
 
 Follow the concept of layered boundaries as a single runtime pass. First, a trigger occurs when a new job securely enters the system. Next, the action requires the architecture to route state transitions, execution logic, probabilistic reasoning, policy checks, and evidence generation strictly through their separate, designated boundaries. For persistence, the system must meticulously record every single boundary crossing as a durable row, a discrete event, or a formally typed decision. Finally, the check requires verifying that absolutely no boundary silently usurped both probabilistic reasoning and strict business authority.
+Follow the concept as one runtime pass:
+1. **Trigger:** the system receives work or a reviewer inspects a design.
+2. **Action:** the mechanism changes typed state under an explicit owner.
+3. **Persistence:** the change leaves durable evidence.
+4. **Check:** an operator verifies the invariant from evidence.
+
 
 ## Acceptance Gate
 
 Do not move on until you can produce the minimum required evidence. You must be able to prove that state, execution, model reasoning, strict policy, and audit evidence fundamentally operate as completely separate boundaries. To validate this path, an operator must trace one single run perfectly through the job rows, the worker events, the provider output, the specific policy decision, and the final audit event. Stop the design process immediately if one single software component can both magically reason and silently authorize a durable mutation without explicit, separate checks.
+Do not move on until this minimum evidence exists:
+- **Minimum evidence:** the mechanism has one inspectable artifact and one named invariant.
+- **Validation path:** run or inspect the smallest check that proves the artifact exists.
+- **Stop if:** the proof depends on a unverified note, chat message, or unverified assumption.
+
 
 ## Micro-Lesson
 
-If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, agent systems become incredibly fragile when the model, the queue, the scheduler, the trace log, the approval logic, and the side effects are carelessly collapsed into one giant mental bucket. The guiding rule is to aggressively split the system into dedicated intelligence, reliability, and product-control layers. A tiny example of this is observing the fiercely separated responsibilities of durable state, worker execution, provider reasoning, security policy, and operational evidence. The resulting artifact is a formal boundary map that structurally separates state, worker execution, model reasoning, policy, and evidence. The ultimate proof of success is that state, execution, model reasoning, policy, and evidence are demonstrably, mathematically separate boundaries in the code.
+If you need a concise summary before diving into the heavier mechanisms, remember this sequence: The pain arises because, in production, agent systems become incredibly fragile when the model, the queue, the scheduler, the trace log, the approval logic, and the side effects are carelessly collapsed into one giant mental bucket. The guiding rule is to aggressively split the system into dedicated intelligence, reliability, and product-control layers.
+
+A tiny example of this is observing the fiercely separated responsibilities of durable state, worker execution, provider reasoning, security policy, and operational evidence. The resulting artifact is a formal boundary map that structurally separates state, worker execution, model reasoning, policy, and evidence. The ultimate proof of success is that state, execution, model reasoning, policy, and evidence are demonstrably, mathematically separate boundaries in the code. Use this five-line version before the heavier mechanism:
+
+```text
+pain: the production failure becomes unclear without this concept
+rule: name the invariant and the evidence before adding machinery
+tiny example: one job changes state under one owner
+artifact: one row, type, receipt, policy, or runbook query
+proof: another engineer can inspect the artifact and explain the result
+```
+If the next section feels large, keep only these five lines in view and then return to the detailed proof.
+
 
 ## Intuition
 
@@ -198,7 +231,7 @@ working on one system, but they are not all editing the same magical loop.
 That is the reason this chapter comes early. Before you learn schemas, Rust
 types, workers, Rig, approvals, or SLOs, you need a map of who owns what.
 
-## Worked Walkthrough
+## Tiny Scenario
 
 Imagine you are looking at the execution logs of a supposedly simple agent job.
 
@@ -231,6 +264,15 @@ Even this tiny, seemingly trivial stream already involves several fiercely indep
 The `job_enqueued` event belongs entirely to the admission and durable state boundary. The `job_picked` event belongs to the ruthless worker ownership boundary. `agent_started` and `agent_succeeded` belong to the deeply uncertain reasoning boundary. `retry_scheduled` belongs to failure classification and operational scheduling. Finally, `job_succeeded` belongs to the formal terminal state transition.
 
 If an eager developer had carelessly compressed all of those distinct facts into one single, useless log line saying `agent finished`, the system would have instantly lost almost all of the critical information required to successfully operate it at scale.
+
+Read the tiny case as:
+
+```text
+setup: a job status transitions from pending to running in the database
+transition: worker-a claims the lease and executes the agent step
+evidence: an audit event and a database update record the transition to running
+invariant: no other worker can mutate the job during this execution window
+```
 
 ## The Invariant
 
@@ -295,11 +337,19 @@ This habit forcefully prevents incidents from devolving into vague, unactionable
 
 For this chapter, the precise, formal definition of adoption is clear. A production agent is fundamentally a blue-collar worker equipped with tools, memory, permissions, and undeniable evidence, wrapped securely around a highly probabilistic model step.
 
-In the book's overarching system model, the **State** mapping is precise: you must maintain fiercely separated responsibilities between durable state, worker execution, provider reasoning, strict policy, and operational evidence. The **Actor** interactions are restricted so that each boundary owner—the API, the worker, the Rig adapter, the policy gate, or the operator—is only allowed to change the specific fact it is directly responsible for. The core **Transition** dictates that one single production fact moves smoothly through its assigned boundary without another boundary silently or magically taking over. The **Evidence** ensures that the state representation, the worker process, the provider boundary, the policy check, the event timeline, and the operator evidence remain mathematically separate architectural responsibilities. Ultimately, the governing **Invariant** guarantees that intelligence, state, execution, and safety remain sufficiently decoupled to effectively audit and repair at 3 AM.
+In the book's overarching system model, the **State** mapping is precise: you must maintain fiercely separated responsibilities between durable state, worker execution, provider reasoning, strict policy, and operational evidence. The **Actor** interactions are restricted so that each boundary owner—the API, the worker, the Rig adapter, the policy gate, or the operator—is only allowed to change the specific fact it is directly responsible for.
+
+The core **Transition** dictates that one single production fact moves smoothly through its assigned boundary without another boundary silently or magically taking over. The **Evidence** ensures that the state representation, the worker process, the provider boundary, the policy check, the event timeline, and the operator evidence remain mathematically separate architectural responsibilities. Ultimately, the governing **Invariant** guarantees that intelligence, state, execution, and safety remain sufficiently decoupled to effectively audit and repair at 3 AM.
+
+For this chapter, the precise definition is: required production anchor for this chapter.
+
 
 ## What Can Fail
 
-When dealing with a layered architecture, several critical failure modes can emerge. The most common design smell occurs when these pristine boundaries simply collapse into one giant, tangled agent loop. The production symptom of this tragedy is that provider errors, policy decisions, and state transitions all blur together during an active incident, making debugging impossible. The corrective invariant to ruthlessly enforce is that the state, worker, provider, policy, and evidence boundaries must stay mathematically separate at all times. If a failure occurs, the operational evidence you must inspect includes the event timelines; they must be able to cleanly distinguish between worker actions, model output, policy results, and terminal state.
+When dealing with a layered architecture, several critical failure modes can emerge. The most common design smell occurs when these pristine boundaries simply collapse into one giant, tangled agent loop. The production symptom of this tragedy is that provider errors, policy decisions, and state transitions all blur together during an active incident, making debugging impossible. The corrective invariant to ruthlessly enforce is that the state, worker, provider, policy, and evidence boundaries must stay mathematically separate at all times.
+
+If a failure occurs, the operational evidence you must inspect includes the event timelines; they must be able to cleanly distinguish between worker actions, model output, policy results, and terminal state. **Design smell:** the design names a mechanism but not the invariant it protects. **Production symptom:** operators cannot explain what changed or which evidence proves it. **Corrective invariant:** every important transition must be owned, durable, and reviewable. **Evidence to inspect:** inspect the row, event, receipt, policy decision, trace, or runbook output.
+
 
 ## Production Contract
 
@@ -315,11 +365,15 @@ In the naive version, boundaries collapse entirely into one massive agent loop. 
 
 The safer version dramatically improves upon this by ensuring the state, worker, provider, policy, and evidence boundaries stay structurally separate. Here, separate boundaries allow each layer to excel at exactly one job: remembering things, enforcing permissions, making provider calls, transitioning worker state, or recording evidence.
 
-The final, production-grade version hardens this integration entirely. The team ensures that event timelines definitively distinguish between worker actions, model output, policy results, and terminal state. At this stage, the event timeline clearly shows whether a bad outcome originated from flawed planning, a denied policy, a botched tool execution, hallucinated provider output, or a failed recovery attempt. Use the naive row to rapidly identify agent-loop blur, use the safer row to start separating responsibilities, and rely on the production row when a reviewer must quickly locate the exact failing boundary at 3 AM.
+The final, production-grade version hardens this integration entirely. The team ensures that event timelines definitively distinguish between worker actions, model output, policy results, and terminal state. At this stage, the event timeline clearly shows whether a bad outcome originated from flawed planning, a denied policy, a botched tool execution, hallucinated provider output, or a failed recovery attempt.
+
+Use the naive row to rapidly identify agent-loop blur, use the safer row to start separating responsibilities, and rely on the production row when a reviewer must quickly locate the exact failing boundary at 3 AM. **Naive version:** the mechanism works once but does not leave enough evidence for recovery. **Safer version:** the mechanism names ownership, state, and proof before execution. **Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
 
 ## Testing Strategy
 
-You must aggressively test the boundary split directly in your code. In your unit or type tests, you must prove that your Rust interfaces keep worker state, provider output, policy decisions, memory, and tool execution as fundamentally separate types or traits. Your persistence or boundary tests must explicitly prove that Postgres event rows can definitively distinguish between a worker action, model output, a policy result, a tool call, and the terminal outcome for a single run. Furthermore, your regression tests must encode a "collapsed-agent-loop" case—for instance, where provider text somehow attempts to update durable state directly without a worker transition—and ensure the boundary test violently rejects it.
+You must aggressively test the boundary split directly in your code. In your unit or type tests, you must prove that your Rust interfaces keep worker state, provider output, policy decisions, memory, and tool execution as fundamentally separate types or traits. Your persistence or boundary tests must explicitly prove that Postgres event rows can definitively distinguish between a worker action, model output, a policy result, a tool call, and the terminal outcome for a single run.
+
+Furthermore, your regression tests must encode a "collapsed-agent-loop" case—for instance, where provider text somehow attempts to update durable state directly without a worker transition—and ensure the boundary test violently rejects it. **Unit:** test the smallest typed transition and the invariant it preserves. **Persistence:** test the database row, query, or receipt that proves the transition survives process death. **Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -328,6 +382,7 @@ You must actively observe each boundary as a completely separate operational res
 ## Security and Safety Considerations
 
 Boundary separation is not just good architecture; it is a critical security control. You must treat model text, retrieved memory, tool output, provider responses, and database rows as inherently untrusted data whenever they cross from one layer into another. Crucially, authorization, sandboxing, and approval must live entirely outside the model loop, ensuring the agent can freely propose actions but never receives the authority to execute them by default. Always meticulously redact sensitive context at each boundary while preserving exactly enough typed evidence to definitively explain which specific layer allowed or denied the transition.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -340,10 +395,18 @@ Third, rehearse your **Failure** modes: ensure a standard debugging path can ins
 ## Exercises
 
 To test your mastery, write a negative test where a hallucinating model response attempts to directly update Postgres state or skip an idempotency check without going through a formal worker transition. You must explicitly explain which idempotency key, receipt, or state transition effectively blocked the duplicate work. Next, sketch the exact Postgres evidence: one event timeline that beautifully separates intake, planning, tool proposal, policy decision, execution, and receipt. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents cleanly separated `AgentBoundary`, `WorkerBoundary`, `PolicyBoundary`, and `EvidenceBoundary` types or modules. Then, meticulously name the runbook question that proves this enforcement actually works.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your layered understanding. First, recall exactly which layers officially own intelligence, durable state, execution, policy, and evidence. Next, be able to clearly explain why lazily merging those layers into a single prompt text makes failures catastrophically harder to debug. Then, apply this knowledge by correctly placing a tool call failure into its exact layer and assigning it to the correct owner. Finally, explicitly name the specific row, event, trace field, or policy record that should definitively prove the boundary behaved exactly as intended.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -353,10 +416,23 @@ The core invariant to remember is that no layer is ever permitted to silently ta
 
 Moving forward, remember the golden rule: when aggressively debugging an agent incident at 3 AM, the very first question you must ask is exactly which boundary owned the failed decision.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, an agent probably looked like a magical, incredibly smart conversational loop. After this chapter, you should understand that a production agent is essentially just a highly probabilistic worker trapped inside a rigidly deterministic control system. Moving forward, keep in mind that you must always fiercely separate model reasoning from product control, reliability control, and durable evidence.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1986). The academic foundation for the "Agent as Worker" model. It formalizes why actors (workers) must be decoupled in time and space, communicating only through messages (jobs) to ensure safety and scalability.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A practical industry reference for how to build high-availability systems where "Intelligence" (the user request) is separated from "Execution" (the payment) via stable idempotency keys.
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2025). Distinguishes between workflows and agents, helping identify which boundary should own the reasoning step.
+- [ReAct: Synergizing Reasoning and Acting in Language Models](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) Read this because: (2022). Research into interleaving reasoning and action, providing the intuition for the Rig/Worker boundary.

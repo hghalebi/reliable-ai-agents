@@ -53,16 +53,33 @@ Read this as the simple version:
 Start by anchoring yourself in the solid type theory you have already established. Chapter 4 finally gave your most important, dangerous production values real Rust names. You also intuitively know that certain operational objects have a strictly legal order of operations. Finally, you understand that a completed job, a formally approved request, and a merely validated tool input are profoundly not interchangeable states, even if they share similar data structures.
 
 This chapter adds the final polish: typed composition and typestate. You will learn to violently deploy the type system wherever workflow order matters, while pragmatically avoiding heavy type machinery in places where a simple, validated constructor is perfectly sufficient.
+Start with these anchors:
+
+- Durable state is the first production boundary.
+- Typed values make production meaning explicit.
+- Evidence must survive process death.
+
+This chapter adds: one more production mechanism that can be inspected, tested, and operated.
+
 
 ## Focus Cue
 
 Keep three critical elements fiercely in view as you read. Regarding **State**, recognize that explicitly typed transformations, lifecycle states, and error pipelines are the only things that can be safely composed without fear. Regarding the **Move**, understand that a value is only permitted to move through a pipeline when the previous output type flawlessly and mathematically satisfies the next input requirement. Finally, regarding **Proof**, remember that newtypes, typestate builders, and explicit `Result` pipelines are the undeniable proof that illegal composition was caught and destroyed long before runtime.
 
 If you ever get lost in the abstraction, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical typing concept to a concrete production check.
+Keep three things in view:
+- **State:** the production fact that changes.
+- **Move:** the lawful transition from one state to another.
+- **Proof:** the evidence an operator can inspect later.
+
 
 ## Production Artifact
 
 Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a small typestate pipeline specifically designed for a single lifecycle that is prone to illegal transitions. This artifact matters intensely because compile-time state tracking is incredibly useful when relying on runtime checks would only manage to protect a dangerous operation far too late. You will know this is "done" when an unvalidated or unapproved value mathematically cannot even attempt to call the operation strictly reserved for a validated or approved value.
+Build or inspect this artifact before moving on:
+- **Artifact:** the concrete row, type, policy, receipt, or runbook query for this chapter.
+- **Why it matters:** learning becomes production skill only when it changes an inspectable artifact.
+- **Done when:** another engineer can inspect the artifact and explain the invariant it protects.
 
 
 ## Implementation Map
@@ -328,11 +345,17 @@ performance.
 
 For this chapter, the formal definition of adoption is unapologetically academic yet intensely practical: Typed composition is the mathematically safe connection of transformations where the output and input types must flawlessly match, actively utilizing typestate whenever the specific lifecycle order of operations matters to system safety.
 
-In the book's overarching system model, the **State** mapping is precise: typed transformations, lifecycle states, and strict error pipelines are explicitly defined so they can be safely composed. The **Actor** interactions are restricted so that the Rust compiler, the smart constructors, and the developers themselves can connect only fully compatible outputs, inputs, and lifecycle states. The core **Transition** dictates that a value moves through a pipeline *only* when the previous step's output type undeniably satisfies the next step's rigorous input requirement. The **Evidence** ensures that newtypes, typestate builders, and explicit `Result` pipelines make any attempt at illegal composition glaringly visible long before runtime. Ultimately, the governing **Invariant** guarantees that this strict composition successfully forces both category errors and illegal lifecycle transitions to become visible, compile-time failures rather than terrifying production execution bugs.
+In the book's overarching system model, the **State** mapping is precise: typed transformations, lifecycle states, and strict error pipelines are explicitly defined so they can be safely composed. The **Actor** interactions are restricted so that the Rust compiler, the smart constructors, and the developers themselves can connect only fully compatible outputs, inputs, and lifecycle states. The core **Transition** dictates that a value moves through a pipeline *only* when the previous step's output type undeniably satisfies the next step's rigorous input requirement.
+
+The **Evidence** ensures that newtypes, typestate builders, and explicit `Result` pipelines make any attempt at illegal composition glaringly visible long before runtime. Ultimately, the governing **Invariant** guarantees that this strict composition successfully forces both category errors and illegal lifecycle transitions to become visible, compile-time failures rather than terrifying production execution bugs. For this chapter, the precise definition is: required production anchor for this chapter.
+
 
 ## What Can Fail
 
-When relying on composition, the most dangerous failure mode is blind optimism. The most common design smell occurs when a critical lifecycle order is enforced purely by loose team convention or hopeful comments rather than strict types. The production symptom of this tragedy is that an unvalidated request can suddenly be sent out before formal authorization, payload validation, or necessary policy preparation has actually happened. The corrective invariant to ruthlessly enforce is that invalid, out-of-order lifecycle transitions must be mathematically inexpressible through your public API. If a failure occurs, the operational evidence you must inspect includes the typestate builders themselves; they should only ever expose a `.build()` or `.execute()` method *after* all prerequisite states definitively exist in the type signature.
+When relying on composition, the most dangerous failure mode is blind optimism. The most common design smell occurs when a critical lifecycle order is enforced purely by loose team convention or hopeful comments rather than strict types. The production symptom of this tragedy is that an unvalidated request can suddenly be sent out before formal authorization, payload validation, or necessary policy preparation has actually happened. The corrective invariant to ruthlessly enforce is that invalid, out-of-order lifecycle transitions must be mathematically inexpressible through your public API.
+
+If a failure occurs, the operational evidence you must inspect includes the typestate builders themselves; they should only ever expose a `.build()` or `.execute()` method *after* all prerequisite states definitively exist in the type signature. **Design smell:** the design names a mechanism but not the invariant it protects. **Production symptom:** operators cannot explain what changed or which evidence proves it. **Corrective invariant:** every important transition must be owned, durable, and reviewable. **Evidence to inspect:** inspect the row, event, receipt, policy decision, trace, or runbook output.
+
 
 ## Production Contract
 
@@ -341,6 +364,23 @@ When integrating these powerful type concepts, you are drafting a clear, three-p
 First, use **newtypes** as your absolute default for any meaningful boundary value. Second, use **typestate** selectively, reserving it strictly for construction order and critical lifecycle gates where skipping a step would cause an incident. Third, use **category theory** purely as a conceptual teaching lens for understanding composition, identity, and error flow, but never as an excuse to rename ordinary services to things like `Monad` or `NaturalTransformation`.
 
 Do not attempt to encode your highly volatile, runtime database status as rigid compile-time typestate. Do not lazily expose confusing math vocabulary in your operational, blue-collar APIs. But absolutely do use these types to structurally force the safe path to be the easiest, most obvious path for the next developer who touches your code at 2 AM.
+
+Use this rule of thumb during design review:
+
+```text
+newtypes: default for meaningful boundary values
+typestate: selective for construction order and lifecycle gates
+category theory: teaching lens for composition, identity, and error flow
+```
+
+When typestate makes every function generic and nobody can explain the
+signature, the type design is no longer helping the production system. Step
+back to a validated constructor, a clear enum, and an explicit transition
+method.
+
+Do not make the production API speak math. Use the mathematical lens to clarify
+the engineering, then expose names that operators and application engineers can
+understand during an incident.
 
 ## Judgment: When Not To Use Typestate
 
@@ -361,10 +401,18 @@ In the naive version, lifecycle order is desperately enforced by team convention
 The safer version dramatically improves upon this by ensuring that invalid lifecycle transitions are fundamentally inexpressible through the public API. Here, typed transformations and strategic typestate mechanically force the allowed composition to be glaringly visible directly in the function signatures.
 
 The final, production-grade version hardens this integration entirely. The team implements typestate builders that physically only expose `.build()`, `.execute()`, or `.approve()` methods *after* the required, typed prerequisite evidence exists. Use the naive row to aggressively spot "convention-based" safety, use the safer row when composition demands type-level enforcement, and rely on the production row when illegal transitions absolutely must be unrepresentable.
+**Naive version:** the mechanism works once but does not leave enough evidence for recovery.
+**Safer version:** the mechanism names ownership, state, and proof before execution.
+**Production version:** the mechanism survives crash, retry, deploy, audit, and handoff through durable evidence.
 
 ## Testing Strategy
 
-You must aggressively test your composition by ensuring illegal ordering is either mathematically impossible or explicitly, violently rejected. In your unit or type tests, you must prove that your Rust typestate builder legitimately only exposes its terminal methods after the required earlier states physically exist in the type signature. Your persistence or boundary tests must unequivocally prove that Postgres lifecycle rows cannot be successfully decoded into a later domain state unless the earlier, prerequisite evidence is fully present in the data. Furthermore, your regression tests must meticulously encode a terrifying scenario where an output is somehow maliciously used before validation or approval; your type pipeline must structurally fail long before any runtime side effects can be triggered.
+You must aggressively test your composition by ensuring illegal ordering is either mathematically impossible or explicitly, violently rejected. In your unit or type tests, you must prove that your Rust typestate builder legitimately only exposes its terminal methods after the required earlier states physically exist in the type signature. Your persistence or boundary tests must unequivocally prove that Postgres lifecycle rows cannot be successfully decoded into a later domain state unless the earlier, prerequisite evidence is fully present in the data.
+
+Furthermore, your regression tests must meticulously encode a terrifying scenario where an output is somehow maliciously used before validation or approval; your type pipeline must structurally fail long before any runtime side effects can be triggered.
+**Unit:** test the smallest typed transition and the invariant it preserves.
+**Persistence:** test the database row, query, or receipt that proves the transition survives process death.
+**Regression:** keep a failing case for the production bug this chapter is designed to prevent.
 
 ## Observability Strategy
 
@@ -375,6 +423,8 @@ You must actively observe your composition as a strict sequence of explicitly ty
 Typed composition functions as a genuine security control only when unsafe states absolutely cannot skip mandatory validation steps. You must treat every single pipeline step that crosses a trust boundary—such as an API endpoint, a database read, or an untrusted model output—as fiercely demanding its own distinct type before it can proceed. Authorization, strict sandboxing, and formal approval checks must be represented as unforgeable, un-skippable steps within the composition chain. Always meticulously redact sensitive payload values from your type-level tracing, while ensuring the exact sequence of typed transformations remains perfectly visible for the inevitable security audit.
 
 Treat every single pipeline input as inherently hostile until the previous typed transformation has explicitly produced the required state. Authorization, sandboxing, and approval decisions must be separate, legally enforced transformations *before* an executable tool request or a side-effect receipt can physically exist in the system. Finally, aggressively redact raw model and tool payloads between transformations while flawlessly preserving the typed state names and any associated failure evidence.
+Keep authorization explicit at the boundary where the mechanism can affect users, tenants, tools, or data.
+Redact secrets, tenant data, prompts, and private payloads while preserving ids, state names, and evidence references for audit.
 
 ## Operational Checklist
 
@@ -386,11 +436,21 @@ Third, rehearse your **Failure** modes: ensure that illegal transitions—such a
 
 ## Exercises
 
-To test your operational mastery, write a decidedly negative test where a `ToolCall<Requested>` is stubbornly attempting to execute before formal validation or approval supplies the required idempotency evidence. You must explicitly explain which idempotency key, receipt, or state transition mathematically prevented the duplicate work. Next, sketch the exact Postgres evidence: explicitly define the rows that prove raw output, validated request, policy decision, approval, execution, and receipt are stored as completely separate evidence. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that precisely represents the transitions between `ToolCall<Requested>`, `ToolCall<Validated>`, `ToolCall<Approved>`, and `ToolCall<Executed>`. Then, meticulously name the runbook question that proves this enforcement mechanism actually works at 3 AM.
+To test your operational mastery, write a decidedly negative test where a `ToolCall<Requested>` is stubbornly attempting to execute before formal validation or approval supplies the required idempotency evidence. You must explicitly explain which idempotency key, receipt, or state transition mathematically prevented the duplicate work. Next, sketch the exact Postgres evidence: explicitly define the rows that prove raw output, validated request, policy decision, approval, execution, and receipt are stored as completely separate evidence.
+
+Finally, define or heavily refine the Rust type, enum, constructor, or typestate that precisely represents the transitions between `ToolCall<Requested>`, `ToolCall<Validated>`, `ToolCall<Approved>`, and `ToolCall<Executed>`. Then, meticulously name the runbook question that proves this enforcement mechanism actually works at 3 AM.
+1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
+2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
 
 ## Self-Check
 
 Before you move on, use this quick retrieval drill to solidify your composition understanding. First, recall exactly what operational problem typestate solves that a simple enum alone cannot mathematically solve. Next, be able to clearly explain why applying typed composition must start with boring engineering flow rather than intimidating category-theory words. Then, defensively scan your own codebase and explicitly choose one lifecycle where only the strictly *next* legal operation should be allowed to compile. Finally, explicitly name the state type, the transition method, the invalid call you prevented, and the compile-time or unit test that undeniably proves your safety.
+- Recall: what is the core invariant in this chapter?
+- Explain: why does the invariant matter during an incident?
+- Apply: use the idea on one real agent job or tool call.
+- Evidence: name the artifact that proves the result.
+
 
 ## Summary
 
@@ -400,10 +460,23 @@ The core invariant to remember is that raw input, unpredictable model output, an
 
 Moving forward, remember the golden rule: strict type discipline is profoundly not about academic cleverness; it is the most effective form of production bug prevention available.
 
+**Invariant:** the chapter concept must preserve its named production rule under failure.
+
+**Evidence:** the proof must be visible as a row, event, receipt, trace, policy, test, or runbook query.
+
 ## Changed Understanding
 
 Before reading this chapter, composition likely looked exactly like casually chaining functions together simply because the compiler allowed it. After this chapter, you should understand that genuinely safe composition means every single step rigorously transforms one formally validated type into the next lawful, prerequisite type. Moving forward, keep in mind that you must always read each pipeline arrow as a highly validated transformation between explicitly typed states.
+- **Before this chapter:** the mechanism may have looked like an implementation detail.
+- **After this chapter:** the mechanism is a production contract with evidence.
+- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: The primary industry reference for using the type system to enforce valid state transitions (e.g., ensuring a job is leased before it is executed).
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: A definitive explanation of how Rust's ownership and move semantics enable "un-misusable" APIs.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: Although Idris-specific, this research-backed guide explores how types can be used to describe and verify stateful protocols and concurrent communication orders.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: (2012). The seminal academic work on "Session Types," which treat distributed protocols as types that can be verified at compile time.

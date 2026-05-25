@@ -266,7 +266,12 @@ The companion SQL exposes a small health surface:
 
 ```sql
 {{#include ../../../examples/postgres-rig-agent-jobs/sql/queue_metrics.sql}}
-The medical monitor analogy is perfect. In AI, we often have the **"Vibes-based Monitoring"** problem, where a developer looks at three outputs and says "The model feels slow today." SLIs turn those vibes into **Hard Data**.
+```
+
+This query turns queue health into evidence. A developer may feel that the
+model is slow today, but production systems need a measurable signal. SLIs
+turn impressions into data that can be reviewed, alerted on, and compared over
+time.
 
 Fleet health is a signal; SLO measurement is a contract. For that, the companion
 implementation also exposes SLI queries such as:
@@ -275,9 +280,15 @@ implementation also exposes SLI queries such as:
 {{#include ../../../examples/postgres-rig-agent-jobs/sql/sli_job_start_latency.sql}}
 ```
 
-We should also measure **Quality SLIs**. For example, "99% of triage jobs result in a valid proposal." If the "Good Event" count drops because models are failing to parse, that's an SLO breach that requires a prompt engineer, not a SRE. These SLIs should be part of our **Continuous Evaluation** pipeline.
+Quality SLIs matter too. For example, "99% of triage jobs result in a valid
+proposal" is a reliability signal for model behavior. If the good-event count
+drops because model output no longer parses, the incident may require prompt,
+schema, model, or evaluation work rather than infrastructure work.
 
-In AI, performance is inextricably linked to cost. We should add a **Cost SLI**: for example, "99% of triage jobs cost less than $0.05." If a worker "loops" or "retries" with a larger model, causing a cost spike, our **Cost-per-Reasoning-Step** metric will catch it before it burns the budget.
+Cost SLIs are also part of reliable agent operation. For example, "99% of
+triage jobs cost less than $0.05" turns cost into an operating constraint. If a
+worker loops or retries with a larger model, a cost-per-reasoning-step signal
+can catch the budget risk before it becomes a business incident.
 
 The query returns a measurement row with a named SLO, a named SLI, a measurement
 window, a target in basis points, a good-event count, and a total-event count.
@@ -742,4 +753,10 @@ Observability is not logging more. It is designing state, events, metrics, trace
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google: Dapper Tracing Paper](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2010). The foundational academic paper for modern tracing. it introduces the concepts of "Traces," "Spans," and "Context Propagation" used to connect the agent lifecycle in this chapter.
+- [W3C Trace Context](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: The official standard for the `traceparent` and `tracestate` headers used to propagate correlation identifiers across service boundaries.
+- [Charity Majors: Observability vs Monitoring](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A definitive industry guide explaining why "Monitoring" (dashboards) is for known-unknowns, while "Observability" (traces/events) is for the unknown-unknowns encountered in agent systems.
+- [Google SRE: Service Level Objectives](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The canonical reference for turning raw metrics into meaningful business promises (SLOs) and using error budgets to drive release safety.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: The standard for naming structured fields (e.g., `db.operation`, `service.name`, `error.type`) so that telemetry stays consistent across different backends.

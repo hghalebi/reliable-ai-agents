@@ -499,4 +499,9 @@ The honest production model is at-least-once execution with idempotent boundarie
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The canonical reference for ensuring that state changes and side effects (like agent tool calls) are decoupled yet consistent.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A clear, high-signal explanation of why distributed systems must embrace "at-least-once" delivery and solve for safety via idempotency.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (2007). A seminal paper explaining why scale and reliability require "entities" (agent jobs) that are managed through messaging rather than distributed locks.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 7: Transactions). Provides the formal vocabulary for isolation, atomicity, and the "Exactly-once" myth in distributed systems.

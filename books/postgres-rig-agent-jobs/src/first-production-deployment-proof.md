@@ -291,4 +291,11 @@ launch one job kind only when its evidence packet can survive a review
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the appendix's emphasis on launch evidence, ownership, runbooks, SLOs, and operational review.
+- [Google SRE chapter: Testing for Reliability](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports treating launch as a reliability proof that includes tests, drills, and expected failure behavior.
+- [PostgreSQL transaction isolation documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports the durable intake and worker-ownership proof around transactions, locks, and concurrent workers.
+- [Rig: Build AI Applications in Rust](./31-credible-resources-further-reading.md#agent-architecture) Read this because: supports the separation between model/tool interaction and the surrounding reliability system.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the launch checks for prompt injection, tool abuse, data exposure, memory poisoning, and excessive agency.
+- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports launch evidence for accountability, risk ownership, measurement, and governance.

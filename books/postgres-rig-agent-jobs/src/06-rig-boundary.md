@@ -56,19 +56,34 @@ Read this as the simple version:
 
 ## What You Already Know
 
-Start by anchoring yourself in the hard-won architecture you have already built. You know that the blue-collar worker firmly owns the state transitions. You explicitly know that the model provider lives entirely outside your trusted core. Finally, you understand that messy provider DTOs and raw model outputs are strictly boundary data, and absolutely never domain truth.
+Start with these anchors:
 
-This chapter adds the critical intelligence checkpoint: the Rig boundary. Rig provides the worker with an elegant, powerful way to ask the model for one single reasoning step, while your uncompromising Rust adapters parse, validate, strictly classify, and durably record the result.
+- The worker owns state transitions.
+- The model provider is outside the trusted core.
+- Provider DTOs and model output are boundary data, not domain truth.
+
+This chapter adds: the Rig boundary. Rig gives the worker a way to ask the
+model for one reasoning step while Rust adapters parse, validate, classify, and
+record the result.
 
 ## Focus Cue
 
-Keep three critical elements fiercely in view as you read. Regarding **State**, recognize that raw provider responses and transient provider errors must explicitly exist before they are ever allowed to become typed agent results or formal retry decisions. Regarding the **Move**, understand that provider output is only legally permitted to cross into your domain after surviving rigorous parsing, semantic validation, and strict failure classification. Finally, regarding **Proof**, remember that provider DTOs must never leak into the worker, malformed output must be violently rejected, and every single retry disposition must be heavily typed.
+Keep three things in view:
 
-If you ever get lost in the boundary logic, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical idea to a concrete production check at 3 AM.
+- **State:** raw provider responses and provider errors before they become typed agent results or retry decisions.
+- **Move:** provider output crosses into the domain only after parsing, semantic validation, and failure classification.
+- **Proof:** Provider DTOs do not leak into the worker, malformed output is rejected, and retry disposition is typed.
+
+If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
+
 
 ## Production Artifact
 
-Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a robust Rig adapter that explicitly converts wild provider output into heavily typed agent decisions and strictly typed errors. This artifact matters intensely because while Rig beautifully gives the agent its model and tool interaction capabilities, the underlying reliability layer must stubbornly retain the sole authority to validate that interaction. You will know this is "done" when malformed output, hallucinated tools, provider failures, and valid decisions all flawlessly become explicit, predictable domain outcomes.
+Build or inspect this artifact before moving on:
+
+- **Artifact:** a Rig adapter that converts provider output into typed agent decisions and typed errors.
+- **Why it matters:** Rig gives the agent model and tool interaction, but the reliability layer must still validate authority.
+- **Done when:** malformed output, unknown tools, provider failures, and valid decisions all become explicit domain outcomes.
 
 
 ## Implementation Map
@@ -668,4 +683,9 @@ Rig gives the agent hands, but it should not own the reliability system. The wor
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Toolformer: Language Models Can Teach Themselves to Use Tools](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) Read this because: (2023). The academic foundation for automated tool calling. This chapter turns the Toolformer "API request" concept into a production-hardened typed Rust contract.
+- [ReAct: Synergizing Reasoning and Acting in Language Models](./31-credible-resources-further-reading.md#agent-research-and-evaluation-papers) Read this because: (2022). Foundational research on interleaving reasoning (Thought) and action (Act). It motivates the "Rig Boundary" where the model proposes an action and the system validates the response.
+- [Rig: Build AI Applications in Rust](./31-credible-resources-further-reading.md#agent-architecture) Read this because: The official repository and documentation for the Rig framework, detailing the `Agent` and `Tool` traits used at this boundary.
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2025). Industry guidance on separating model-powered reasoning from the deterministic scaffolds that execute side effects.

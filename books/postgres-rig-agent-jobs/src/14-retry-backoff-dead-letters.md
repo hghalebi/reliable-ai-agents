@@ -557,4 +557,10 @@ Retries should convert temporary failure into future work. Dead letters should c
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Metcalfe & Boggs: Ethernet](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (1976). The seminal academic paper that introduced the **Binary Exponential Backoff** algorithm. It proves why dynamic retransmission delays are necessary to prevent congestive collapse in shared systems.
+- [Marc Brooker: Exponential Backoff and Jitter](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive industry guide to why pure exponential backoff is insufficient. It introduces "Jitter" (randomness) as the critical mechanism to break synchronization and prevent retry storms.
+- [Google SRE: Retry Budgets](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Formalizes the concept of a "Retry Budget" (e.g., limiting retries to 10% of total traffic) to ensure that failures do not amplify load.
+- [Stripe Engineering: Scaling Idempotency](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A high-scale case study on the "Multi-tiered Retry" pattern, which prevents head-of-line blocking by moving failed work to dedicated delay topics.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects retry policy to the "Poison Pill" problem and explains why some failures must become terminal to protect the fleet.

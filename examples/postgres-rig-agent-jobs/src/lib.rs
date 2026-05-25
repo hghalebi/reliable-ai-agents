@@ -34,8 +34,8 @@ pub mod job_kind_readiness;
 pub mod kafka_adoption;
 pub mod launch_packet;
 pub mod logging;
-pub mod observability;
 pub mod memory_store;
+pub mod observability;
 pub mod outbox;
 #[cfg(feature = "postgres-store")]
 pub mod postgres_store;
@@ -228,8 +228,8 @@ pub use logging::{
     LOG_FORMAT_ENV, LogFilterDirective, RUST_LOG_ENV, RuntimeLogFormat, RuntimeTracingConfig,
     RuntimeTracingError, TracingSubscriberInitError, UnknownLogFormat, init_runtime_tracing,
 };
-pub use observability::{init_telemetry, ObservabilityError};
 pub use memory_store::{InMemoryAgentJobStore, InMemoryStoreError};
+pub use observability::{ObservabilityError, init_telemetry};
 pub use outbox::{
     DbOutboxEventRow, FailedOutboxEvent, OutboxAggregateId, OutboxEnvelope, OutboxError,
     OutboxEventId, OutboxEventKind, OutboxEventRecord, OutboxPayload, OutboxStatus,

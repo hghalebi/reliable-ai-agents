@@ -45,6 +45,8 @@ provider contracts, restore evidence, and ownership review dates. A system that
 must run for years needs to preserve meaning, not only bytes.
 
 I’ve seen too many AI projects fail because they couldn't explain a decision from six months ago. In AI, **Lineage is everything**. Your emphasis on storing the `prompt_version` and `model_route` alongside the result is the only way to build a **Verifiable AI**. This lineage is also what allows us to do **Backtesting**—re-running old inputs against new prompts to see if we’ve actually improved.
+**Design response:** required production anchor for this chapter.
+
 
 ## Motivation
 
@@ -718,4 +720,10 @@ problem.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Lehman: Laws of Software Evolution](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The foundational academic research (1974-1996) describing the inevitable decline in quality and increase in complexity of long-lived software systems. It provides the "reality check" for the maintenance cadence described in this chapter.
+- [Crunchy Data: Autovacuum Tuning](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive industry guide to preventing "Database Bloat" in high-traffic task queues, explaining how to adjust scale factors for million-row tables.
+- [EDPB: Data Protection by Design](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The regulatory and technical standard for implementing the "Storage Limitation" and "Erasure" workflows discussed in this chapter's privacy review section.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 4: Encoding and Evolution). The primary reference for Schema Evolution (backward and forward compatibility) used to ensure old agent rows remain parseable by new worker code.
+- [ICO: Storage Limitation](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: A high-signal practical guide for developers on setting retention periods and implementing "Crypto-shredding" for data in backups.

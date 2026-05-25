@@ -708,4 +708,10 @@ Idempotency separates "I saw the same request twice" from "there are two pieces 
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (2007). The seminal paper explaining why scale and reliability require "at-least-once" messaging combined with idempotent entities rather than distributed locks.
+- [Airbnb Engineering: Avoiding Double Payments](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A detailed technical case study of **Orpheus**, Airbnb's idempotency library, which achieves "five nines" consistency using the exact key and lease patterns described in this chapter.
+- [Garcia-Molina & Salem: Sagas](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (1987). The academic foundation for the "Compensation Actions" introduced in this chapter. It formalizes how to manage long-lived transactions by breaking them into smaller steps with explicit rollback actions.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The definitive guide to solving the "Dual-Write Problem" where internal state and external notifications must be kept consistent.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Chapter 11 explains why "exactly-once" is physically impossible in asynchronous networks and why idempotency is the only robust alternative.

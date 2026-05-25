@@ -37,14 +37,6 @@ person.
 
 In production, incidents are handled by tired humans under time pressure. A good runbook reduces choice, names evidence, and prevents improvised unsafe actions.
 
-> ### 🎓 The Professor's Corner
->
-> **The Fat-Finger Problem: The Danger of Ad-Hoc Queries**
->
-> Imagine it's 3 a.m. and you're trying to fix a stuck job. You're tired, and you type `DELETE FROM agent_jobs` instead of `SELECT`. Oh no! You just erased all your work! 
-> 
-> In distributed systems, we call this the **Fat-Finger Problem**. A single typo can be more dangerous than a total power outage. This is why we use **Checked SQL Files**: you never type the command yourself; you just "Run the script" that has already been tested and approved. It's the only way to be safe when you're sleepy!
-
 Without checked runbooks, operators copy ad hoc queries, miss redaction rules, or replay work without receipts. This chapter treats runbooks as part of the production system interface.
 
 ## Plain Version
@@ -162,9 +154,7 @@ oldest_pending_age_seconds > 600
 ```
 
 The operator should not immediately restart workers or add replicas. The
-runbook asks narrower questions first. This is what I call **External Contextual Awareness**. In AI, "Lag" is often caused by **Model provider latency** or 429 errors. Without a runbook that checks provider status, an operator might waste an hour debugging the Rust worker when the problem is in the OpenAI or DeepSeek data center.
-
-The runbook should follow a path of **Causal Diagnosis**:
+runbook asks narrower questions first:
 
 ```text
 Are workers picking any jobs?
@@ -177,7 +167,7 @@ Is an SLO budget already exhausted for this job kind?
 ```
 
 That sequence prevents a common failure: increasing worker count while the real
-problem is a provider quota or paused job kind. I would also emphasize that the **Oldest Pending Age** is the best proxy for **Queue Liveness**. If that number isn't moving, the state machine is stalled.
+problem is a provider quota or paused job kind.
 
 Read the tiny case as:
 
@@ -235,20 +225,12 @@ DATABASE_URL="$DATABASE_URL" \
 The script starts the API server, checks `/healthz`, `/readyz`, `/metrics`,
 admits one idempotent job, and verifies that the pending queue count increases.
 
-> ### 🎓 The Professor's Corner
->
-> **The Doctor's Checkup: healthz vs. readyz**
->
-> Think of a doctor's checkup. **healthz** is checking your pulse—are you alive? **readyz** is checking if you can actually lift a heavy box—are you ready to work? 
-> 
-> A server might be "Alive" but unable to work because it lost its connection to the database. By separating these two checks, we can tell if we just need to wait a second or if we need to call for help!
-
 Use this interpretation:
 
 ```text
 /healthz:
   the process can answer a local liveness check
-...
+
 /readyz:
   the process can read the queue dependency and return a typed readiness result
 
@@ -887,6 +869,7 @@ needs no open work, no waiting retries, no pending human decisions, no recent
 provider usage, and a durable pause or replacement path.
 
 ## Job Kind Readiness Review
+
 When a team says a job kind is ready, ask which level it is ready for. Then
 inspect the durable readiness review:
 
@@ -895,13 +878,10 @@ psql "$DATABASE_URL" \
   -f examples/postgres-rig-agent-jobs/sql/job_kind_readiness_review.sql
 ```
 
-This is what I call **Durable Readiness**. In AI, we often "Launch and Pray." By recording the readiness level (Prototype vs. Production) in the database, the runbook can automatically say: "This is a Prototype, expect higher failure rates." This is the foundation of **Service-Level Accountability** for AI.
-
 This query answers:
 
 ```text
 Which job kinds target demo, prototype, production, or regulated/high-risk use?
-...
 Which job kinds are below their target level?
 Which reviews are overdue?
 Which blocking gaps still exist?
@@ -1042,7 +1022,7 @@ after the incident.
 
 ## What Not To Do
 
-I call this **"The Big No-No List."** You should never do these things, even in an emergency:
+Do not:
 
 ```text
 delete running rows during deploy
@@ -1051,8 +1031,6 @@ increase worker count during provider rate limiting
 store emergency secrets in payloads or events
 turn off approval gates to clear a queue
 ```
-
-Turning off brakes (approval gates) to make a car (the queue) go faster only leads to a crash. Safety first!
 
 ## Formal Definition
 
@@ -1177,4 +1155,10 @@ The runbook is ready when a tired operator can inspect, pause, explain, and reco
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: (1998). A foundational paper for SRE and Resilience Engineering. It identifies why "Human Operators" are the adaptable element that keeps inherently hazardous systems (like agents) safe, provided they have the right evidence.
+- [Google SRE: Managing Incidents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (Chapter 14). Provides the formal Incident Command System (ICS) framework used to separate strategy (Incident Commander) from execution (Operations), which the runbook structure in this chapter supports.
+- [PagerDuty: Incident Response](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The industry standard for the on-call lifecycle (Detect, Triage, Diagnose, Remediate). It provides the practical context for the "Mitigation First" rule used in these runbooks.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: Explains the cognitive science behind "Slip" vs "Mistake" and why runbooks must be designed to reduce choices during high-stress periods.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Connects runbook queries to the "Observability vs. Monitoring" distinction and the formal requirements for a reviewable event ledger.

@@ -584,4 +584,9 @@ An AI agent in production is a durable state machine wrapped around an unreliabl
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Michael Wooldridge: Multiagent Systems](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The definitive academic textbook on how agents coordinate, negotiate, and share responsibility—the theoretical basis for the "Blueprint" in this chapter.
+- [DeepLearning.AI: Agentic Workflows](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2024). A high-signal industry reference explaining why iterative, step-by-step workflows (the "System" approach) outperform autonomous "One-Shot" agent loops.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 12: The Future of Data Systems). Connects the complete blueprint to the formal "System of Systems" view, where separate components coordinate via a shared durable log.
+- [Google SRE Book: The 5 Pillars of Quality](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Provides the industrial framework for connecting the API, worker, and database boundaries into a single observable production service.

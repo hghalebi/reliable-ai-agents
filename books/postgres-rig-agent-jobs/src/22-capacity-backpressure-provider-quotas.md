@@ -198,7 +198,8 @@ tool latency
 human approvals
 ```
 
-The system is limited by the narrowest part of that chain. This is known as **Little's Law**—where the number of items in a system is equal to the arrival rate multiplied by the average time in the system. If you increase the arrival rate without decreasing the service time, your queue depth *must* grow. Adding workers only helps when workers are the limiting resource.
+The system is limited by the narrowest part of that chain. Adding workers only
+helps when workers are the limiting resource.
 
 This is the mental model to keep. Capacity is not one big pool. It is a chain of
 small promises. A job may need a database write, a model request, tokens, a tool
@@ -232,14 +233,10 @@ tool server capacity
 approval team throughput
 ```
 
-Every agent should have a **Token Allowance** per run. If the reasoning loop exceeds this allowance, it must pause and ask for human review rather than burning unbounded money on a "Chain of Thought" loop.
-
 For agent systems, capacity also includes risk. A provider can be healthy while
 the approval queue is saturated. A database can be healthy while tenant cost
 budgets are exhausted. A worker pool can be idle while a high-risk action waits
 for a human gate. Treat all of those as capacity signals.
-
-In AI, one job isn't just one request; it's often a "Chain of Thought." If the first step fails, the whole chain might retry, multiplying the **Token Burn**. We should implement **Token Budgeting**: each agent should have a "Token Allowance" per run to prevent it from going into an infinite reasoning loop that burns the entire company's budget.
 
 ## Tiny Example
 
@@ -258,8 +255,6 @@ That is why retries and backpressure must be designed together. A retry is not
 free. During an outage, retries can turn one provider problem into a queue
 problem, then into an SLO problem, then into a cost problem.
 
-In AI engineering, we often treat the LLM as a "Global Variable." But it’s actually a **Bounded Resource**. If one provider is hot, the admission controller should consider **Multi-Provider Fallback**—routing to a "Faster/Cheaper" model as a form of backpressure.
-
 Read the tiny case as:
 
 ```text
@@ -272,8 +267,6 @@ invariant: overload must become controlled waiting or refusal, not unbounded ret
 ## Backpressure
 
 Backpressure means the system says "not now" before it collapses.
-
-This is the distinction between **Controlled Delay** and **Failure**. In distributed systems, we call this **Load Shedding**. By rejecting low-priority work early, you preserve the ability of the "Whole" to survive. It is an act of **Systemic Altruism**—one job "dies" so that the others can "live."
 
 This is not the same as failure. A controlled delay is often the most reliable
 thing the system can do. It protects critical work, keeps provider calls inside
@@ -340,6 +333,7 @@ The outcome is not a boolean. It is a production decision:
 ```rust,ignore
 {{#include ../../../examples/postgres-rig-agent-jobs/src/admission_control.rs:admission_decision}}
 ```
+
 The evaluator combines queue metrics, provider pressure, budget state, and job
 priority before the system enqueues work or schedules it for later:
 
@@ -347,10 +341,7 @@ priority before the system enqueues work or schedules it for later:
 {{#include ../../../examples/postgres-rig-agent-jobs/src/admission_control.rs:admission_control_evaluate}}
 ```
 
-I like that the decision is a **State Transition**. I call this **"Writing it Down Before Doing it."** If you write down *why* you said "No" to a request, you don't have to remember it later! It's the best way to ensure **Accountability**.
-
-The HTTP boundary resolves duplicate idempotency keys
-... (omitted) ...
+The HTTP boundary resolves duplicate idempotency keys before admission pressure
 is evaluated. Existing work is not new load; it is a lookup that returns the
 known durable job and records `duplicate_suppressed`. For new work, the boundary
 then applies the policy before enqueue. Accepted work is enqueued immediately,
@@ -573,22 +564,6 @@ rather than intuition. Use the naive version only to spot the smell. Use the
 safer version to measure pressure. Use the production version before overload can
 trigger expensive or unsafe behavior.
 
-> ### 🎓 The Professor's Corner
->
-> **Little's Law: The Law of Gravity for Queues**
->
-> Imagine a small coffee shop. If 10 people walk in every minute, but the barista can only make 5 coffees a minute, the line will get longer and longer until it goes out the door! 
-> 
-> **Little's Law** is the "Law of Gravity" for systems: if you want a shorter line, you either have to make coffee faster or tell people to wait before they come in. You can't just ignore the math!
-
-> ### 🎓 The Professor's Corner
->
-> **The Bouncer: Controlled Admission**
->
-> Think of the admission controller as a **Bouncer** at a crowded club. They aren't being mean when they say "Wait outside"; they are making sure the people inside still have room to dance! 
-> 
-> If the bouncer lets everyone in, the club gets too crowded, someone gets hurt, and the music stops. Load shedding is the bouncer's way of protecting the "Whole" by saying "No" to a few.
-
 ## Testing Strategy
 
 Test capacity control before overload reaches the provider:
@@ -683,4 +658,10 @@ budgets, and human approval throughput.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [John Little: A Proof for the Queuing Formula](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (1961). The foundational mathematical theorem for capacity planning. It proves that the number of jobs in a system depends only on arrival rate and latency—the exact logic used to size the worker pools in this chapter.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1984). The seminal paper that defined "Congestion Collapse." It explains why systems that don't use backpressure end up doing 100% work for 0% useful output during overload.
+- [AWS Builders' Library: Load Shedding](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A definitive practical guide to the "Admission Control" patterns implemented in this chapter, including the use of LIFO queues and deadline propagation.
+- [Pat Helland: Life Beyond Distributed Transactions](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: A high-signal engineering review of how to apply queuing theory to real-world microservices and background workers.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Chapter 8 explains the "Metastable Failure" modes that occur when retries amplify pressure on an already-saturated database or provider.

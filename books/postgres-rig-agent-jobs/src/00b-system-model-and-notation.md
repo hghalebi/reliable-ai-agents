@@ -553,4 +553,9 @@ The notation is a small language for production reasoning: state changes, an act
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (1994). The formal inspiration for the "State, Actor, Transition, Evidence, Invariant" grammar. It defines a system as a mathematical formula describing all possible future states.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: The definitive guide to state-transition modeling for hardware and software engineers. It grounds the book's notation in rigorous computer science.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: A high-signal industry resource for applying formal modeling to real-world distributed systems, bridging the gap between math and code.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann). Provides the data-systems vocabulary for states, logs, and invariants.

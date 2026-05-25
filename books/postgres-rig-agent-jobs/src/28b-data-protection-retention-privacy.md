@@ -46,8 +46,6 @@ It is also risky. Agent runs, tool calls, memory records, provider usage rows,
 approval reasons, audit events, and operation events may contain information
 that should be redacted, exported, reviewed, or erased.
 
-In AI, we also have a unique risk: **Model Memorization**. If a model is trained or "finetuned" on sensitive agent logs, it might later "leak" that data to other users. Redacting data *before* it reaches long-term memory is our first defense. We treat privacy work as a form of **Dataset Hygiene**.
-
 The engineering question is not:
 
 ```text
@@ -75,17 +73,7 @@ Read this as the simple version:
 
 **Simple rule:** Privacy work is production work. A redaction request, an
 erasure request, an export request, or a retention review is not less important
-because it came from a support conversation.
-
-> ### 🎓 The Professor's Corner
->
-> **The Scientist's Notebook: Honest Evidence**
->
-> Imagine a scientist makes a mistake in their notebook. They don't just use an eraser and pretend it never happened! They cross it out and write a note explaining why. 
-> 
-> A reliable system does the same thing. We don't just "erase the past"; we correct it with **Honest Evidence**. We keep a record of the request and the action so we can always prove we did the right thing.
-
-It changes what the system is
+because it came from a support conversation. It changes what the system is
 allowed to keep, show, replay, or use in future prompts.
 
 **Why it matters:** If that work lives in informal notes, the team may still do
@@ -156,21 +144,13 @@ Follow the concept as one runtime pass:
 reviewer, or policy owner. The request may ask for redaction, erasure, export, or
 retention review. At this point, the request is still raw work. It is not yet
 proof that anything should be deleted, retained, or exported.
-Action: The first system action is to create a `data_protection_requests`
+
+**Action:** The first system action is to create a `data_protection_requests`
 row. That row names the evidence surface, the subject reference, the owner, the
 reason, the policy version, and the due date. This turns a private promise into
 visible operational state.
 
-> ### 🎓 The Professor's Corner
->
-> **The Hardness of Deleting: State Transitions to "Removed"**
->
-> In distributed systems, deleting data is actually harder than writing it! If you just erase a row, how do you prove it's really gone? 
-> 
-> We treat deletion as a **State Transition**. We don't just "hit delete"; we move the record into a "Removed" or "Redacted" state and record the decision in our notebook. This ensures every replica and cache eventually agrees that the data is gone!
-
-Persistence: After that, every status change should go through an audited
-...
+**Persistence:** After that, every status change should go through an audited
 operation. Approval, application, rejection, expiry, and completion evidence all
 become part of the system history.
 
@@ -229,6 +209,7 @@ data_protection_requests
   policy_version: privacy-policy-2026-05
   due_at: ...
 ```
+
 Then the operator asks two more questions:
 
 ```text
@@ -236,10 +217,7 @@ Did the same data appear in tool_calls?
 Did audit_events keep only the minimum evidence needed to prove the action?
 ```
 
-I call this **"The Glitter Problem."** If you drop glitter on the floor, it doesn't stay in one spot; it gets everywhere! Sensitive data is just like glitter—you have to check every corner of the house (every database table) to find it!
-
 transition: the requested redaction becomes approved, applied, rejected, or
-...
 expired through the same audited operation path as other risky work.
 
 evidence: the operator can inspect `data_protection_requests`,
@@ -252,8 +230,6 @@ and the completion proof agree.
 The request does not mean "delete everything blindly." It means the system has
 a durable workflow for deciding what must be redacted, erased, exported,
 retained, or justified.
-
-I call this **Compliant Event Sourcing**. We distinguish between the **Event Log** (which might be permanent) and the **Projections** (which can be deleted). By redacting content while retaining identity, we satisfy both audit and privacy needs.
 
 ## Mental Model
 
@@ -677,4 +653,9 @@ operate, audit, and recover the system.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Ann Cavoukian: Privacy by Design](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The globally recognized standard for embedding privacy into the architecture of automated systems. It provides the "Positive-Sum" philosophy used to balance auditability with data minimization.
+- [EDPB: Data Protection by Design](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: The regulatory and technical standard for implementing the durable data-protection workqueue described in this chapter.
+- [ICO: Storage Limitation](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: Practical industry guidance on how to preserve enough evidence for system reliability while redacting or erasing what is no longer needed.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 11: Stream Processing). Explains the formal mechanics of "Compacting" and "Deleting" data in distributed ledgers while maintaining a verifiable history.

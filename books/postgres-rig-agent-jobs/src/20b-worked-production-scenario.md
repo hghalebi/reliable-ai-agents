@@ -709,4 +709,9 @@ Reliable agent systems are built from small mechanisms, but they are judged by t
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Pat Helland: Memories, Guesses, and Apologies](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: (2020). A foundational paper for the "Worked Scenario" in this chapter. It explains how to build reliable systems where agents (memories) propose actions based on uncertain information (guesses) and how to handle failures (apologies) via compensation.
+- [Google SRE chapter: Testing for Reliability](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: Supports the chapter's goal of end-to-end scenario tracing to prove that individual controls (idempotency, leases, retries) compose correctly under live traffic.
+- [Anthropic: Building Effective Agents](./31-credible-resources-further-reading.md#chapter-specific-resources) Read this because: Industry guidance for the multi-step "Orchestration" workflow traced in this scenario, emphasizing the separation of reasoning from tool execution.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: (Martin Kleppmann, Chapter 11: Stream Processing). Provides the formal vocabulary for the "Timeline of Transitions" reconstructed by the operator at the end of the scenario.

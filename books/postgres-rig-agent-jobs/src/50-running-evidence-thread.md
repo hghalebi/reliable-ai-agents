@@ -197,4 +197,11 @@ is still guessing.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Rig: Build AI Applications in Rust](./31-credible-resources-further-reading.md#agent-architecture) Read this because: supports the thread's separation between model/tool interaction and the reliability evidence around it.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: grounds the claim, lock, and `SKIP LOCKED` pieces of the thread in real database behavior.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports the thread's focus on durable identity, state transitions, logs, and long-lived evidence.
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the reviewer walkthrough, incident reconstruction, and operations-as-engineering framing.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the trace, metrics, and event correlation used to reconstruct one agent run.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the security parts of the thread where untrusted text meets tools, memory, permissions, and side effects.

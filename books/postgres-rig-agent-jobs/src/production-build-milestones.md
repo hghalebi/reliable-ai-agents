@@ -227,4 +227,12 @@ for the proof.
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: are relevant because the milestones turn reliability into observable production evidence, not intentions.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: supports the state, transaction, log, and recovery thinking behind the milestone order.
+- [PostgreSQL `SELECT` documentation](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: is relevant because worker ownership depends on precise row selection and locking behavior.
+- [Rust API Guidelines](./31-credible-resources-further-reading.md#rust-engineering) Read this because: supports the typed-boundary milestone by treating explicit types and constructors as reliability tools.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the observability milestone by connecting traces, metrics, and logs to operational questions.
+- [OWASP Top 10 for LLM Applications](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the security-boundary milestone by naming agent-specific risks around tool use, prompt injection, and data exposure.
+- [NIST AI Risk Management Framework 1.0](./31-credible-resources-further-reading.md#security-abuse-and-governance) Read this because: supports the approval, evaluation, and governance milestones for systems that affect real users or business workflows.

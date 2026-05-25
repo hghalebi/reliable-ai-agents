@@ -2,95 +2,250 @@
 
 ## What You Will Learn
 
-This chapter teaches you exactly how to prove what should improve next as your fragile agent system inevitably becomes more important to the business. You will learn to rigorously inspect every single job kind to formally assess its true maturity level, its actual business risk, its glaring missing controls, its explicit owner, and its next required review date. Finally, you will learn how to verify that reliability maturity is measured by cold, undeniable evidence, rather than hopeful ambition or impressive slide decks.
+This chapter teaches you to:
 
-The production evidence for this chapter is a ruthless maturity scorecard that explicitly maps the risk of each job to a target maturity level, meticulously documenting current control gaps, the exact next required upgrade, the accountable owner, and the specific validation command that proves the upgrade works.
+- explain what should improve next as the agent system becomes more important;
+- inspect each job kind for maturity level, risk, missing control, owner, and review date;
+- verify that reliability maturity is measured by evidence, not ambition.
+
+The production evidence is a maturity scorecard that maps job risk to a target
+level, current gaps, next upgrade, owner, and validation command.
 
 ## Chapter Thread
 
-This chapter serves as the operational reality-check in your production chain. It builds directly upon the fact that your recovery controls now explicitly show exactly which job kinds are truly, mathematically dependable. Here, we add evidence-backed maturity strictly categorized by job kind and business risk. By enforcing this discipline, this chapter directly prepares you for the advanced scaling paths that securely preserve this evidence even after the Postgres-first limits inevitably appear.
+Read this chapter as one link in the production chain:
+
+- **Builds on:** recovery controls show which job kinds are truly dependable.
+- **Adds:** evidence-backed maturity by job kind and risk.
+- **Prepares:** scaling paths that preserve evidence after Postgres-first limits appear.
 
 ## Production Failure
 
-Imagine a scenario where two different engineering teams both proudly declare their agents to be "production ready."
+Two teams both say their agents are "production ready."
 
-The first team's agent drafts internal, low-stakes meeting summaries. The second team's agent autonomously updates critical customer billing records. In a naive organization, both teams fill out the exact same basic deployment checklist, even though a failure in the first agent causes a minor annoyance, while a failure in the second triggers a financial compliance disaster.
+One agent drafts internal summaries. The other can update billing records. They
+have the same checklist, even though their risk is completely different.
 
-What breaks here is the concept of operational rigor: maturity was treated as a generic, feel-good slogan instead of a targeted, evidence-based standard matched explicitly to business risk. A tragically false fix is to aggressively demand the heaviest possible controls for every single job, slowing development to a crawl, or conversely, to accept the same lightweight, dangerous controls for all jobs. The correct, relentlessly practical design response is to formally score each job kind by its actual risk, assigning a target maturity level, identifying existing proof, documenting missing controls, naming a specific owner, defining the next upgrade, and setting a firm review date.
+- **What breaks:** maturity was treated as a slogan instead of evidence matched
+  to risk.
+- **False fix:** demand the heaviest controls for every job or accept the same
+  lightweight controls for all jobs.
+- **Design response:** score each job kind by risk, target maturity, existing
+  proof, missing control, owner, next upgrade, and review date.
 
 ## Motivation
 
-In the unforgiving environment of production, vaguely asking "is this agent ready?" is an operationally useless question. A helpful support triage assistant, a highly privileged billing adjustment agent, and an autonomous deployment rollback agent all fundamentally demand entirely different reliability bars.
+In production, "is this agent ready?" is too vague. A support triage assistant, billing adjustment agent, and deployment rollback agent need different reliability bars.
 
-Without a rigorous maturity model, engineering teams will either overbuild controls for low-risk work or terrifyingly underbuild controls for high-risk work. This chapter meticulously maps actual job risk to concrete technical controls, demanding explicit evidence, identifying gaps, assigning owners, and scheduling the next brutal review.
+Without a maturity model, teams either overbuild low-risk work or underbuild high-risk work. This chapter maps job risk to concrete controls, evidence, gaps, owners, and next reviews.
 
 ## Plain Version
 
-The simple rule for this chapter is that "maturity" simply means your system can mathematically prove more of its reliability with significantly less human guesswork. This matters deeply because operational teams absolutely need a clear way to see which controls are actually real, which are merely manual habits, and which are completely, dangerously missing. As you read, you must aggressively watch the required evidence for each maturity level across durable state, strict types, retries, observability, behavior evaluation, security boundaries, and daily operations.
+Read this as the simple version:
+
+- **Simple rule:** Maturity means the system can prove more of its reliability with less guesswork.
+- **Why it matters:** Teams need a way to see which controls are real, which are manual, and which are missing.
+- **What to watch:** Watch evidence for each maturity level across state, types, retries, observability, evaluation, security, and operations.
 
 ## What You Already Know
 
-Start by anchoring yourself in the hard-won architecture you have spent this entire book building. You have already introduced durable state, strictly typed boundaries, unyielding ownership, strict idempotency, heavy observability, daily operations, formal evaluation, paranoid security, and practiced recovery. You also inherently understand that different job kinds naturally carry vastly different business risks. Finally, you know that reliability work is never truly "done"; it simply needs a clear, concrete *next* upgrade.
+Start with these anchors:
 
-This chapter adds the final operational lens: a formal maturity model. You will learn to map every single job kind to its current operational level, its necessary target level, its most dangerous missing control, its accountable owner, its next review date, and the specific validation evidence that proves it is safe.
+- The book has introduced durable state, typed boundaries, ownership, idempotency, observability, operations, evaluation, security, and recovery.
+- Different job kinds carry different risks.
+- Reliability work needs a next concrete upgrade.
+
+This chapter adds: a maturity model. You will map each job kind to current
+level, target level, missing control, owner, review date, and validation
+evidence.
 
 ## Focus Cue
 
-Keep three critical elements fiercely in view as you read. Regarding **State**, recognize that the scorecard tracks one job kind, its target level, current evidence, specific gaps, the owner, the next upgrade, and the review date. Regarding the **Move**, understand that a job kind legally moves to a higher maturity level *only* after the mathematically required evidence for that specific level actually exists in the database or test suite. Finally, regarding **Proof**, remember that each maturity level strictly names its current proof, its glaring gaps, its next mandatory upgrade, its owner, and its review date.
+Keep three things in view:
 
-If you ever get lost in the grading criteria, immediately return to state, move, and proof. They form the absolute shortest path from a theoretical maturity score to a concrete production check at 2 AM.
+- **State:** one job kind, target level, current evidence, gap, owner, next upgrade, and review date.
+- **Move:** a job kind moves to a higher level only after the required evidence for that level exists.
+- **Proof:** Each level names current proof, gap, next upgrade, owner, and review date.
+
+If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
+
 
 ## Production Artifact
 
-Before moving on from this chapter, you must build or rigorously inspect a specific artifact: a formal maturity scorecard categorized by job kind, detailing the exact gap, owner, next required artifact, and review date. This artifact matters intensely because vastly different agent jobs demand vastly different reliability bars, and that maturity must be made brutally explicit before an incident occurs. You will know this is "done" when every single capability possesses undeniable evidence, a strict target level, an accountable owner, and the specific next concrete improvement required to survive.
+Build or inspect this artifact before moving on:
+
+- **Artifact:** a maturity scorecard by job kind with gap, owner, next artifact, and review date.
+- **Why it matters:** different agent jobs need different reliability bars, and maturity should be explicit.
+- **Done when:** each capability has evidence, a target level, an owner, and the next concrete improvement.
+
 
 ## Implementation Map
 
-When you transition from reading about maturity to actual implementation, rely on this map as your guide. The primary surfaces you will interact with are your readiness scorecard, the evaluation fixtures in Appendix E, the traceability matrix in Appendix R, and your team's maturity review rows. The core state transition here is formally mapping each specific job kind to the exact reliability level it actually needs to survive its business purpose. The evidence path mathematically guarantees that every gap, owner, target level, next required artifact, and review date are made explicitly, unavoidably visible to the entire organization.
+Use this map when you move from reading to implementation:
+
+- **Primary surface:** readiness scorecard, Appendix E, Appendix R, and maturity review rows.
+- **State transition:** map each job kind to the reliability level it actually needs.
+- **Evidence path:** gap, owner, target level, next artifact, and review date are explicit.
+
 
 ## Operator Question
 
-Before you ship any architectural idea based on this maturity model, you must answer one vital operational question: What specific maturity level does this job kind mathematically require, and exactly what operational evidence is currently missing? To answer this, you must explicitly inspect the job-kind risk, the current level, the target level, the gap, the owner, the next artifact, and the review date. You should immediately escalate the design to leadership if the team lazily applies one single reliability bar to all agent work, or if they cannot definitively name the exact next improvement required to harden the system.
+Before you ship this idea, answer one operational question:
+
+- **Question:** What maturity level does this job kind require, and what evidence is missing?
+- **Evidence to inspect:** job-kind risk, current level, target level, gap, owner, next artifact, and review date.
+- **Escalate if:** the team applies one reliability bar to all agent work or cannot name the next improvement.
+
 
 ## Runtime Walkthrough
 
-Follow the concept of maturity tracking as a single runtime pass. First, a trigger occurs when a specific job kind is formally reviewed for production maturity. Next, the action requires the engineering team to brutally compare its current, actual controls against the target reliability level dictated by its risk. For persistence, the team must permanently persist the gap, the owner, the next artifact to be built, and the review date. Finally, the check requires verifying that the next scheduled improvement is highly concrete and entirely evidence-based, rather than just a vague aspiration.
+Follow the concept as one runtime pass:
+
+1. **Trigger:** a job kind is reviewed for production maturity.
+2. **Action:** compare its current controls to the target reliability level.
+3. **Persistence:** persist gap, owner, next artifact, and review date.
+4. **Check:** verify the next improvement is concrete and evidence-based.
+
 
 ## Acceptance Gate
 
-Do not move on until you can produce the minimum required evidence. You must be able to empirically prove that each job kind explicitly possesses a target level, a documented gap, an accountable owner, a next required artifact, and a firm review date. To validate this path, an operator must inspect the readiness scorecard, the maturity rows, Appendix E, and the strict traceability found in Appendix R. Stop the design process immediately if the engineering team cannot definitively name the exact next evidence-backed reliability improvement required for their agent.
+Do not move on until this minimum evidence exists:
+
+- **Minimum evidence:** each job kind has target level, gap, owner, next artifact, and review date.
+- **Validation path:** inspect readiness scorecard, maturity rows, Appendix E, and Appendix R traceability.
+- **Stop if:** the team cannot name the next evidence-backed reliability improvement.
+
+## Micro-Lesson
+
+Use this five-line version before the heavier mechanism:
+
+```text
+pain: In production, "is this agent ready?" is too vague
+rule: Maturity means the system can prove more of its reliability with less guesswork
+tiny example: one job kind, target level, current evidence, gap, owner, next upgrade, and review date
+artifact: a maturity scorecard by job kind with gap, owner, next artifact, and review date
+proof: each job kind has target level, gap, owner, next artifact, and review date
+```
+
+If the next section feels large, keep only these five lines in view. Then read
+the mechanism as the detailed proof.
 
 ## Mental Model
 
-Think of operational maturity exclusively as the number of catastrophic failures the system can gracefully absorb without surprising the human operators.
+Think of maturity as the number of failures the system can absorb without
+surprise:
 
-Level 0 absorbs almost nothing. It is a fragile script. Level 1 gracefully absorbs hard process crashes. Level 2 securely absorbs invalid data and wild provider boundary drift. Level 3 aggressively absorbs immense operational load and live incidents. Level 4 reliably absorbs slow behavior drift and model degradation. Level 5 ultimately absorbs time, rapid team rotation, sudden provider changes, and full-scale disasters.
+```text
+Level 0 absorbs almost nothing.
+Level 1 absorbs process crashes.
+Level 2 absorbs invalid data and provider boundary drift.
+Level 3 absorbs operational load and incidents.
+Level 4 absorbs behavior drift.
+Level 5 absorbs time, team rotation, provider change, and disaster.
+```
 
-The maturity level is emphatically not a shiny badge for a README file. It is a brutal, mathematical statement about exactly what kinds of failure the current architectural design can actually handle.
+The level is not a badge. It is a statement about what kinds of failure the
+current design can handle.
 
 ## Level 0: Script
 
-At Level 0, the agent is merely a script or a local notebook. There is absolutely no durable state, no automated retries, and no formal audit trail. Reruns are entirely manual, and terrifying provider errors are visible only if someone happens to be staring at the terminal logs. This level is perfectly fine for initial learning and fast prototyping. It is absolutely, unequivocally not a production system.
+The agent is a script or notebook:
+
+```text
+no durable state
+no retries
+no audit trail
+manual reruns
+provider errors visible only in logs
+```
+
+This is fine for learning. It is not a production system.
 
 ## Level 1: Durable Jobs
 
-At Level 1, the agent finally possesses a durable job ledger. The system now formally respects pending, running, succeeded, and failed states. It enforces a strict idempotency key, utilizes active lease ownership, follows a defined retry policy, gracefully handles dead-letter states, and writes an immutable event timeline. At this level, hard crashes finally become safely recoverable. Operators can query the database and definitively answer what actually happened to a job after the process died.
+The agent has a job ledger:
+
+```text
+pending/running/succeeded/failed states
+idempotency key
+lease ownership
+retry policy
+dead letter state
+event timeline
+```
+
+At this level, crashes become recoverable. Operators can answer what happened
+to a job.
 
 ## Level 2: Typed Boundaries
 
-At Level 2, the agent enforces strict domain types and explicit architectural boundaries. The system now demands typed payloads and results, typed error classes, a formal provider adapter, heavily typed tool schemas, rigorous policy results, and explicitly versioned rows. At this level, mathematically invalid states are significantly harder to express in code, and old, historical work can finally be replayed or safely inspected long after the release that created it is gone.
+The agent has domain types and explicit boundaries:
+
+```text
+typed payloads and results
+typed error classes
+provider adapter
+tool schemas
+policy result
+versioned rows
+```
+
+At this level, invalid states are harder to express, and old work can be
+replayed or inspected safely.
 
 ## Level 3: Operated Service
 
-At Level 3, the agent has graduated to SRE-grade operation. The system now actively measures SLIs and SLOs, triggers burn-rate alerts, strictly enforces capacity controls, relies on mechanical backpressure, maintains actionable runbooks, follows a formal incident process, demands explicit release gates, and gracefully handles process shutdown. At this level, the engineering team can confidently run the system under massive load and respond predictably when it inevitably misbehaves at 3 AM.
+The agent has SRE-grade operation:
+
+```text
+SLIs and SLOs
+burn-rate alerts
+capacity controls
+backpressure
+runbooks
+incident process
+release gates
+graceful shutdown
+```
+
+At this level, the team can run the system under load and respond when it
+misbehaves.
 
 ## Level 4: Behavior-Gated Agent
 
-At Level 4, the agent finally implements strict behavior reliability controls. The system relies on rigid fixture evaluations, continuous historical shadow evaluations, formal prompt and model release receipts, aggressive policy gates, mandatory human approval samples, active drift detection, and post-incident regression cases. At this level, the team can aggressively change prompts, models, and tools with mathematical confidence, rather than simply deploying and hoping for the best.
+The agent has behavior reliability controls:
+
+```text
+fixture evals
+historical shadow evals
+prompt and model release receipts
+policy gates
+human approval samples
+drift detection
+post-incident regression cases
+```
+
+At this level, the team can change prompts, models, and tools without relying
+on hope.
 
 ## Level 5: Long-Horizon Platform
 
-At Level 5, the agent platform is designed to seamlessly support years of uninterrupted operation. The system enforces multi-version compatibility, mandates routine restore drills, maintains a living security threat model, strictly isolates tenants, tightly governs tool capabilities, actively monitors cost governance, relentlessly automates toil, seamlessly handles ownership rotation, and strictly enforces a deprecation policy. At this level, reliability is no longer dependent on one senior engineer's memory. It is permanently built into the system architecture, the tests, the runbooks, and the team's relentless operating rhythm.
+The agent platform supports years of operation:
+
+```text
+multi-version compatibility
+restore drills
+security threat model
+tenant isolation
+tool capability governance
+cost governance
+toil automation
+ownership rotation
+deprecation policy
+```
+
+At this level, reliability is not one engineer's memory. It is built into the
+system, the tests, the runbooks, and the team's operating rhythm.
 
 ## How to Use the Model
 
@@ -107,46 +262,26 @@ no behavior gate -> add fixture and shadow evals
 no runbook -> add operator diagnostics
 no restore proof -> run a restore drill
 ```
+
 The important move is to choose the next upgrade from the failure that matters
 most for that job kind. Do not start with the most impressive control. Start
 with the missing control that would hurt users, operators, or the business if it
 failed tomorrow.
 
-I call this **Risk-Proportional Engineering**. It stops teams from "Over-Engineering" the easy stuff and "Under-Engineering" the hard stuff. It is perfectly fine to have a Level 1 "Internal Experiment" and a Level 5 "Payment Agent" in the same codebase.
-
 For a low-risk internal summarizer, the next upgrade may be typed output and
-... (omitted) ...
 visible dead-letter state. If it fails, users wait or receive a draft that can be
 regenerated. That is still worth fixing, but it is not the same risk as a
 billing agent that can create external financial changes.
+
 For a billing agent, the next upgrade may be side-effect receipts, approval
 evidence, and a rollback or compensation path. If that agent repeats an action,
 the business may charge a customer twice or issue the wrong credit. The maturity
 model forces the team to see that difference before saying both agents are
 "ready."
 
-We should also track **Human-AI Collaboration Maturity**. Moving from Level 4 to Level 5 is often about how well the human team and the agent work together over years—how the team learns from agent failures and how the agent context is refined by human judgment.
-
 This is why maturity is per job kind. A product can have one Level 2 job kind,
-... (omitted) ...
 one Level 4 job kind, and one job kind that should stay at Level 0 because it is
 only a research script. That is not inconsistency. It is honest engineering.
-
-> ### 🎓 The Professor's Corner
->
-> **The Karate Belt of Code: Maturity means Proof**
->
-> Think of maturity levels like **Karate Belts**. You don't get a Black Belt just because you want one! You have to go to the Dojo and prove you know the moves. 
-> 
-> Level 1 is a White Belt—you know how to stand up (durable state). Level 5 is a Black Belt—you can handle a fight in the dark (disaster recovery)! It makes your progress feel like a personal achievement, not just a checklist.
-
-> ### 🎓 The Professor's Corner
->
-> **The Reliability Volume Knob: Not a Switch**
->
-> Reliability isn't a simple "On/Off" switch. It’s more like a **Volume Knob**! 
-> 
-> For a quiet conversation (low-risk job), you can turn the volume down (basic controls). But for a rock concert (high-risk financial action), you have to turn the volume all the way up! The maturity model helps you decide exactly how loud your reliability needs to be.
 
 ## Tiny Example
 
@@ -196,16 +331,12 @@ summarizer may be overburdened while the refund executor may still be
 underprotected. The mature decision is narrower: each job kind receives a target
 level, current evidence, missing control, owner, next artifact, and review date.
 
-This walk through also reinforces the core of **Distributed Authority**. A "Drafting" agent (Level 4) only produces **Soft State** (a recommendation), while an "Executing" agent (Level 5) produces **Hard State** (a financial transaction). The maturity model correctly forces the "Hard State" agent to carry the heavier burden of proof.
-
 This also makes planning easier. The team does not need to "make the platform
 reliable" in one vague push. It can say: the summarizer needs typed output
 validation this week; refund drafting needs a new evaluation slice before the
 next prompt release; refund execution needs receipt-backed replay before it can
 leave human-supervised mode. Each improvement is small enough to build and clear
 enough to review.
-
-I call this a **"Growth Mindset"** for architecture. It’s okay to be at Level 1 today, as long as you have a plan to get to Level 2 tomorrow. It takes the **"Imposter Syndrome"** away and replaces it with a clear journey toward expert engineering.
 
 The maturity model is therefore not bureaucracy. It is a map from risk to the
 next concrete engineering move.
@@ -372,4 +503,8 @@ Reliable AI agents are not one feature. They are a ladder of engineering capabil
 
 ## Further Reading and Sources
 
-- [Appendix A: Credible Resources and Further Reading](./31-credible-resources-further-reading.md) contains the complete list of academic papers and industry standards used to build the reliability model in this chapter.
+
+
+- [Google SRE books and resources](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: gives the operational frame for SLIs, SLOs, error budgets, toil, incidents, and release discipline.
+- [OpenTelemetry documentation](./31-credible-resources-further-reading.md#reliability-and-operations) Read this because: supports the chapter's treatment of traces, metrics, logs, and cross-boundary evidence.
+- [Designing Data-Intensive Applications](./31-credible-resources-further-reading.md#durable-execution-and-data-systems) Read this because: connects operational evidence back to durable state, transactions, and event histories.

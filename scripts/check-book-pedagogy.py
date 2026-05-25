@@ -59,7 +59,7 @@ HANDOFF_CHAPTER = BOOK_SRC / "20a-agent-handoffs-multi-agent-coordination.md"
 WORKED_SCENARIO = BOOK_SRC / "20b-worked-production-scenario.md"
 SUMMARY_LINK_RE = re.compile(r"\[[^\]]+\]\((?:\./)?([^)\s#?]+\.md)(?:#[^)]*)?\)")
 WORD_RE = re.compile(r"\b[\w'-]+\b")
-APPENDIX_SOURCE_RE = re.compile(r"^- \[([^\]]+)\]\(https?://[^)]+\)", re.MULTILINE)
+APPENDIX_SOURCE_RE = re.compile(r"^- (?:\*\*)?\[([^\]]+)\]\(https?://[^)]+\)(?:\*\*)?", re.MULTILINE)
 CHAPTER_SOURCE_RE = re.compile(
     r"^- \[([^\]]+)\]\(\./31-credible-resources-further-reading\.md#([^)]+)\)(.+)$",
     re.MULTILINE,
