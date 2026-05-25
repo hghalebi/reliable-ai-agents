@@ -4,9 +4,18 @@
 
 This chapter teaches you to:
 
-- explain the ten rules that survive a change of framework, provider, database, or hosting platform;
-- inspect a design decision and ask which principle it protects or violates;
-- verify that each principle maps to a concrete artifact, not a slogan.
+This chapter gives you the small set of rules that hold the rest of the book
+together. Frameworks change. Model providers change. Hosting platforms change.
+The principles in this chapter should still help you decide whether a design is
+getting safer or merely getting more complicated.
+
+By the end, you should be able to explain why the principles are ordered,
+inspect a design decision for the principle it protects or violates, and verify
+the production evidence behind the claim. You should be able to look at a proposed agent feature and ask a
+plain question: which production promise does this protect? If the answer is
+"it sounds modern," the design is not ready yet. If the answer points to a row,
+a type, a receipt, a test, a runbook query, or a release gate, the principle has
+become engineering.
 
 The production evidence is a principle-to-artifact map that connects durable
 state, typed boundaries, ownership, idempotency, observability, approval,
@@ -16,9 +25,15 @@ evaluation, release safety, and recovery practice.
 
 Read this chapter as one link in the production chain:
 
-- **Builds on:** the system model names state, actors, evidence, and invariants.
-- **Adds:** ten production rules that survive framework or provider changes.
-- **Prepares:** an operating-envelope decision for the Postgres-first architecture.
+The previous chapter gave us a vocabulary: state, actor, transition, evidence,
+and invariant. This chapter turns that vocabulary into judgment. It adds ten
+rules for deciding whether a mechanism belongs in the system and what proof
+should come with it.
+
+**Builds on:** the system model names state, actors, evidence, and invariants.
+**Adds:** ten production rules that survive framework or provider changes.
+**Prepares:** an operating-envelope decision for the Postgres-first architecture.
+The next chapters will keep returning to these rules. When we later discuss Postgres, Rust types, workers, Rig, approvals, evals, recovery, Kafka, or Temporal, the same question appears in a slightly different coat: what promise is this mechanism protecting?
 
 ## Motivation
 
@@ -33,17 +48,32 @@ together instead of standing as isolated implementation tricks.
 
 Read this as the simple version:
 
-- **Simple rule:** Build the agent system by protecting promises in the right order, not by adding tools at random.
-- **Why it matters:** Controls only help when they protect an invariant the system already understands.
-- **What to watch:** Check whether each new feature depends on durable state, typed boundaries, ownership, idempotency, observability, or versioning.
+The simple rule is this: build the agent system by protecting promises in the
+right order, not by adding tools at random.
+
+**Simple rule:** build the agent system by protecting promises in the right
+order, not by adding tools at random. **Why it matters:** a control is useful
+only when it protects an invariant the system already understands. **What to watch:** a retry policy is not useful before idempotency, a dashboard is not
+very useful before durable state, and human approval is fragile if it lives only
+in a chat thread. The order matters because production bugs are often just
+missing prerequisites wearing a nice jacket.
 
 ## What You Already Know
 
 Start with these anchors:
 
-- The previous chapter gave the review grammar: state, actor, transition, evidence, invariant.
-- A production rule is useful only when it changes a design decision.
+- The system model names state, actor, transition, evidence, and invariant.
 - A reliable agent must survive crashes, provider changes, retries, and audits.
+- A production rule is useful only when it changes a design decision.
+
+You already know the review grammar from the system model: state, actor,
+transition, evidence, and invariant. You also know the central pressure of this
+book: a reliable agent must survive crashes, provider changes, retries, and
+audits.
+
+Now we add a stricter standard. A production rule is useful only if it changes a
+design decision. If a principle cannot change code, SQL, tests, runbooks, or
+release gates, it is still only a sentence.
 
 This chapter adds: ten principles that help you choose the boring, durable,
 typed, observable option when a framework or model feature looks easier.
@@ -52,61 +82,108 @@ typed, observable option when a framework or model feature looks easier.
 
 Keep three things in view:
 
-- **State:** the ordered dependency between a principle and the production mechanism that depends on it.
-- **Move:** a design advances only when the earlier invariant required by the principle is already implemented and evidenced.
-- **Proof:** The principle points to chapters, artifacts, review questions, and common failure repairs.
+Keep three things in view: state, move, and proof.
 
-If you get lost, return to state, move, and proof. They are the short path from the idea to a production check.
+**State:** the dependency between a principle and the mechanism that depends on
+it. **Move:** the design step that becomes legal only after the earlier invariant
+exists. **Proof:** the artifact another engineer can inspect.
+
+If you get lost, return to those three words. They are less glamorous than a new
+tool, but they are easier to operate at 03:00.
 
 
 ## Production Artifact
 
 Build or inspect this artifact before moving on:
 
-- **Artifact:** a principle review card that maps each design rule to one concrete artifact.
-- **Why it matters:** principles only help production work when they change schemas, types, tests, runbooks, or release gates.
-- **Done when:** each principle has a named control and a question that catches a real failure.
+**Artifact:** a principle review card maps each design rule to one concrete
+artifact. The artifact may be a schema constraint, Rust type, lease predicate,
+idempotency record, evaluation receipt, approval row, runbook query, or restore
+drill.
+
+**Why it matters:** principles only help production work when they change
+schemas, types, tests, runbooks, or release gates. **Done when:** each principle
+has a named control and a question that would catch a real failure. If the
+review card cannot make a risky design awkward, it is decorative paperwork.
 
 
 ## Implementation Map
 
 Use this map when you move from reading to implementation:
 
-- **Primary surface:** the design-principle list, Appendix J, and Appendix R traceability rows.
-- **State transition:** turn each principle into a concrete schema, type, test, runbook, or release gate.
-- **Evidence path:** a reviewer can name the artifact that proves the principle is not decorative.
+When you move from reading to implementation, start with the principle list and
+the traceability appendices. For each principle, choose one system surface where
+the rule becomes visible: a schema, a type, a test, a runbook, or a release
+gate. The state transition is the moment the principle stops being advice and
+becomes a check.
+
+**Primary surface:** the design-principle list, Appendix J, and Appendix R
+traceability rows. **State transition:** turn each principle into a concrete
+schema, type, test, runbook, or release gate. **Evidence path:** a reviewer can
+name the artifact that proves the principle is not decorative.
 
 
 ## Operator Question
 
 Before you ship this idea, answer one operational question:
 
-- **Question:** Which production artifact proves this principle changed the design?
-- **Evidence to inspect:** principle review card, related chapter, implementation artifact, and reviewer question.
-- **Escalate if:** a principle sounds correct but cannot point to a schema, type, test, runbook, or release gate.
+Before shipping a design that claims to follow these principles, ask one
+operational question: which production artifact proves this principle changed
+the design?
+
+**Question:** which production artifact proves this principle changed the
+design? **Evidence to inspect:** principle review card, related chapter,
+implementation artifact, and reviewer question. **Escalate if:** a principle
+sounds correct but cannot point to a schema, type, test, runbook, approval,
+receipt, or release gate. Production systems are very polite about slogans; they
+fail anyway.
 
 
 ## Runtime Walkthrough
 
 Follow the concept as one runtime pass:
 
-1. **Trigger:** a design choice is being reviewed.
-2. **Action:** choose the principle that should constrain the choice.
-3. **Persistence:** point to the concrete artifact the principle changes.
-4. **Check:** ask whether the artifact would catch a real production failure.
+During a design review, a choice appears: perhaps a retry policy, a new tool, or
+a model upgrade. The reviewer chooses the principle that should constrain that
+choice and asks for the artifact the principle changes. Then the team checks the
+important question: would this artifact catch a real production failure?
+
+**Trigger:** a design choice is being reviewed. **Action:** choose the principle
+that should constrain the choice. **Persistence:** point to the concrete
+artifact the principle changes. **Check:** ask whether the artifact would catch
+a real production failure.
+
+If the answer is yes, the principle is alive. If the answer is no, the system is
+collecting inspirational posters.
 
 
 ## Acceptance Gate
 
 Do not move on until this minimum evidence exists:
 
-- **Minimum evidence:** each principle points to a concrete artifact that can be reviewed.
-- **Validation path:** check Appendix J and Appendix R for principle-to-artifact traceability.
-- **Stop if:** a principle changes no schema, type, test, runbook, approval, or release gate.
+Do not move on until each principle points to a concrete artifact that can be
+reviewed. Appendix J and Appendix R provide the traceability path, but the real
+standard is simpler: another engineer should be able to find the artifact and
+explain the failure it prevents.
+
+**Minimum evidence:** each principle points to a concrete artifact that can be
+reviewed. **Validation path:** check Appendix J and Appendix R for
+principle-to-artifact traceability. **Stop if:** a principle changes no schema,
+type, test, runbook, approval, receipt, or release gate. That is not a
+production principle yet. It is a bumper sticker, and production has no respect
+for bumper stickers.
 
 ## Micro-Lesson
 
 Use this five-line version before the heavier mechanism:
+
+Here is the compact version before the heavier mechanism. Production failures
+often happen because teams copy mechanisms without knowing the promises those
+mechanisms protect. The rule is to build by protecting promises in the right
+order. The tiny example is a duplicate incident request that becomes one job
+because durable state, identity, and ownership already exist. The artifact is a
+principle review card. The proof is that each principle points to a concrete
+artifact another engineer can inspect.
 
 ```text
 pain: In production, mechanisms are easy to copy and hard to judge
@@ -373,22 +450,28 @@ For this chapter, the precise definition is:
 A design principle is a reusable ordering rule that prevents a later mechanism from depending on an earlier missing invariant.
 ```
 
-In the book's system model:
+In the book's system model, **State** is the dependency between a principle and
+the production mechanism that depends on it. **Actor** is the engineer,
+reviewer, or operator deciding whether a design is ready to move forward.
+**Transition** happens when the design advances only after the prerequisite
+invariant has been implemented and evidenced.
 
-- **State:** the ordered dependency between a principle and the production mechanism that depends on it.
-- **Actor:** the engineer, reviewer, or operator deciding whether a design is ready to move to the next control.
-- **Transition:** a design advances only when the earlier invariant required by the principle is already implemented and evidenced.
-- **Evidence:** The principle points to chapters, artifacts, review questions, and common failure repairs.
-- **Invariant:** later mechanisms never pretend to solve a problem whose prerequisite invariant is still missing.
+**Evidence** is not a belief that the team is careful. It is a chapter,
+artifact, review question, test, row, receipt, or runbook. **Invariant** means
+later mechanisms never pretend to solve a problem whose prerequisite invariant
+is still missing.
 
 ## What Can Fail
 
-| Signal | Production meaning |
-| --- | --- |
-| Design smell | Principles are slogans rather than constraints. |
-| Production symptom | Teams agree with the prose but ship systems that violate it. |
-| Corrective invariant | Each principle maps to an artifact that prevents one failure class. |
-| Evidence to inspect | Design review rows connect principle, artifact, failure prevented, and owner. |
+**Design smell:** the most common failure is not disagreement. Almost everyone
+agrees with phrases like "make it observable" or "use idempotency." The failure
+is that the principle remains a slogan rather than a constraint.
+
+**Production symptom:** a team agrees with the prose and still ships a system
+that violates it. **Corrective invariant:** each principle maps to an artifact
+that prevents one failure class. **Evidence to inspect:** a design review row,
+or its moral equivalent, connecting principle, artifact, failure prevented, and
+owner.
 
 
 ## Production Contract
@@ -414,13 +497,18 @@ reliability.
 
 ## Progressive Hardening Path
 
-| Stage | Implementation shape | What changes |
-| --- | --- | --- |
-| Naive version | Principles are slogans rather than constraints. | A principle list becomes slogans if it does not order real engineering decisions. |
-| Safer version | Each principle maps to an artifact that prevents one failure class. | Each principle explains which earlier invariant must exist before a later control can be trusted. |
-| Production version | Design review rows connect principle, artifact, failure prevented, and owner. | Design reviews can point from principle to artifact, failure class, owner, and repair path. |
+**Naive version:** a list of principles that everyone likes and nobody can
+enforce. It may be useful for a workshop, but it will not stop a duplicate side
+effect or a risky model release.
 
-Use the naive row to spot decorative principles. Use the safer row to check ordering. Use the production row when the principle must drive review questions and corrective action.
+**Safer version:** each principle maps to an artifact that prevents one failure
+class. "Idempotent before retried" points to an idempotency key and receipt.
+"Typed before clever" points to newtypes, enums, and conversion tests.
+"Recovery must be practiced" points to a restore drill.
+
+**Production version:** principle, artifact, failure class, owner, and repair
+path are connected in the design review process. At that point the principle has
+a job: it can block a shortcut before the shortcut becomes an incident.
 
 ## Testing Strategy
 
@@ -447,18 +535,32 @@ Third, rehearse your **Failure** modes: a design review must be able to explicit
 
 ## Exercises
 
-To test your mastery, pick a scenario and write a negative test where a retry is accidentally added before the side effect possesses a receipt or an idempotency key. You must explicitly explain which idempotency key, receipt, or state transition prevents the duplicate work from executing. Next, sketch the exact Postgres evidence—one row or query—that proves each chosen principle has durable, inspectable evidence. Finally, define or heavily refine the Rust type, enum, constructor, or typestate that represents a Principle enum or a review checklist type that automatically rejects principles lacking evidence links. Then, meticulously name the runbook question that proves this enforcement works.
+To test your mastery, pick one scenario and make the principle do real work.
+For example, write a negative test where a retry is added before the side effect
+has a receipt or idempotency key. Explain which key, receipt, or state
+transition prevents duplicate work.
+
+Then sketch the exact Postgres evidence, such as one row or query, proving that
+the chosen principle is durable and inspectable. Finally, define or refine a
+Rust type, enum, constructor, or typestate value that represents the review rule
+and rejects missing evidence links. Finish by naming the runbook question that
+would prove the enforcement works during an incident.
+
 1. Name one invalid transition this chapter should prevent and write the evidence that proves it is blocked.
-2. Sketch the durable row, event, receipt, or policy record that would prove the correct behavior.
-3. Add or describe one Rust type, enum, constructor, or test that makes the production rule harder to violate.
+2. Sketch the durable Postgres row, event, receipt, or policy record that would prove the correct behavior.
+3. Add or describe one Rust negative test, type, enum, constructor, or typestate state that makes the production rule harder to violate.
 
 ## Self-Check
 
-Before you move on, use this quick retrieval drill to solidify your understanding. First, recall and name three specific principles that actively protect long-running agents from hidden failure. Next, be able to clearly explain why "durable before intelligent" is an enforceable design rule, not merely a motivational slogan. Then, apply this knowledge by picking one principle and explicitly describing the exact bug that inevitably appears when it is violated in code. Finally, ensure you can explicitly name the row, type, test, receipt, or runbook query that would unconditionally prove the principle is enforced.
-- Recall: what is the core invariant in this chapter?
-- Explain: why does the invariant matter during an incident?
-- Apply: use the idea on one real agent job or tool call.
-- Evidence: name the artifact that proves the result.
+Before you move on, do a short retrieval drill. **Recall:** name three
+principles that protect long-running agents from hidden failure. **Explain:**
+why is "durable before intelligent" an enforceable design rule rather than a
+motivational slogan? **Apply:** pick one principle and describe the exact bug
+that appears when code violates it.
+
+**Evidence:** name the row, type, test, receipt, or runbook query that
+proves the principle is enforced. If you cannot name the evidence, the principle
+is not ready to carry production weight.
 
 
 ## Summary
@@ -476,9 +578,11 @@ Moving forward, remember the golden rule: actively use these principles as a str
 ## Changed Understanding
 
 Before reading this chapter, reliability may have simply looked like extra, tedious infrastructure bolted on after the model already "works." After this chapter, you should understand that reliability is a strict, upfront design discipline: you must be durable before you are intelligent, typed before you are clever, and observable before you are trusted. Moving forward, keep in mind that you must use this design-principle checklist ruthlessly before accepting any new agent feature.
-- **Before this chapter:** the mechanism may have looked like an implementation detail.
-- **After this chapter:** the mechanism is a production contract with evidence.
-- **Keep:** name the invariant, evidence, and operator question before relying on it.
+
+**Before this chapter:** the mechanism may have looked like an implementation
+detail. **After this chapter:** the mechanism is a production contract with
+evidence. **Keep:** name the invariant, the evidence, and the operator question
+before relying on any new control.
 
 
 ## Further Reading and Sources

@@ -13,7 +13,7 @@ PUBLIC_CI = ROOT / "scripts" / "check-public-mdbook-ci.sh"
 
 REQUIRED_PHRASES = (
     "actions/checkout@v6",
-    "actions/configure-pages@v5",
+    "actions/configure-pages@v6",
     "cargo install mdbook --version 0.5.2 --locked",
     "bash scripts/check-public-mdbook-ci.sh",
     "examples/postgres-rig-agent-jobs/**",
@@ -22,9 +22,9 @@ REQUIRED_PHRASES = (
     "scripts/check-public-repo-surface.py",
     "scripts/check-rust-boundary-types.py",
     "scripts/write-public-build-info.py",
-    "actions/upload-pages-artifact@v4",
+    "actions/upload-pages-artifact@v5",
     "path: books/postgres-rig-agent-jobs/book",
-    "actions/deploy-pages@v4",
+    "actions/deploy-pages@v5",
     "pages: write",
     "id-token: write",
     "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true",
